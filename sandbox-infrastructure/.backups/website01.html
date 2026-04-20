@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="InfraNest Technologies provides managed IT support, IT operations management, SaaS administration, and workplace technology solutions for growing businesses." />
+  <title>InfraNest Technologies | Modern IT Support and Operations</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #111a2e;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #f5f7fb;
+      --muted: #b6c2d9;
+      --accent: #5aa9ff;
+      --accent-soft: rgba(90, 169, 255, 0.14);
+      --success: #7ee0b5;
+      --max-width: 1180px;
+      --radius: 20px;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(90, 169, 255, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(126, 224, 181, 0.12), transparent 26%),
+        linear-gradient(180deg, #09111f 0%, #0d1527 52%, #0b1220 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(92%, var(--max-width));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(9, 17, 31, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), #8cc2ff);
+      color: #06101f;
+      font-weight: 800;
+      box-shadow: 0 12px 24px rgba(90, 169, 255, 0.28);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #081120;
+      font-weight: 700;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 12px 24px rgba(90, 169, 255, 0.25);
+    }
+
+    .nav-cta:hover,
+    .button:hover,
+    .button-secondary:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      padding: 88px 0 64px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 38px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 6px rgba(126, 224, 181, 0.12);
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4.5rem);
+      line-height: 1.06;
+      margin-bottom: 18px;
+      max-width: 12ch;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 620px;
+      margin-bottom: 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .button,
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .button {
+      background: var(--accent);
+      color: #071121;
+      box-shadow: 0 14px 30px rgba(90, 169, 255, 0.28);
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text);
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-points span {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .hero-card {
+      padding: 28px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.75rem;
+      margin-bottom: 4px;
+    }
+
+    .metric span,
+    .hero-card p,
+    .service-card p,
+    .section-copy,
+    .contact-card p,
+    .footer-copy,
+    .approach-card p {
+      color: var(--muted);
+    }
+
+    section {
+      padding: 34px 0 78px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    .section-label {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h2.section-title {
+      font-size: clamp(1.9rem, 3.6vw, 3rem);
+      line-height: 1.1;
+    }
+
+    .services-grid,
+    .approach-grid,
+    .contact-grid,
+    .footer-grid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .services-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .service-card,
+    .approach-card,
+    .contact-card {
+      padding: 28px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+    }
+
+    .service-card h3,
+    .approach-card h3,
+    .contact-card h3 {
+      font-size: 1.24rem;
+      margin-bottom: 10px;
+    }
+
+    .service-card ul,
+    .approach-card ul {
+      list-style: none;
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .service-card li,
+    .approach-card li {
+      color: var(--text);
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .service-card li::before,
+    .approach-card li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .about-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .about-panel,
+    .cta-panel {
+      padding: 30px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow);
+    }
+
+    .about-panel p + p {
+      margin-top: 14px;
+    }
+
+    .approach-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+
+    .contact-list {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+      color: var(--muted);
+    }
+
+    .contact-list strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .cta-panel {
+      background: linear-gradient(135deg, rgba(90, 169, 255, 0.16), rgba(255, 255, 255, 0.05));
+    }
+
+    .cta-panel p {
+      color: #dce7f8;
+      margin: 14px 0 22px;
+    }
+
+    footer {
+      padding: 24px 0 50px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-grid {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+
+    .footer-copy {
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .section-head,
+      .services-grid,
+      .approach-grid,
+      .contact-grid,
+      .about-wrap,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding-top: 62px;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .site-header {
+        position: static;
+      }
+
+      .nav {
+        justify-content: center;
+      }
+
+      .brand {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="#top" class="brand" aria-label="InfraNest Technologies home">
+        <div class="brand-mark">IN</div>
+        <div>InfraNest Technologies</div>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#approach">Approach</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <a class="nav-cta" href="#contact">Book a Consultation</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Modern IT support for growing teams</div>
+          <h1>Reliable IT operations built for businesses that need things to work.</h1>
+          <p>
+            InfraNest Technologies helps organizations simplify day to day IT, improve internal operations,
+            manage core platforms, and build better workplace technology experiences.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button" href="#contact">Get Started</a>
+            <a class="button-secondary" href="#services">Explore Services</a>
+          </div>
+
+          <div class="hero-points">
+            <span>Managed IT Support</span>
+            <span>SaaS Administration</span>
+            <span>IT Operations</span>
+            <span>Workplace Technology</span>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Business highlights">
+          <h2>What we help improve</h2>
+          <div class="metric-grid">
+            <div class="metric">
+              <strong>Support</strong>
+              <span>User issues, access requests, and day to day IT needs</span>
+            </div>
+            <div class="metric">
+              <strong>Systems</strong>
+              <span>Google Workspace, Microsoft 365, and SaaS environments</span>
+            </div>
+            <div class="metric">
+              <strong>Process</strong>
+              <span>Documentation, SOPs, and workflow optimization</span>
+            </div>
+            <div class="metric">
+              <strong>Workplace</strong>
+              <span>Conference rooms, AV setup, and collaboration tools</span>
+            </div>
+          </div>
+          <p>
+            Built for small and mid sized businesses that need practical, dependable IT support without unnecessary complexity.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Services</div>
+            <h2 class="section-title">IT services designed to support operations, users, and growth.</h2>
+          </div>
+          <p class="section-copy">
+            From frontline support to long term operational improvements, InfraNest Technologies provides flexible IT services that help businesses stay organized, secure, and productive.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <article class="service-card">
+            <h3>Core Managed IT Support</h3>
+            <p>Responsive help for everyday technical issues, onboarding needs, and vendor coordination.</p>
+            <ul>
+              <li>Help desk support for tickets and user issues</li>
+              <li>Remote troubleshooting</li>
+              <li>Device setup and onboarding</li>
+              <li>Software installs and access issues</li>
+              <li>Basic network troubleshooting</li>
+              <li>Vendor coordination</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <h3>IT Operations Management</h3>
+            <p>Operational support focused on improving structure, consistency, and efficiency across IT workflows.</p>
+            <ul>
+              <li>IT process improvement</li>
+              <li>Documentation and SOP creation</li>
+              <li>Workflow optimization</li>
+              <li>SaaS environment management</li>
+              <li>Ticketing system optimization</li>
+              <li>Automation improvements</li>
+              <li>IT roadmap planning</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <h3>SaaS and Workspace Administration</h3>
+            <p>Administration and oversight for the tools teams rely on every day.</p>
+            <ul>
+              <li>Google Workspace or Microsoft 365 administration</li>
+              <li>User lifecycle management</li>
+              <li>Permissions audits</li>
+              <li>Security settings review</li>
+              <li>Email and collaboration optimization</li>
+              <li>License management</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <h3>Workplace Technology and Collaboration Solutions</h3>
+            <p>Technology support that improves communication, meetings, and the day to day office experience.</p>
+            <ul>
+              <li>Conference room technology</li>
+              <li>Video conferencing deployments</li>
+              <li>Collaboration and AV hardware setup</li>
+              <li>Office technology environments</li>
+              <li>Optimization and support</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">About</div>
+            <h2 class="section-title">A practical IT partner for teams that want clarity and consistency.</h2>
+          </div>
+          <p class="section-copy">
+            InfraNest Technologies is built around the idea that IT should be dependable, efficient, and easy for businesses to navigate. The focus is on strong support, cleaner operations, and technology environments that actually help people do their work.
+          </p>
+        </div>
+
+        <div class="about-wrap">
+          <div class="about-panel">
+            <p>
+              Whether the need is day to day support, process improvement, SaaS administration, or workplace technology setup, the goal is the same: reduce friction, improve the user experience, and create a stronger operational foundation.
+            </p>
+            <p>
+              This site is designed as a clean first version of your company website and can be expanded later with testimonials, pricing, contact forms, case studies, and additional service pages.
+            </p>
+          </div>
+
+          <div class="about-panel">
+            <p>
+              InfraNest Technologies is a strong fit for businesses that need hands on IT support with an operations minded approach. That includes teams looking to improve onboarding, standardize documentation, optimize tool management, and strengthen collaboration across their environment.
+            </p>
+            <p>
+              As your business grows, this page can also evolve into a larger multi page site while still keeping the same brand and layout direction.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="approach">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Approach</div>
+            <h2 class="section-title">How InfraNest Technologies adds value.</h2>
+          </div>
+          <p class="section-copy">
+            The focus is not just fixing issues as they come up. It is also about building better systems, cleaner processes, and more reliable technology experiences over time.
+          </p>
+        </div>
+
+        <div class="approach-grid">
+          <article class="approach-card">
+            <h3>User Focused Support</h3>
+            <p>Support that helps employees get unstuck quickly and keeps technology from slowing down day to day work.</p>
+            <ul>
+              <li>Clear communication</li>
+              <li>Practical troubleshooting</li>
+              <li>Reliable follow through</li>
+            </ul>
+          </article>
+
+          <article class="approach-card">
+            <h3>Operational Improvement</h3>
+            <p>Process minded IT support that improves how systems are managed behind the scenes.</p>
+            <ul>
+              <li>Cleaner workflows</li>
+              <li>Better documentation</li>
+              <li>More scalable operations</li>
+            </ul>
+          </article>
+
+          <article class="approach-card">
+            <h3>Technology Enablement</h3>
+            <p>Thoughtful setup and administration that helps tools, devices, and collaboration environments work together smoothly.</p>
+            <ul>
+              <li>Stronger workspace management</li>
+              <li>Improved collaboration setup</li>
+              <li>Consistent user experience</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container contact-grid">
+        <div class="contact-card">
+          <div class="section-label">Contact</div>
+          <h2 class="section-title">Let’s talk about your IT needs.</h2>
+          <p>
+            Ready to improve support, streamline operations, or get help managing your workplace technology? Reach out and start the conversation.
+          </p>
+
+          <ul class="contact-list">
+            <li>
+              <strong>Email</strong>
+              yourname@infranest.com
+            </li>
+            <li>
+              <strong>Phone</strong>
+              (555) 555 5555
+            </li>
+            <li>
+              <strong>Service Area</strong>
+              Add your city, state, or remote coverage area here
+            </li>
+          </ul>
+        </div>
+
+        <div class="cta-panel">
+          <div class="section-label">Next Step</div>
+          <h3 style="font-size: 1.8rem; line-height: 1.15;">Need a clean first website that is ready for AWS hosting?</h3>
+          <p>
+            This page is already structured to work well as a static site. You can upload it to an S3 bucket for website hosting, then point your Route 53 record to it once your domain setup is ready.
+          </p>
+          <a class="button" href="mailto:yourname@infranest.com">Request a Consultation</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div class="brand">
+          <div class="brand-mark">IN</div>
+          <div>InfraNest Technologies</div>
+        </div>
+        <p class="footer-copy" style="margin-top: 12px;">
+          Modern IT support, operations, and workplace technology solutions for growing businesses.
+        </p>
+      </div>
+      <p class="footer-copy">© 2026 InfraNest Technologies. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

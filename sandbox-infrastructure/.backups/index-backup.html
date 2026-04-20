@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="InfraNest Technologies delivers practical IT operations, cloud infrastructure, SaaS administration, and managed support — all in one partner." />
+  <title>InfraNest Technologies | IT Operations, Cloud &amp; Managed Support</title>
+  <style>
+    :root {
+      --bg: #050e1c;
+      --accent: #4fa8ff;
+      --accent-soft: rgba(79, 168, 255, 0.16);
+      --success: #7fe1b4;
+      --muted: #7a9bbf;
+      --text: #f0f6ff;
+      --panel: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.10);
+      --border-strong: rgba(79, 168, 255, 0.6);
+      --shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
+      --radius: 20px;
+      --max-width: 1180px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(92%, var(--max-width));
+      margin: 0 auto;
+    }
+
+    /* ── NAV ─────────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5, 14, 28, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-shrink: 0;
+    }
+
+    .logo-pill {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-pill img {
+      height: 32px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-pill--sm img {
+      height: 24px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      background: var(--accent);
+      color: #07111d;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 22px rgba(79, 168, 255, 0.38);
+      white-space: nowrap;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(79, 168, 255, 0.50);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 38px;
+      height: 38px;
+      padding: 6px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    /* ── HERO ────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      padding: 88px 0 72px;
+      overflow: hidden;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+
+    .hero::before {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(79, 168, 255, 0.22) 0%, transparent 70%);
+      top: -140px;
+      left: -160px;
+      animation-duration: 16s;
+    }
+
+    .hero::after {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(127, 225, 180, 0.13) 0%, transparent 70%);
+      top: -60px;
+      right: -80px;
+      animation-duration: 20s;
+      animation-direction: alternate-reverse;
+    }
+
+    @keyframes drift {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(30px, 20px) scale(1.06); }
+      100% { transform: translate(-20px, 40px) scale(0.96); }
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 44px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-bottom: 24px;
+      font-size: 0.88rem;
+      letter-spacing: 0.01em;
+    }
+
+    .eyebrow-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 0 rgba(127, 225, 180, 0.5);
+      animation: pulse-dot 2.4s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(127, 225, 180, 0.5); }
+      50%       { box-shadow: 0 0 0 7px rgba(127, 225, 180, 0); }
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      max-width: 13ch;
+    }
+
+    .hero-copy {
+      color: var(--muted);
+      font-size: 1.06rem;
+      max-width: 560px;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 26px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--accent);
+      color: #07111d;
+      box-shadow: 0 10px 26px rgba(79, 168, 255, 0.40);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(79, 168, 255, 0.52);
+    }
+
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 26px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .button-secondary:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Hero Panel */
+    .hero-panel {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .platform-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 8px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      cursor: default;
+    }
+
+    .platform-chip:hover {
+      border-color: var(--border-strong);
+      background: rgba(79, 168, 255, 0.10);
+      transform: translateY(-2px);
+    }
+
+    .platform-chip img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    .platform-chip span {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* ── SECTIONS ────────────────────────────────────── */
+    section {
+      padding: 80px 0;
+    }
+
+    .section-label {
+      color: var(--accent);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.85rem, 3.5vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .section-copy {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 40px;
+    }
+
+    /* ── SERVICES ────────────────────────────────────── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .service-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+      outline: none;
+    }
+
+    .service-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 1px var(--border-strong), 0 24px 50px rgba(4, 12, 30, 0.55);
+    }
+
+    .service-card.active {
+      background: linear-gradient(160deg, rgba(79, 168, 255, 0.18), rgba(255, 255, 255, 0.05));
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 1px var(--border-strong), 0 28px 60px rgba(4, 12, 30, 0.60);
+    }
+
+    .service-card.active:hover {
+      transform: none;
+    }
+
+    .service-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+
+    .service-icon-badge [data-lucide] {
+      width: 22px;
+      height: 22px;
+      stroke-width: 1.8;
+    }
+
+    .service-card h3 {
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .service-card > p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .service-card ul {
+      list-style: none;
+      margin-top: 16px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .service-card li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .service-card li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .tech-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .chip img {
+      width: 13px;
+      height: 13px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      flex-shrink: 0;
+    }
+
+    /* ── ABOUT ───────────────────────────────────────── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .about-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .about-panel h3 {
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .about-panel p {
+      color: var(--muted);
+      font-size: 0.97rem;
+      line-height: 1.7;
+    }
+
+    /* ── APPROACH ────────────────────────────────────── */
+    .approach-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .approach-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .approach-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(79, 168, 255, 0.28);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+    }
+
+    .approach-card h3 {
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .approach-card > p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .approach-card ul {
+      list-style: none;
+      margin-top: 16px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .approach-card li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .approach-card li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── CONTACT ─────────────────────────────────────── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .contact-card,
+    .contact-cta {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-card h2 {
+      font-size: clamp(1.7rem, 3vw, 2.4rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .contact-card > p {
+      color: var(--muted);
+      font-size: 0.97rem;
+      line-height: 1.7;
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .toggle-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .toggle-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .toggle-button.active {
+      background: var(--accent);
+      color: #07111d;
+      border-color: transparent;
+      box-shadow: 0 8px 22px rgba(79, 168, 255, 0.40);
+    }
+
+    .info-reveal {
+      display: none;
+      margin-top: 18px;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    .info-reveal.active {
+      display: block;
+    }
+
+    .info-reveal strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .info-reveal a {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .info-reveal a:hover {
+      text-decoration: underline;
+    }
+
+    .contact-cta .section-label {
+      margin-bottom: 14px;
+    }
+
+    .contact-cta h3 {
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      line-height: 1.35;
+    }
+
+    .contact-cta > p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .contact-list {
+      list-style: none;
+      margin-top: 20px;
+      display: grid;
+      gap: 11px;
+    }
+
+    .contact-list li {
+      position: relative;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    .contact-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer {
+      padding: 28px 0 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .footer-tagline {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      max-width: 340px;
+    }
+
+    .footer-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 20px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .footer-nav a:hover {
+      color: var(--text);
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 960px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(5, 14, 28, 0.97);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 12px 0;
+        z-index: 100;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        width: 100%;
+        padding: 12px 24px;
+        font-size: 1rem;
+      }
+
+      .site-header {
+        position: sticky;
+      }
+
+      .hero-grid,
+      .section-head,
+      .about-grid,
+      .approach-grid,
+      .contact-grid,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .footer-right {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 60px 0 56px;
+      }
+
+      .platform-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      h1 {
+        max-width: none;
+      }
+
+      .footer-nav {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="nav">
+        <a href="#top" class="brand" aria-label="InfraNest Technologies home">
+          <div class="logo-pill">
+            <img src="Infra-logo.png" alt="InfraNest Technologies" />
+          </div>
+        </a>
+
+        <nav class="nav-links" id="nav-links" aria-label="Primary navigation">
+          <a href="#services">Services</a>
+          <a href="#about">About</a>
+          <a href="#approach">Approach</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="nav-right">
+          <a class="nav-cta" href="#contact">Talk to Us</a>
+          <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ── HERO ───────────────────────────────────── -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            IT operations &amp; cloud support for growing teams
+          </div>
+          <h1>Modern IT support for growing businesses.</h1>
+          <p class="hero-copy">
+            InfraNest Technologies delivers practical IT operations, cloud infrastructure, SaaS administration, and managed support — all in one partner.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#contact">Request a Service</a>
+            <a class="button-secondary" href="#services">Explore Services</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Platforms and tools we support">
+          <div class="hero-panel-label">Platforms &amp; tools we support</div>
+          <div class="platform-grid">
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg" alt="AWS" onerror="this.style.display='none'" />
+              <span>AWS</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/microsoftazure.svg" alt="Azure" onerror="this.style.display='none'" />
+              <span>Azure</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/googlecloud.svg" alt="GCP" onerror="this.style.display='none'" />
+              <span>GCP</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/terraform.svg" alt="Terraform" onerror="this.style.display='none'" />
+              <span>Terraform</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/kubernetes.svg" alt="Kubernetes" onerror="this.style.display='none'" />
+              <span>Kubernetes</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/docker.svg" alt="Docker" onerror="this.style.display='none'" />
+              <span>Docker</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/google.svg" alt="Google Workspace" onerror="this.style.display='none'" />
+              <span>Google Workspace</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/microsoftoffice.svg" alt="M365" onerror="this.style.display='none'" />
+              <span>M365</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/slack.svg" alt="Slack" onerror="this.style.display='none'" />
+              <span>Slack</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/jira.svg" alt="Jira" onerror="this.style.display='none'" />
+              <span>Jira</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/zoom.svg" alt="Zoom" onerror="this.style.display='none'" />
+              <span>Zoom</span>
+            </div>
+            <div class="platform-chip">
+              <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/okta.svg" alt="Okta" onerror="this.style.display='none'" />
+              <span>Okta</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── SERVICES ───────────────────────────────── -->
+    <section id="services">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Services</div>
+            <h2 class="section-title">Technology services built for reliability and growth.</h2>
+          </div>
+          <p class="section-copy">
+            From day-to-day user support to cloud infrastructure and SaaS administration, InfraNest covers the full breadth of modern IT operations. Select any service to explore.
+          </p>
+        </div>
+
+        <div class="services-grid">
+
+          <!-- Card 1 -->
+          <article class="service-card active" tabindex="0" role="button" aria-pressed="true">
+            <div class="service-icon-badge">
+              <i data-lucide="settings-2"></i>
+            </div>
+            <h3>IT Operations &amp; Technology Management</h3>
+            <p>Structure, consistency, and efficiency across your entire technology environment.</p>
+            <ul>
+              <li>IT process improvement &amp; roadmap planning</li>
+              <li>Documentation and SOP development</li>
+              <li>Workflow optimization &amp; automation</li>
+              <li>Ticketing system setup and optimization</li>
+            </ul>
+            <div class="tech-chips">
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/jira.svg" alt="Jira" onerror="this.style.display='none'" />
+                Jira
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/confluence.svg" alt="Confluence" onerror="this.style.display='none'" />
+                Confluence
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/slack.svg" alt="Slack" onerror="this.style.display='none'" />
+                Slack
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/notion.svg" alt="Notion" onerror="this.style.display='none'" />
+                Notion
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/zapier.svg" alt="Zapier" onerror="this.style.display='none'" />
+                Zapier
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="service-card" tabindex="0" role="button" aria-pressed="false">
+            <div class="service-icon-badge">
+              <i data-lucide="cloud"></i>
+            </div>
+            <h3>Cloud &amp; Platform Engineering</h3>
+            <p>Scalable cloud infrastructure and DevOps support to modernize how your team builds and operates.</p>
+            <ul>
+              <li>Cloud infrastructure design &amp; optimization</li>
+              <li>Infrastructure-as-code &amp; automation</li>
+              <li>CI/CD pipeline implementation</li>
+              <li>Monitoring, alerting &amp; reliability</li>
+            </ul>
+            <div class="tech-chips">
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/amazonaws.svg" alt="AWS" onerror="this.style.display='none'" />
+                AWS
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/microsoftazure.svg" alt="Azure" onerror="this.style.display='none'" />
+                Azure
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/googlecloud.svg" alt="GCP" onerror="this.style.display='none'" />
+                GCP
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/terraform.svg" alt="Terraform" onerror="this.style.display='none'" />
+                Terraform
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/kubernetes.svg" alt="Kubernetes" onerror="this.style.display='none'" />
+                Kubernetes
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/docker.svg" alt="Docker" onerror="this.style.display='none'" />
+                Docker
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="service-card" tabindex="0" role="button" aria-pressed="false">
+            <div class="service-icon-badge">
+              <i data-lucide="shield-check"></i>
+            </div>
+            <h3>SaaS &amp; Workspace Administration</h3>
+            <p>Access, security, and productivity management for the tools your teams depend on daily.</p>
+            <ul>
+              <li>Google Workspace &amp; Microsoft 365 admin</li>
+              <li>User lifecycle &amp; access management</li>
+              <li>Permissions audits &amp; security reviews</li>
+              <li>License management &amp; optimization</li>
+            </ul>
+            <div class="tech-chips">
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/google.svg" alt="Google Workspace" onerror="this.style.display='none'" />
+                Workspace
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/microsoftoffice.svg" alt="Microsoft 365" onerror="this.style.display='none'" />
+                M365
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/okta.svg" alt="Okta" onerror="this.style.display='none'" />
+                Okta
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg" alt="GitHub" onerror="this.style.display='none'" />
+                GitHub
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 4 -->
+          <article class="service-card" tabindex="0" role="button" aria-pressed="false">
+            <div class="service-icon-badge">
+              <i data-lucide="headphones"></i>
+            </div>
+            <h3>Managed IT Services &amp; Support</h3>
+            <p>Responsive, reliable support for your users, devices, and day-to-day IT needs.</p>
+            <ul>
+              <li>Help desk &amp; ticket-based support</li>
+              <li>Device setup &amp; onboarding</li>
+              <li>Software &amp; access management</li>
+              <li>Vendor coordination</li>
+            </ul>
+            <div class="tech-chips">
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/zendesk.svg" alt="Zendesk" onerror="this.style.display='none'" />
+                Zendesk
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/apple.svg" alt="Apple" onerror="this.style.display='none'" />
+                Apple
+              </span>
+              <span class="chip"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/windows.svg" alt="Windows" onerror="this.style.display='none'" />Windows</span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/slack.svg" alt="Slack" onerror="this.style.display='none'" />
+                Slack
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 5 -->
+          <article class="service-card" tabindex="0" role="button" aria-pressed="false">
+            <div class="service-icon-badge">
+              <i data-lucide="video"></i>
+            </div>
+            <h3>Workplace Technology &amp; Collaboration</h3>
+            <p>Conference rooms, AV systems, and collaboration tools that keep teams connected.</p>
+            <ul>
+              <li>Conference room AV setup &amp; deployment</li>
+              <li>Video conferencing configuration</li>
+              <li>Collaboration hardware &amp; software</li>
+              <li>Ongoing workplace technology support</li>
+            </ul>
+            <div class="tech-chips">
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/zoom.svg" alt="Zoom" onerror="this.style.display='none'" />
+                Zoom
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/microsoftteams.svg" alt="Teams" onerror="this.style.display='none'" />
+                Teams
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/googlemeet.svg" alt="Google Meet" onerror="this.style.display='none'" />
+                Meet
+              </span>
+              <span class="chip">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/cisco.svg" alt="Cisco" onerror="this.style.display='none'" />
+                Cisco
+              </span>
+            </div>
+          </article>
+
+          <!-- Card 6 -->
+          <article class="service-card" tabindex="0" role="button" aria-pressed="false">
+            <div class="service-icon-badge">
+              <i data-lucide="layers"></i>
+            </div>
+            <h3>Flexible Engagement Models</h3>
+            <p>Support structured around how your business prefers to work — project-based, advisory, or ongoing.</p>
+            <ul>
+              <li>Hourly consulting &amp; advisory</li>
+              <li>Project-based engagements</li>
+              <li>Retainers &amp; support contracts</li>
+              <li>Scalable service relationships</li>
+            </ul>
+            <div class="tech-chips">
+              <span class="chip">Hourly</span>
+              <span class="chip">Project</span>
+              <span class="chip">Retainer</span>
+              <span class="chip">Contract</span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ABOUT ──────────────────────────────────── -->
+    <section id="about">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">About</div>
+            <h2 class="section-title">A practical technology partner for teams that need real results.</h2>
+          </div>
+          <p class="section-copy">
+            InfraNest Technologies helps businesses simplify and improve their technology environments — combining day-to-day operational support with longer-term infrastructure and process improvement.
+          </p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-panel">
+            <h3>Day-to-day coverage</h3>
+            <p>Whether you need help desk support, onboarding, access requests, or vendor coordination — InfraNest handles immediate IT needs so your team stays productive.</p>
+          </div>
+          <div class="about-panel">
+            <h3>Long-term improvement</h3>
+            <p>Beyond fixing issues, we build cleaner workflows, stronger administration practices, better documentation, and more reliable technology foundations.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── APPROACH ───────────────────────────────── -->
+    <section id="approach">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Approach</div>
+            <h2 class="section-title">How InfraNest Technologies delivers value.</h2>
+          </div>
+          <p class="section-copy">
+            Three core principles guide every engagement — from the first support ticket to long-term infrastructure planning.
+          </p>
+        </div>
+
+        <div class="approach-grid">
+          <article class="approach-card">
+            <div class="approach-badge">01</div>
+            <h3>Reliable Service Delivery</h3>
+            <p>Consistent, responsive support for users and systems.</p>
+            <ul>
+              <li>Responsive communication</li>
+              <li>Consistent follow-through</li>
+              <li>Clear support coverage</li>
+            </ul>
+          </article>
+
+          <article class="approach-card">
+            <div class="approach-badge">02</div>
+            <h3>Operational Improvement</h3>
+            <p>Smarter processes and stronger systems behind the scenes.</p>
+            <ul>
+              <li>Process refinement</li>
+              <li>Standardization &amp; documentation</li>
+              <li>Automation &amp; workflow gains</li>
+            </ul>
+          </article>
+
+          <article class="approach-card">
+            <div class="approach-badge">03</div>
+            <h3>Modern Infrastructure Thinking</h3>
+            <p>Cloud and platform support designed for growth and scalability.</p>
+            <ul>
+              <li>Cloud guidance</li>
+              <li>DevOps-minded improvements</li>
+              <li>Scalable technology planning</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACT ────────────────────────────────── -->
+    <section id="contact">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="section-label">Contact</div>
+            <h2>Start the conversation.</h2>
+            <p>Ready to improve your IT operations, cloud environment, or user support? We're here to help.</p>
+
+            <div class="contact-actions">
+              <button class="toggle-button active" type="button" data-target="service-request">Request a Service</button>
+              <button class="toggle-button" type="button" data-target="talk-to-us">Talk to Us</button>
+            </div>
+
+            <div id="service-request" class="info-reveal active">
+              <strong>Request a Service</strong>
+              Email us at <a href="mailto:info@infranests.com">info@infranests.com</a>
+            </div>
+
+            <div id="talk-to-us" class="info-reveal">
+              <strong>Talk to Us</strong>
+              Call us at <a href="tel:16173027580">(617) 302-7580</a>
+            </div>
+          </div>
+
+          <div class="contact-cta">
+            <div class="section-label">Why InfraNest</div>
+            <h3>Responsive support today. Better systems tomorrow.</h3>
+            <p>InfraNest combines practical day-to-day IT support with a broader operational and cloud-focused perspective — ideal for teams that need real help now and stronger foundations over time.</p>
+            <ul class="contact-list">
+              <li>Managed support for users and devices</li>
+              <li>Cloud and DevOps-oriented improvements</li>
+              <li>SaaS and workspace administration</li>
+              <li>Technology operations and documentation support</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo-pill logo-pill--sm">
+            <img src="Infra-logo.png" alt="InfraNest Technologies" />
+          </div>
+          <p class="footer-tagline">Professional IT services, cloud support, and operational technology solutions for growing businesses.</p>
+        </div>
+        <div class="footer-right">
+          <nav class="footer-nav" aria-label="Footer navigation">
+            <a href="#services">Services</a>
+            <a href="#about">About</a>
+            <a href="#approach">Approach</a>
+            <a href="#contact">Contact</a>
+          </nav>
+          <p class="footer-copy">&copy; 2026 InfraNest Technologies. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    lucide.createIcons();
+
+    // Service card highlight
+    const cards = document.querySelectorAll('.service-card');
+    cards.forEach(card => {
+      const activate = () => {
+        cards.forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-pressed', 'false');
+        });
+        card.classList.add('active');
+        card.setAttribute('aria-pressed', 'true');
+      };
+      card.addEventListener('click', activate);
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activate();
+        }
+      });
+    });
+
+    // Contact toggles
+    document.querySelectorAll('.toggle-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        document.querySelectorAll('.toggle-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.info-reveal').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  </script>
+</body>
+</html>
