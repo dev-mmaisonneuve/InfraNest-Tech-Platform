@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { HeroSpotlightWrapper } from "@/components/hero-spotlight-wrapper";
 import { SectionHeading } from "@/components/section-heading";
 import { aboutContent, homeContent, services, testimonials } from "@/data/site-content";
 
@@ -52,7 +53,7 @@ export default function HomePage() {
       <section className="hero" id="hero">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow" data-reveal>{homeContent.eyebrow}</span>
+            <span className="eyebrow eyebrow--pulse" data-reveal>{homeContent.eyebrow}</span>
             <h1 data-reveal data-delay="1">
               Keep your technology{" "}
               <em className="gradient-text serif-accent">reliable, secure, and ready to scale.</em>
@@ -87,7 +88,7 @@ export default function HomePage() {
           </div>
 
           <aside className="hero-panel" data-reveal="right">
-            <div className="hero-spotlight">
+            <HeroSpotlightWrapper>
               <div className="hero-tunnel-glow" aria-hidden="true" />
               <div className="hero-atmosphere hero-atmosphere-left" aria-hidden="true" />
               <div className="hero-atmosphere hero-atmosphere-right" aria-hidden="true" />
@@ -150,7 +151,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </HeroSpotlightWrapper>
           </aside>
         </div>
       </section>
@@ -163,6 +164,7 @@ export default function HomePage() {
             title="Technology support built around how your business actually works."
             description="InfraNest is designed for companies that need more than ad hoc help, but are not ready for a large in-house IT team."
             reveal
+            pulse
           />
 
           <div className="service-grid">
