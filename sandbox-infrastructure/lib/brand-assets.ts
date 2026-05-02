@@ -12,8 +12,8 @@ export const brandAssets = {
     height: 425,
   },
   socialPreview: {
-    src: "/assets/Infra-logo.png",
-    width: 1460,
-    height: 561,
+    src: "/opengraph-image",
+    width: 1200,
+    height: 630,
   },
 } as const;
