@@ -42,6 +42,8 @@ const serviceIcons = [
   </svg>,
 ];
 
+const heroParticles = ["particle-a", "particle-b", "particle-c", "particle-d", "particle-e", "particle-f"];
+
 export default function HomePage() {
   return (
     <div id="main-content">
@@ -86,24 +88,49 @@ export default function HomePage() {
 
           <aside className="hero-panel" data-reveal="right">
             <div className="hero-spotlight">
-              {/* Decorative network nodes */}
-              <svg viewBox="0 0 400 300" fill="none" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.55 }}>
-                <line x1="80" y1="70" x2="200" y2="130" stroke="#70c2ff" strokeWidth="1" />
-                <line x1="200" y1="130" x2="330" y2="80" stroke="#70c2ff" strokeWidth="1" />
+              <div className="hero-tunnel-glow" aria-hidden="true" />
+              <div className="hero-atmosphere hero-atmosphere-left" aria-hidden="true" />
+              <div className="hero-atmosphere hero-atmosphere-right" aria-hidden="true" />
+              <div className="hero-scan-sweep" aria-hidden="true" />
+              <div className="hero-glass-slab hero-glass-slab-left" aria-hidden="true" />
+              <div className="hero-glass-slab hero-glass-slab-right" aria-hidden="true" />
+              <div className="hero-particle-field" aria-hidden="true">
+                {heroParticles.map((particle) => (
+                  <span key={particle} className={`hero-particle ${particle}`} />
+                ))}
+              </div>
+              <svg viewBox="0 0 400 300" fill="none" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.9 }}>
+                <line x1="72" y1="32" x2="200" y2="130" stroke="#70c2ff" strokeWidth="1.1" opacity="0.48" />
+                <line x1="330" y1="32" x2="200" y2="130" stroke="#8eedc3" strokeWidth="1.1" opacity="0.48" />
+                <line x1="36" y1="92" x2="200" y2="130" stroke="#70c2ff" strokeWidth="0.9" opacity="0.28" />
+                <line x1="364" y1="92" x2="200" y2="130" stroke="#8eedc3" strokeWidth="0.9" opacity="0.28" />
+                <line x1="108" y1="18" x2="200" y2="130" stroke="#70c2ff" strokeWidth="0.7" opacity="0.22" />
+                <line x1="292" y1="18" x2="200" y2="130" stroke="#8eedc3" strokeWidth="0.7" opacity="0.22" />
+                <path d="M136 42L200 108L264 42" stroke="#70c2ff" strokeWidth="1" opacity="0.3" />
+                <path d="M118 58L200 126L282 58" stroke="#8eedc3" strokeWidth="0.8" opacity="0.24" />
+                <path d="M96 78L200 148L304 78" stroke="#70c2ff" strokeWidth="0.65" opacity="0.18" />
+
                 <line x1="200" y1="130" x2="145" y2="215" stroke="#8eedc3" strokeWidth="1" />
                 <line x1="200" y1="130" x2="285" y2="195" stroke="#8eedc3" strokeWidth="1" />
-                <line x1="330" y1="80" x2="365" y2="155" stroke="#70c2ff" strokeWidth="0.75" />
-                <line x1="60" y1="155" x2="145" y2="215" stroke="#8eedc3" strokeWidth="0.75" />
-                <line x1="285" y1="195" x2="340" y2="240" stroke="#70c2ff" strokeWidth="0.75" />
-                <circle cx="80" cy="70" r="5" fill="#70c2ff" opacity="0.75" />
+                <line x1="145" y1="215" x2="92" y2="248" stroke="#70c2ff" strokeWidth="1" opacity="0.72" />
+                <line x1="285" y1="195" x2="340" y2="240" stroke="#70c2ff" strokeWidth="1" />
+                <line x1="285" y1="195" x2="356" y2="164" stroke="#8eedc3" strokeWidth="0.95" opacity="0.64" />
+
+                <circle cx="112" cy="54" r="4.2" fill="#70c2ff" opacity="0.44" />
+                <circle cx="290" cy="60" r="4.8" fill="#8eedc3" opacity="0.4" />
+                <circle cx="94" cy="112" r="3.8" fill="#70c2ff" opacity="0.28" />
+                <circle cx="324" cy="110" r="3.8" fill="#8eedc3" opacity="0.26" />
                 <circle cx="200" cy="130" r="9" fill="#70c2ff" opacity="0.85" className="hero-node-pulse" />
-                <circle cx="330" cy="80" r="6" fill="#8eedc3" opacity="0.8" />
                 <circle cx="145" cy="215" r="5" fill="#8eedc3" opacity="0.7" />
                 <circle cx="285" cy="195" r="7" fill="#70c2ff" opacity="0.75" />
-                <circle cx="365" cy="155" r="4" fill="#8eedc3" opacity="0.65" />
-                <circle cx="60" cy="155" r="3.5" fill="#70c2ff" opacity="0.55" />
-                <circle cx="340" cy="240" r="4" fill="#8eedc3" opacity="0.6" />
-                <circle cx="200" cy="130" r="20" fill="none" stroke="#70c2ff" strokeWidth="0.75" strokeDasharray="3 3" opacity="0.5" className="hero-node-ring" />
+                <circle cx="356" cy="164" r="4.8" fill="#8eedc3" opacity="0.62" />
+                <circle cx="92" cy="248" r="4.2" fill="#70c2ff" opacity="0.62" />
+                <circle cx="340" cy="240" r="4.8" fill="#8eedc3" opacity="0.74" />
+                <circle cx="200" cy="130" r="26" fill="rgba(112, 194, 255, 0.18)" opacity="0.9" />
+                <circle cx="200" cy="130" r="20" fill="none" stroke="#70c2ff" strokeWidth="0.95" strokeDasharray="3 3" opacity="0.7" className="hero-node-ring" />
+                <circle cx="200" cy="130" r="3.2" fill="#ffffff" opacity="0.8" className="hero-packet packet-a" />
+                <circle cx="200" cy="130" r="3" fill="#8eedc3" opacity="0.74" className="hero-packet packet-b" />
+                <circle cx="200" cy="130" r="2.8" fill="#70c2ff" opacity="0.7" className="hero-packet packet-c" />
               </svg>
               <div className="hero-spotlight-content">
                 <span className="hero-kicker">Why growing teams trust InfraNest</span>
