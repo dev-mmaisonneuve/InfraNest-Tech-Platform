@@ -7,7 +7,17 @@ import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submission
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: "The form submission could not be read. Please try again." },
+      { status: 400 },
+    );
+  }
+
   const parsed = quoteSchema.safeParse(body);
 
   if (!parsed.success) {

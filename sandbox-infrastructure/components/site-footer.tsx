@@ -2,12 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { company, navigation } from "@/data/site-content";
+import { brandAssets } from "@/lib/brand-assets";
 
 export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="container">
         <div className="footer-panel panel">
+          <Image
+            className="footer-badge-watermark"
+            src={brandAssets.badge.src}
+            alt=""
+            aria-hidden="true"
+            width={brandAssets.badge.width}
+            height={brandAssets.badge.height}
+          />
           <div className="footer-grid">
 
             {/* ─── Brand column ─── */}

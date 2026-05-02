@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Instrument_Serif } from "next/font/google";
 
+import { RevealObserver } from "@/components/reveal-observer";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { BackToTop } from "@/components/back-to-top";
@@ -21,6 +22,14 @@ const outfit = Outfit({
   variable: "--font-outfit",
   display: "swap",
   weight: ["600", "700", "800", "900"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  style: ["normal", "italic"],
+  weight: "400",
+  display: "swap",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -77,7 +86,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable}`}
+      className={`${inter.variable} ${outfit.variable} ${instrumentSerif.variable}`}
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
@@ -86,6 +95,7 @@ export default function RootLayout({
         <main>{children}</main>
         <SiteFooter />
         <BackToTop />
+        <RevealObserver />
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>

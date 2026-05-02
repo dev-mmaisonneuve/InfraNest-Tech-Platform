@@ -17,10 +17,11 @@ export default function QuotePage() {
           title="Shape the right engagement."
           description="For businesses that need hands-on help with IT operations, cloud systems, SaaS administration, or managed support."
           h1
+          reveal
         />
 
         <div className="section-split">
-          <div className="info-panel" style={{ padding: "1.5rem" }}>
+          <div className="info-panel" style={{ padding: "1.5rem" }} data-reveal="left">
             <div className="stack" style={{ gap: "1.1rem" }}>
               <span className="eyebrow">How this works</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
@@ -28,7 +29,7 @@ export default function QuotePage() {
               </h2>
               <p className="meta-copy">
                 Share a little context about your environment and current needs. InfraNest responds with the most
-                sensible first step — not a bloated intake process.
+                sensible first step, not a bloated intake process.
               </p>
               <ul className="meta-list">
                 <li>Ideal for scoped support requests and ongoing service conversations</li>
@@ -38,7 +39,7 @@ export default function QuotePage() {
             </div>
           </div>
 
-          <QuoteForm />
+          <div data-reveal="right"><QuoteForm /></div>
         </div>
       </div>
     </div>

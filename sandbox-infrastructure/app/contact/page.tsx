@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/contact-form";
+import { FaqAccordion } from "@/components/faq-accordion";
 import { SectionHeading } from "@/components/section-heading";
-import { company, contactDetails, faqItems, nextSteps } from "@/data/site-content";
+import { company, contactDetails, nextSteps } from "@/data/site-content";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -36,13 +37,14 @@ export default function ContactPage() {
       <div className="container stack">
         <SectionHeading
           eyebrow="Contact"
-          title="Get in touch — we'll take it from there."
+          title="Get in touch. We'll take it from there."
           description="Use the contact form for general questions, or jump to the quote page if you already know you need a scoped engagement."
           h1
+          reveal
         />
 
         <div className="section-split contact-split">
-          <div className="info-panel" style={{ padding: "1.75rem" }}>
+          <div className="info-panel" style={{ padding: "1.75rem" }} data-reveal="left">
             <div className="stack">
               <span className="eyebrow">Direct contact</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
@@ -83,11 +85,11 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <ContactForm />
+          <div data-reveal="right"><ContactForm /></div>
         </div>
 
         {/* ─── FAQ ─── */}
-        <div className="stack" style={{ gap: "1.25rem" }}>
+        <div className="stack" style={{ gap: "1.25rem" }} data-reveal>
           <div>
             <span className="eyebrow">FAQ</span>
             <h2 style={{ margin: "0.75rem 0 0.5rem", fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.15 }}>
@@ -97,14 +99,7 @@ export default function ContactPage() {
               If you have a question not covered here, use the form above or reach out directly.
             </p>
           </div>
-          <div className="faq-list">
-            {faqItems.map((item) => (
-              <details className="faq-item" key={item.question}>
-                <summary>{item.question}</summary>
-                <p className="faq-answer">{item.answer}</p>
-              </details>
-            ))}
-          </div>
+          <FaqAccordion />
         </div>
 
       </div>

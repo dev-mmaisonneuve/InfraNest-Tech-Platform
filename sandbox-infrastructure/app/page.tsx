@@ -50,13 +50,13 @@ export default function HomePage() {
       <section className="hero" id="hero">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">{homeContent.eyebrow}</span>
-            <h1>
+            <span className="eyebrow" data-reveal>{homeContent.eyebrow}</span>
+            <h1 data-reveal data-delay="1">
               Keep your technology{" "}
-              <span className="gradient-text">reliable, secure, and ready to scale.</span>
+              <em className="gradient-text serif-accent">reliable, secure, and ready to scale.</em>
             </h1>
-            <p>{homeContent.description}</p>
-            <div className="hero-actions">
+            <p data-reveal data-delay="2">{homeContent.description}</p>
+            <div className="hero-actions" data-reveal data-delay="3">
               <Link className="button" href={homeContent.primaryCta.href}>
                 {homeContent.primaryCta.label}
               </Link>
@@ -65,28 +65,26 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="stats-grid">
+            <div className="stats-grid" data-reveal data-delay="4">
               {homeContent.stats.map((stat) => (
                 <article className="stat-card" key={stat.label}>
                   <div className="stat-icon" aria-hidden="true">
                     {stat.icon === "clock" ? (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     ) : stat.icon === "grid" ? (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                     ) : (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     )}
                   </div>
-                  <div>
-                    <div className="hero-value" style={{ fontSize: "1.55rem", color: "var(--text)" }}>{stat.value}</div>
-                    <div className="stat-label">{stat.label}</div>
-                  </div>
+                  <div className="stat-value">{stat.value}</div>
+                  <div className="stat-label">{stat.label}</div>
                 </article>
               ))}
             </div>
           </div>
 
-          <aside className="hero-panel">
+          <aside className="hero-panel" data-reveal="right">
             <div className="hero-spotlight">
               {/* Decorative network nodes */}
               <svg viewBox="0 0 400 300" fill="none" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.55 }}>
@@ -98,14 +96,14 @@ export default function HomePage() {
                 <line x1="60" y1="155" x2="145" y2="215" stroke="#8eedc3" strokeWidth="0.75" />
                 <line x1="285" y1="195" x2="340" y2="240" stroke="#70c2ff" strokeWidth="0.75" />
                 <circle cx="80" cy="70" r="5" fill="#70c2ff" opacity="0.75" />
-                <circle cx="200" cy="130" r="9" fill="#70c2ff" opacity="0.85" />
+                <circle cx="200" cy="130" r="9" fill="#70c2ff" opacity="0.85" className="hero-node-pulse" />
                 <circle cx="330" cy="80" r="6" fill="#8eedc3" opacity="0.8" />
                 <circle cx="145" cy="215" r="5" fill="#8eedc3" opacity="0.7" />
                 <circle cx="285" cy="195" r="7" fill="#70c2ff" opacity="0.75" />
                 <circle cx="365" cy="155" r="4" fill="#8eedc3" opacity="0.65" />
                 <circle cx="60" cy="155" r="3.5" fill="#70c2ff" opacity="0.55" />
                 <circle cx="340" cy="240" r="4" fill="#8eedc3" opacity="0.6" />
-                <circle cx="200" cy="130" r="20" fill="none" stroke="#70c2ff" strokeWidth="0.75" strokeDasharray="3 3" opacity="0.5" />
+                <circle cx="200" cy="130" r="20" fill="none" stroke="#70c2ff" strokeWidth="0.75" strokeDasharray="3 3" opacity="0.5" className="hero-node-ring" />
               </svg>
               <div className="hero-spotlight-content">
                 <span className="hero-kicker">Why growing teams trust InfraNest</span>
@@ -131,17 +129,18 @@ export default function HomePage() {
       </section>
 
       {/* ─── Services ─── */}
-      <section className="section" id="services">
+      <section className="section section-tinted" id="services">
         <div className="container">
           <SectionHeading
             eyebrow="Service lanes"
             title="Technology support built around how your business actually works."
             description="InfraNest is designed for companies that need more than ad hoc help, but are not ready for a large in-house IT team."
+            reveal
           />
 
           <div className="service-grid">
             {featuredServices.map((service, index) => (
-              <article className="service-card" key={service.title}>
+              <article className="service-card" key={service.title} data-reveal data-delay={String(index + 1)}>
                 <div className="card-icon-wrap">{serviceIcons[index]}</div>
                 <h3>{service.title}</h3>
                 <p>{service.description}</p>
@@ -172,11 +171,12 @@ export default function HomePage() {
             eyebrow="Why InfraNest"
             title="Three principles that shape every engagement."
             description="The philosophy behind InfraNest is simple: clear communication, practical operations, and systems designed to stay manageable as the business grows."
+            reveal
           />
 
           <div className="cards-grid">
             {aboutContent.pillars.map((pillar, index) => (
-              <article className="about-card" key={pillar.title}>
+              <article className="about-card" key={pillar.title} data-reveal data-delay={String(index + 1)}>
                 <div className="card-icon-wrap">{pillarIcons[index]}</div>
                 <h3>{pillar.title}</h3>
                 <p>{pillar.body}</p>
@@ -198,11 +198,12 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="From the field"
             title="What clients say after the first engagement."
-            description="These reflect what working with InfraNest is typically like — from early conversations to steady ongoing support."
+            description="These reflect what working with InfraNest is typically like, from early conversations to steady ongoing support."
+            reveal
           />
           <div className="trust-grid">
-            {testimonials.map((t) => (
-              <article className="testimonial-card" key={t.name}>
+            {testimonials.map((t, i) => (
+              <article className="testimonial-card" key={t.name} data-reveal data-delay={String(i + 1)}>
                 <p className="testimonial-quote">{t.quote}</p>
                 <div className="testimonial-attribution">
                   <div className="testimonial-avatar" aria-hidden="true">
@@ -222,7 +223,7 @@ export default function HomePage() {
       {/* ─── CTA ─── */}
       <section className="section" id="cta">
         <div className="container panel" style={{ padding: "2rem" }}>
-          <div className="section-split">
+          <div className="section-split" data-reveal>
             <div className="stack">
               <span className="eyebrow">Get started</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.05 }}>
@@ -233,7 +234,7 @@ export default function HomePage() {
                 still shaping the right engagement.
               </p>
               <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-                No commitment required — most responses within one business day.
+                No commitment required. Most responses within one business day.
               </p>
             </div>
 

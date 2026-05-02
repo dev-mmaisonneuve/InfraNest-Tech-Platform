@@ -62,20 +62,24 @@ The `serviceIcons` array in `app/page.tsx` must stay in sync with `featuredServi
 All UI is built from a shared CSS design system — no component library. Key conventions:
 
 - **Colors**: `--accent` (#70c2ff blue), `--accent-green` (#8eedc3 teal), `--text` (#111827), `--muted` (#334155), `--border` (#cdd8e8)
-- **Fonts**: `--font-body` (Inter), `--font-display` (Outfit) for headings and badges
+- **Fonts**: `--font-body` (Inter), `--font-display` (Outfit) for headings and badges, `--font-serif` (Instrument Serif) for italic editorial accents — use `className="serif-accent"` or `font-family: var(--font-serif); font-style: italic`
 - **Panels**: `.panel`, `.info-panel`, `.form-panel` — glassmorphic with gradient border via `::before` pseudo-element
 - **Cards**: `.card`, `.service-card`, `.trust-card`, `.process-card`, `.about-card`, `.testimonial-card` — all share hover lift behavior
 - **Layout**: `.section-split` (2-col), `.service-grid` (2-col), `.trust-grid` / `.cards-grid` (3-col), `.process-grid` (2-col)
+- **Scroll reveal**: Add `data-reveal` to any element for a fade-up entrance. Use `data-reveal="left"` / `data-reveal="right"` for horizontal slides. Add `data-delay="1"` through `data-delay="8"` for stagger. The `RevealObserver` client component in layout handles the IntersectionObserver.
 - **Inline SVG icons**: No icon library — all icons are inline SVGs using `stroke="currentColor"`. Match the existing `viewBox="0 0 24 24"` style. Only use `<path>`, `<line>`, and `<rect>` elements — `<polygon>` and `<circle>` do not inherit `fill="none"` reliably and will render blank.
 - **Hero visual**: `.hero-spotlight` uses a pure CSS gradient + grid pattern (no external image).
+- **Responsive breakpoints**: 980px (collapse all multi-col grids to 1-col) and 760px (mobile nav toggle, reduce gaps/padding, revert pill navbar to full-width bar).
 
 ### Components
 
 | Component | Type | Notes |
 |-----------|------|-------|
-| `site-header.tsx` | Server | Sticky dark nav, scroll-spy active state, mobile toggle |
-| `site-footer.tsx` | Server | 3-column grid: brand + tagline (left), vertical nav links (center), contact + copyright (right) |
-| `section-heading.tsx` | Server | Reusable eyebrow + h1/h2 + description block |
+| `site-header.tsx` | Client | Floating pill navbar; scroll-spy active state; mobile hamburger toggle; pill reverts to full-width bar at 760px |
+| `site-footer.tsx` | Server | 3-column grid: brand + tagline (left), vertical nav links (center), contact + copyright (right); `infra-badge.png` watermark centered |
+| `section-heading.tsx` | Server | Reusable eyebrow + h1/h2 + description block; pass `reveal` prop to enable scroll animation |
+| `reveal-observer.tsx` | Client | IntersectionObserver that adds `is-visible` to `[data-reveal]` elements; re-runs on route change via `usePathname` |
+| `faq-accordion.tsx` | Client | One-at-a-time accordion using `useRef` array; closing siblings on `onToggle` |
 | `contact-form.tsx` | Client | 5 fields, Turnstile, `/api/contact` POST |
 | `quote-form.tsx` | Client | 8 service checkboxes with SVG icons, dropdowns, Turnstile, `/api/quote` POST |
 | `turnstile-widget.tsx` | Client | Cloudflare Turnstile wrapper, dark theme |
@@ -104,6 +108,6 @@ Tests use Node.js native test runner (`node --import tsx --test`). Test file at 
 | "What happens next" steps (contact page) | `data/site-content.ts` → `nextSteps` array |
 | Quote form service checkboxes | `data/site-content.ts` → `quoteOptions` array + `serviceIcons` record in `components/quote-form.tsx` |
 | Company email, phone, service area | `data/site-content.ts` → `company` object |
-| Navigation links | `data/site-content.ts` → `navigation` array |
+| Navigation links | `data/site-content.ts` → `navigation` array. "Contact" links directly to `/contact` (no section scroll-spy). Items without a `section` property are highlighted by `pathname` match, not scroll position. |
 | Colors, spacing, typography | `app/globals.css` CSS variables |
 | Page layout / section order | Individual page file in `app/` |

@@ -65,11 +65,12 @@ export default function ServicesPage() {
           title="Technology support that runs quietly so your business doesn't have to."
           description="InfraNest focuses on the practical systems, workflows, and operational responsibilities that keep a growing business moving."
           h1
+          reveal
         />
 
         <div className="service-grid">
           {services.map((service, index) => (
-            <article className="service-card" key={service.title}>
+            <article className="service-card" key={service.title} data-reveal data-delay={String((index % 4) + 1)}>
               <div className="card-icon-wrap">{serviceIcons[index]}</div>
               <h3>{service.title}</h3>
               <p>{service.description}</p>
@@ -87,7 +88,7 @@ export default function ServicesPage() {
 
         {/* ─── Who / Outcomes ─── */}
         <div className="section-split">
-          <div className="about-card">
+          <div className="about-card" data-reveal>
             <div className="card-icon-wrap" style={{ marginBottom: "0.75rem" }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -102,7 +103,7 @@ export default function ServicesPage() {
               better technology ownership without building a full internal IT function too early.
             </p>
           </div>
-          <div className="about-card">
+          <div className="about-card" data-reveal data-delay="1">
             <div className="card-icon-wrap" style={{ marginBottom: "0.75rem" }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -120,13 +121,15 @@ export default function ServicesPage() {
         </div>
 
         {/* ─── Platforms ─── */}
-        <div className="panel" style={{ padding: "1.5rem 2rem" }}>
+        <div className="panel" style={{ padding: "1.5rem 2rem" }} data-reveal>
           <div className="stack" style={{ gap: "0.9rem" }}>
             <span className="eyebrow">Platforms we support</span>
-            <div className="platform-strip">
-              {platforms.map((p) => (
-                <span key={p} className="platform-badge">{p}</span>
-              ))}
+            <div className="marquee-track">
+              <div className="marquee-inner">
+                {[...platforms, ...platforms].map((p, i) => (
+                  <span className="platform-badge" key={i}>{p}</span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -136,7 +139,7 @@ export default function ServicesPage() {
           <div className="section-split">
             <div className="stack">
               <span className="eyebrow">Next step</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.9rem, 4vw, 2.6rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.08 }}>
+              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.9rem, 4vw, 2.6rem)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08 }}>
                 If you already know the business needs hands-on support, start with the quote flow.
               </h2>
               <p className="meta-copy">

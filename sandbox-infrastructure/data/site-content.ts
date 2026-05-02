@@ -12,14 +12,14 @@ export const navigation = [
   { href: "/#hero", label: "Home", section: "hero" },
   { href: "/#services", label: "Services", section: "services" },
   { href: "/#about-preview", label: "About", section: "about-preview" },
-  { href: "/#cta", label: "Contact", section: "cta" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export const homeContent = {
   eyebrow: "Managed IT for lean, growing teams",
   title: "Keep your technology reliable, secure, and ready to scale.",
   description:
-    "InfraNest gives lean teams dependable IT operations, cloud infrastructure, web presence, and managed business support — without the overhead of building a full internal IT department.",
+    "InfraNest gives lean teams dependable IT operations, cloud infrastructure, web presence, and managed business support, without the overhead of building a full internal IT department.",
   primaryCta: { href: "/quote", label: "Request a quote" },
   secondaryCta: { href: "/services", label: "View services" },
   stats: [
@@ -292,6 +292,6 @@ export const faqItems = [
   },
   {
     question: "What size businesses do you work with?",
-    answer: "InfraNest is built for small to mid-sized teams — typically 5 to 75 people — that need professional IT operations without a large internal function.",
+    answer: "InfraNest is built for small to mid-sized teams (typically 5 to 75 people) that need professional IT operations without a large internal function.",
   },
 ];

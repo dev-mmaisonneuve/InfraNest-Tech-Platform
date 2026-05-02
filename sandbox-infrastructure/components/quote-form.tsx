@@ -97,24 +97,32 @@ export function QuoteForm() {
     setFieldErrors({});
     setStatus(null);
 
-    const response = await fetch("/api/quote", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    const payload = (await response.json()) as FormApiResponse;
-    setStatus(payload);
-    setIsSubmitting(false);
+      const payload = (await response.json()) as FormApiResponse;
+      setStatus(payload);
 
-    if (payload.ok) {
-      setForm(initialState);
-      return;
+      if (payload.ok) {
+        setForm(initialState);
+        return;
+      }
+
+      setFieldErrors(payload.fieldErrors ?? {});
+    } catch {
+      setStatus({
+        ok: false,
+        message: "The quote request could not be sent right now. Please try again in a moment.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setFieldErrors(payload.fieldErrors ?? {});
   }
 
   function toggleService(service: string) {

@@ -38,11 +38,12 @@ export default function AboutPage() {
           title="A steadier foundation for business technology."
           description="InfraNest is built for businesses that want clean systems, responsive support, and a thoughtful operator on the technology side of the business."
           h1
+          reveal
         />
 
         {/* ─── Story ─── */}
         <div className="section-split">
-          <div className="info-panel" style={{ padding: "1.5rem" }}>
+          <div className="info-panel" style={{ padding: "1.5rem" }} data-reveal="left">
             <div className="stack">
               <span className="eyebrow">Our story</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
@@ -58,21 +59,21 @@ export default function AboutPage() {
           </div>
 
           <div className="cards-grid" style={{ gridTemplateColumns: "1fr", alignContent: "start" }}>
-            <article className="card">
+            <article className="card" data-reveal data-delay="1">
               <h3>What makes InfraNest different</h3>
               <p>
                 The work is not limited to tickets or isolated tools. InfraNest looks at support, accounts, platforms,
                 workflows, and operational ownership together so the business environment gets easier to run over time.
               </p>
             </article>
-            <article className="card">
+            <article className="card" data-reveal data-delay="2">
               <h3>How engagements feel</h3>
               <p>
                 Clear communication, steady follow-through, and practical recommendations. The goal is a calm, credible
                 experience for business owners and lean teams.
               </p>
             </article>
-            <article className="card">
+            <article className="card" data-reveal data-delay="3">
               <h3>Where support happens</h3>
               <p>
                 InfraNest uses Greater Boston as the local trust anchor while supporting teams remotely when the work is a
@@ -87,11 +88,12 @@ export default function AboutPage() {
           <SectionHeading
             eyebrow="Credibility"
             title="A calm, structured approach to business technology."
-            description="The goal is not more noise — it is a cleaner operating environment, steadier support, and better decisions around the systems your business depends on."
+            description="The goal is not more noise. A cleaner operating environment, steadier support, and better decisions around the systems your business depends on."
+            reveal
           />
           <div className="trust-grid">
             {homeContent.trustPoints.map((point, index) => (
-              <article className="trust-card" key={point.title}>
+              <article className="trust-card" key={point.title} data-reveal data-delay={String(index + 1)}>
                 <div className="card-icon-wrap">{trustIcons[index]}</div>
                 <h3>{point.title}</h3>
                 <p>{point.body}</p>
@@ -111,7 +113,7 @@ export default function AboutPage() {
           </div>
           <div className="process-grid">
             {homeContent.process.map((step, index) => (
-              <article className="process-card" key={step.title}>
+              <article className="process-card" key={step.title} data-reveal data-delay={String(index + 1)}>
                 <div className="step-badge">{index + 1}</div>
                 <h3>{step.title}</h3>
                 <p>{step.body}</p>

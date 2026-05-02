@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { navigation } from "@/data/site-content";
 import { brandAssets } from "@/lib/brand-assets";
@@ -12,6 +12,7 @@ import { useScrollSpy } from "@/lib/use-scroll-spy";
 export function SiteHeader() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const activeSection = useScrollSpy(
     navigation
       .map((item) => item.section)
@@ -19,8 +20,16 @@ export function SiteHeader() {
       .map((id) => String(id)),
   );
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 55);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="site-header">
+    <header className="site-header" data-scrolled={scrolled}>
+      <div className="header-bg" aria-hidden="true" />
       <div className="container">
         <div className="header-row">
           <Link className="brand-mark" href="/" onClick={() => setIsOpen(false)}>
@@ -55,9 +64,6 @@ export function SiteHeader() {
           </div>
 
           <div className="nav-actions">
-            <Link className="button-secondary" href="/contact">
-              Contact
-            </Link>
             <Link className="button" href="/quote">
               Request a quote
             </Link>
