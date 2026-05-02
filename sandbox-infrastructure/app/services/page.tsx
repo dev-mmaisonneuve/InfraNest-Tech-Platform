@@ -7,6 +7,12 @@ import { platforms, serviceBestFor, services } from "@/data/site-content";
 export const metadata: Metadata = {
   title: "Services",
   description: "Managed IT operations, cloud platform help, SaaS administration, and ongoing technology support for growing businesses.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: "Services | InfraNest Technologies",
+    description: "Managed IT operations, cloud platform help, SaaS administration, and ongoing technology support for growing businesses.",
+    url: "/services",
+  },
 };
 
 const serviceIcons = [

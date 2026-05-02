@@ -2,7 +2,7 @@ export const company = {
   name: "InfraNest Technologies",
   shortName: "InfraNest",
   email: process.env.NEXT_PUBLIC_FORMSPREE_FALLBACK_EMAIL ?? "info@infranests.com",
-  phone: "(617) 555-0199",
+  phone: "(617) 302-7580",
   serviceArea: "Greater Boston, MA and remote support across the U.S.",
   linkedIn: "https://www.linkedin.com",
   schedulingNote: "Most inquiries receive a response within one business day.",

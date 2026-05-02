@@ -7,6 +7,12 @@ import { aboutContent, company, homeContent } from "@/data/site-content";
 export const metadata: Metadata = {
   title: "About",
   description: "Learn how InfraNest approaches managed IT operations, cloud support, and scalable business technology guidance.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About | InfraNest Technologies",
+    description: "Learn how InfraNest approaches managed IT operations, cloud support, and scalable business technology guidance.",
+    url: "/about",
+  },
 };
 
 const trustIcons = [

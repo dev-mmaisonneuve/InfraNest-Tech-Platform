@@ -32,9 +32,11 @@ Client form → POST `/api/contact` or `/api/quote` → Zod validation → dupli
 ### Key Directories
 
 - `app/api/` — Two API routes: `contact/route.ts` and `quote/route.ts`. All server-side form logic lives here.
-- `lib/` — Shared utilities: `forms.ts` (Zod schemas), `submissions.ts` (duplicate prevention), `email.ts` (Resend), `turnstile.ts` (bot verification), `supabase.ts` (DB client), `env.ts` (env var validation), `types.ts` (shared TypeScript types).
+- `lib/` — Shared utilities: `forms.ts` (Zod schemas), `submissions.ts` (duplicate prevention), `email.ts` (Resend), `turnstile.ts` (bot verification), `supabase.ts` (DB client), `env.ts` (env var validation), `types.ts` (shared TypeScript types), `brand-assets.ts` (centralises all asset paths — `badge` drives favicon, `socialPreview` drives OG/Twitter preview image via `/opengraph-image` dynamic route).
 - `components/` — React components; form components (`contact-form.tsx`, `quote-form.tsx`) are `"use client"` and manage their own state.
 - `data/site-content.ts` — **Single source of truth** for all marketing copy, navigation, service options, form options, and content arrays. Always edit here first when changing visible text, form options, or content blocks. Exports: `company`, `navigation`, `homeContent`, `services`, `serviceBestFor`, `aboutContent`, `contactDetails`, `quoteOptions`, `budgetRanges`, `timelineOptions`, `testimonials`, `platforms`, `nextSteps`, `faqItems`.
+- `app/sitemap.ts` — Auto-generates `/sitemap.xml`; reads `NEXT_PUBLIC_SITE_URL`. Lists all 5 routes with priority weights.
+- `app/robots.ts` — Auto-generates `/robots.txt`; allows all crawlers, disallows `/api/`, references sitemap.
 - `supabase/schema.sql` — Database schema for `leads` and `quote_requests` tables. Apply manually to Supabase project.
 
 ### Services
@@ -68,7 +70,8 @@ All UI is built from a shared CSS design system — no component library. Key co
 - **Layout**: `.section-split` (2-col), `.service-grid` (2-col), `.trust-grid` / `.cards-grid` (3-col), `.process-grid` (2-col)
 - **Scroll reveal**: Add `data-reveal` to any element for a fade-up entrance. Use `data-reveal="left"` / `data-reveal="right"` for horizontal slides. Add `data-delay="1"` through `data-delay="8"` for stagger. The `RevealObserver` client component in layout handles the IntersectionObserver.
 - **Inline SVG icons**: No icon library — all icons are inline SVGs using `stroke="currentColor"`. Match the existing `viewBox="0 0 24 24"` style. Only use `<path>`, `<line>`, and `<rect>` elements — `<polygon>` and `<circle>` do not inherit `fill="none"` reliably and will render blank.
-- **Hero visual**: `.hero-spotlight` uses a pure CSS gradient + grid pattern (no external image).
+- **Hero visual**: `.hero-spotlight` uses a pure CSS gradient + grid pattern (no external image). Wrapped in `HeroSpotlightWrapper` on the home page for mouse parallax via CSS `translate`. On mobile (≤760px) switches to `display: flex` so `.hero-spotlight-content` flows without clipping.
+- **Eyebrow pulse**: Add `eyebrow--pulse` class (or `pulse` prop on `SectionHeading`) to give the eyebrow dot a sonar-ring animation. Currently enabled on the home hero badge and "Service lanes" only — avoid on informational/form pages.
 - **Responsive breakpoints**: 980px (collapse all multi-col grids to 1-col) and 760px (mobile nav toggle, reduce gaps/padding, revert pill navbar to full-width bar).
 
 ### Components
@@ -77,7 +80,8 @@ All UI is built from a shared CSS design system — no component library. Key co
 |-----------|------|-------|
 | `site-header.tsx` | Client | Floating pill navbar; scroll-spy active state; mobile hamburger toggle; pill reverts to full-width bar at 760px |
 | `site-footer.tsx` | Server | 3-column grid: brand + tagline (left), vertical nav links (center), contact + copyright (right); `infra-badge.png` watermark centered |
-| `section-heading.tsx` | Server | Reusable eyebrow + h1/h2 + description block; pass `reveal` prop to enable scroll animation |
+| `section-heading.tsx` | Server | Reusable eyebrow + h1/h2 + description block; pass `reveal` prop to enable scroll animation; pass `pulse` prop to add sonar-ping animation to the eyebrow dot |
+| `hero-spotlight-wrapper.tsx` | Client | Wraps `.hero-spotlight` on the home page; tracks `mousemove` to drive CSS vars `--px`/`--py` for parallax on glass slabs and atmosphere shapes |
 | `reveal-observer.tsx` | Client | IntersectionObserver that adds `is-visible` to `[data-reveal]` elements; re-runs on route change via `usePathname` |
 | `faq-accordion.tsx` | Client | One-at-a-time accordion using `useRef` array; closing siblings on `onToggle` |
 | `contact-form.tsx` | Client | 5 fields, Turnstile, `/api/contact` POST |
@@ -87,7 +91,7 @@ All UI is built from a shared CSS design system — no component library. Key co
 
 ### Environment Variables
 
-Copy `.env.example` to `.env.local`. Required: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. Optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
+Copy `.env.example` to `.env.local`. Required: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `NEXT_PUBLIC_SITE_URL` (e.g. `https://infranests.com` — used by sitemap, robots.txt, and OG metadata). Optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
 
 ### Testing
 
@@ -111,3 +115,6 @@ Tests use Node.js native test runner (`node --import tsx --test`). Test file at 
 | Navigation links | `data/site-content.ts` → `navigation` array. "Contact" links directly to `/contact` (no section scroll-spy). Items without a `section` property are highlighted by `pathname` match, not scroll position. |
 | Colors, spacing, typography | `app/globals.css` CSS variables |
 | Page layout / section order | Individual page file in `app/` |
+| Page SEO (title, description, canonical, OG) | Individual page file in `app/` — each page exports its own `metadata` object |
+| Favicon | `lib/brand-assets.ts` → `badge.src` |
+| Social/OG preview image | `lib/brand-assets.ts` → `socialPreview.src` (currently `/opengraph-image` dynamic route — edit `app/opengraph-image.tsx` to change the design) |

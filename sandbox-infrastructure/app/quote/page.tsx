@@ -6,6 +6,12 @@ import { SectionHeading } from "@/components/section-heading";
 export const metadata: Metadata = {
   title: "Request a Quote",
   description: "Tell InfraNest what support you need and request a quote for managed IT, cloud, SaaS, or ongoing business technology help.",
+  alternates: { canonical: "/quote" },
+  openGraph: {
+    title: "Request a Quote | InfraNest Technologies",
+    description: "Tell InfraNest what support you need and request a quote for managed IT, cloud, SaaS, or ongoing business technology help.",
+    url: "/quote",
+  },
 };
 
 export default function QuotePage() {

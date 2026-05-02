@@ -8,6 +8,12 @@ import { company, contactDetails, nextSteps } from "@/data/site-content";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Reach InfraNest Technologies for managed IT, cloud, SaaS administration, and support inquiries.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Contact | InfraNest Technologies",
+    description: "Reach InfraNest Technologies for managed IT, cloud, SaaS administration, and support inquiries.",
+    url: "/contact",
+  },
 };
 
 const contactIcons: Record<string, React.ReactNode> = {
