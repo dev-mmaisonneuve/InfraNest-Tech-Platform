@@ -29,28 +29,21 @@ Client form → POST `/api/contact` or `/api/quote` → Zod validation → dupli
 | `/contact` | Contact form + info | Info panel with next-steps flow, ContactForm, FAQ accordion |
 | `/quote` | Quote request form | Info panel, QuoteForm with 8 service checkboxes |
 
+Each page exports its own `metadata` object for SEO (title, description, canonical, OG).
+
 ### Key Directories
 
 - `app/api/` — Two API routes: `contact/route.ts` and `quote/route.ts`. All server-side form logic lives here.
 - `lib/` — Shared utilities: `forms.ts` (Zod schemas), `submissions.ts` (duplicate prevention), `email.ts` (Resend), `turnstile.ts` (bot verification), `supabase.ts` (DB client), `env.ts` (env var validation), `types.ts` (shared TypeScript types), `brand-assets.ts` (centralises all asset paths — `badge` drives favicon, `socialPreview` drives OG/Twitter preview image via `/opengraph-image` dynamic route).
 - `components/` — React components; form components (`contact-form.tsx`, `quote-form.tsx`) are `"use client"` and manage their own state.
-- `data/site-content.ts` — **Single source of truth** for all marketing copy, navigation, service options, form options, and content arrays. Always edit here first when changing visible text, form options, or content blocks. Exports: `company`, `navigation`, `homeContent`, `services`, `serviceBestFor`, `aboutContent`, `contactDetails`, `quoteOptions`, `budgetRanges`, `timelineOptions`, `testimonials`, `platforms`, `nextSteps`, `faqItems`.
+- `data/site-content.ts` — **Single source of truth** for all marketing copy, navigation, service options, form options, and content arrays. Always edit here first when changing visible text, form options, or content blocks. Exports: `company`, `navigation`, `homeContent`, `services`, `serviceBestFor`, `aboutContent`, `contactDetails`, `quoteOptions`, `budgetRanges`, `timelineOptions`, `testimonials`, `platforms`, `nextSteps`, `faqItems`. In `navigation`, items without a `section` property highlight by `pathname` match instead of scroll-spy — "Contact" links directly to `/contact` this way.
 - `app/sitemap.ts` — Auto-generates `/sitemap.xml`; reads `NEXT_PUBLIC_SITE_URL`. Lists all 5 routes with priority weights.
 - `app/robots.ts` — Auto-generates `/robots.txt`; allows all crawlers, disallows `/api/`, references sitemap.
 - `supabase/schema.sql` — Database schema for `leads` and `quote_requests` tables. Apply manually to Supabase project.
 
 ### Services
 
-There are **8 services** defined in `data/site-content.ts` → `services` array:
-
-1. IT Operations & Technology Management
-2. Cloud & Platform Engineering
-3. SaaS & Workspace Administration
-4. Managed IT Services & Support
-5. Workplace Technology & Collaboration
-6. Web Presence & Managed Hosting
-7. Security & Access Foundations
-8. Flexible Engagement Models
+**8 services** defined in `data/site-content.ts` → `services` array (see that file for names/copy; `serviceBestFor` is index-matched to it, 8 items).
 
 The **home page** (`app/page.tsx`) features only 4 of these via `featuredServices`:
 ```ts
@@ -96,25 +89,3 @@ Copy `.env.example` to `.env.local`. Required: `SUPABASE_URL`, `SUPABASE_SERVICE
 ### Testing
 
 Tests use Node.js native test runner (`node --import tsx --test`). Test file at `tests/forms.test.ts` covers Zod schema validation and submission fingerprinting logic.
-
-### Content Editing Quick Reference
-
-| What to change | Where |
-|----------------|-------|
-| Any visible text, headlines, copy | `data/site-content.ts` |
-| All 8 service cards (title, description, bullets) | `data/site-content.ts` → `services` array |
-| "Best for" taglines on service cards | `data/site-content.ts` → `serviceBestFor` array (must stay 8 items, index-matched) |
-| Which 4 services appear on the home page | `app/page.tsx` → `featuredServices` array + `serviceIcons` array (keep in sync) |
-| Service icons on the full services page | `app/services/page.tsx` → `serviceIcons` array (8 items, index-matched to `services`) |
-| Testimonials | `data/site-content.ts` → `testimonials` array |
-| Platforms strip | `data/site-content.ts` → `platforms` array |
-| FAQ items | `data/site-content.ts` → `faqItems` array |
-| "What happens next" steps (contact page) | `data/site-content.ts` → `nextSteps` array |
-| Quote form service checkboxes | `data/site-content.ts` → `quoteOptions` array + `serviceIcons` record in `components/quote-form.tsx` |
-| Company email, phone, service area | `data/site-content.ts` → `company` object |
-| Navigation links | `data/site-content.ts` → `navigation` array. "Contact" links directly to `/contact` (no section scroll-spy). Items without a `section` property are highlighted by `pathname` match, not scroll position. |
-| Colors, spacing, typography | `app/globals.css` CSS variables |
-| Page layout / section order | Individual page file in `app/` |
-| Page SEO (title, description, canonical, OG) | Individual page file in `app/` — each page exports its own `metadata` object |
-| Favicon | `lib/brand-assets.ts` → `badge.src` |
-| Social/OG preview image | `lib/brand-assets.ts` → `socialPreview.src` (currently `/opengraph-image` dynamic route — edit `app/opengraph-image.tsx` to change the design) |
