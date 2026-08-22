@@ -29,6 +29,14 @@ create table if not exists public.quote_requests (
   turnstile_verified boolean not null default false
 );
 
+-- Supports the duplicate-submission check, which looks for a row with the same
+-- email inside a short window on every form post. Additive: the check works
+-- without these, just with a sequential scan that worsens as the tables grow.
+create index if not exists leads_email_created_at_idx
+  on public.leads (email, created_at desc);
+create index if not exists quote_requests_email_created_at_idx
+  on public.quote_requests (email, created_at desc);
+
 -- Both tables sit in the `public` schema, so PostgREST would otherwise expose
 -- every lead's name, email, phone, and message to anyone holding the project's
 -- anon key. Enabling RLS with no policies denies all anon/authenticated access.

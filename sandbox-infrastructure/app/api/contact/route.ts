@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendNotificationEmail } from "@/lib/email";
 import { contactSchema } from "@/lib/forms";
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { isDuplicateSubmission, releaseSubmission, validationErrorResponse } from "@/lib/submissions";
+import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: NextRequest) {
@@ -24,17 +24,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(validationErrorResponse(parsed.error.issues), { status: 400 });
   }
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (isDuplicateSubmission("contact", parsed.data.email, ip)) {
-    return NextResponse.json(
-      { ok: false, message: "A recent submission from this email is already being processed. Please wait a moment." },
-      { status: 429 },
-    );
-  }
-
+  // Verified before any database work so unverified traffic never reaches Supabase.
   const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
   if (!turnstile.ok) {
-    releaseSubmission("contact", parsed.data.email, ip);
     return NextResponse.json(
       { ok: false, message: "Spam protection could not be verified. Please refresh and try again." },
       { status: 400 },
@@ -43,6 +35,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const supabase = getSupabaseServerClient();
+
+    if (await isDuplicateSubmission(supabase, "leads", parsed.data.email)) {
+      return NextResponse.json(
+        { ok: false, message: "A recent submission from this email is already being processed. Please wait a moment." },
+        { status: 429 },
+      );
+    }
 
     const { error } = await supabase.from("leads").insert({
       name: parsed.data.name,
@@ -60,7 +59,6 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("Failed to store contact submission", error);
-    releaseSubmission("contact", parsed.data.email, ip);
     return NextResponse.json(
       { ok: false, message: "The message could not be sent right now. Please try again in a moment." },
       { status: 500 },

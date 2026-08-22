@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 
 import { quoteOptions } from "@/data/site-content";
 import { contactSchema, quoteSchema } from "@/lib/forms";
-import { createSubmissionFingerprint } from "@/lib/submissions";
 
 const baseQuote = {
   name: "Casey Founder",
@@ -63,9 +62,15 @@ test("quote schema removes duplicate service selections", () => {
   assert.deepEqual(result.success && result.data.service_interest, [service]);
 });
 
-test("submission fingerprints are stable", () => {
-  const a = createSubmissionFingerprint("quote", "casey@example.com", "127.0.0.1");
-  const b = createSubmissionFingerprint("quote", "casey@example.com", "127.0.0.1");
+test("email is lower-cased so duplicate lookups match the stored value", () => {
+  const result = contactSchema.safeParse({
+    name: "Casey Founder",
+    email: "Casey@Example.COM",
+    message: "We need help cleaning up cloud access and user onboarding.",
+  });
 
-  assert.equal(a, b);
+  assert.equal(result.success, true);
+  if (result.success) {
+    assert.equal(result.data.email, "casey@example.com");
+  }
 });

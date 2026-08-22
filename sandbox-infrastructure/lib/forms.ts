@@ -12,6 +12,12 @@ const optionalText = z
   .optional()
   .transform((value) => value || undefined);
 
+/**
+ * Normalised on the way in so the duplicate-submission lookup, which compares
+ * against the stored value, matches regardless of how the visitor typed it.
+ */
+const emailField = z.email("Enter a valid email address.").trim().toLowerCase();
+
 const requiredText = (field: string, max: number) =>
   z
     .string()
@@ -21,7 +27,7 @@ const requiredText = (field: string, max: number) =>
 
 export const contactSchema = z.object({
   name: requiredText("Name", 120),
-  email: z.email("Enter a valid email address."),
+  email: emailField,
   phone: optionalText,
   company: optionalText,
   message: requiredText("Message", 2000),
@@ -30,7 +36,7 @@ export const contactSchema = z.object({
 
 export const quoteSchema = z.object({
   name: requiredText("Name", 120),
-  email: z.email("Enter a valid email address."),
+  email: emailField,
   phone: optionalText,
   company: optionalText,
   service_interest: z
