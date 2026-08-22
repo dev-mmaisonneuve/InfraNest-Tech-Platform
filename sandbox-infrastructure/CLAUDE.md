@@ -34,7 +34,8 @@ Each page exports its own `metadata` object for SEO (title, description, canonic
 ### Key Directories
 
 - `app/api/` — Two API routes: `contact/route.ts` and `quote/route.ts`. All server-side form logic lives here.
-- `lib/` — Shared utilities: `forms.ts` (Zod schemas), `submissions.ts` (duplicate prevention), `email.ts` (Resend), `turnstile.ts` (bot verification), `supabase.ts` (DB client), `env.ts` (env var validation), `types.ts` (shared TypeScript types), `brand-assets.ts` (centralises all asset paths — `badge` drives favicon, `socialPreview` drives OG/Twitter preview image via `/opengraph-image` dynamic route).
+- `instrumentation.ts` — Next.js `register()` startup hook; calls `reportRuntimeConfig()` so a misconfigured deployment logs the missing variables on boot. Logs rather than throws, so a missing key never takes down the static marketing pages.
+- `lib/` — Shared utilities: `forms.ts` (Zod schemas), `submissions.ts` (duplicate prevention), `email.ts` (Resend), `turnstile.ts` (bot verification), `supabase.ts` (DB client), `env.ts` (env var reads plus the startup config check), `types.ts` (shared TypeScript types), `brand-assets.ts` (centralises all asset paths — `badge` drives favicon, `socialPreview` drives OG/Twitter preview image via `/opengraph-image` dynamic route).
 - `components/` — React components; form components (`contact-form.tsx`, `quote-form.tsx`) are `"use client"` and manage their own state.
 - `data/site-content.ts` — **Single source of truth** for all marketing copy, navigation, service options, form options, and content arrays. Always edit here first when changing visible text, form options, or content blocks. Exports: `company`, `navigation`, `homeContent`, `services`, `serviceBestFor`, `aboutContent`, `contactDetails`, `quoteOptions`, `budgetRanges`, `timelineOptions`, `testimonials`, `platforms`, `nextSteps`, `faqItems`. In `navigation`, items without a `section` property highlight by `pathname` match instead of scroll-spy — "Contact" links directly to `/contact` this way.
 - `app/sitemap.ts` — Auto-generates `/sitemap.xml`; reads `NEXT_PUBLIC_SITE_URL`. Lists all 5 routes with priority weights.
@@ -85,6 +86,10 @@ All UI is built from a shared CSS design system — no component library. Key co
 ### Environment Variables
 
 Copy `.env.example` to `.env.local`. Required: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `NEXT_PUBLIC_SITE_URL` (e.g. `https://infranests.com` — used by sitemap, robots.txt, and OG metadata). Optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
+
+`NOTIFICATION_FROM` sets the notification sender and must be an address on a domain verified in Resend. Left unset, the sender falls back to `onboarding@resend.dev`, which only delivers to the Resend account owner — so production lead emails silently go nowhere.
+
+The five variables the forms depend on (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`, `TURNSTILE_SECRET_KEY`) are checked once at server start by `reportRuntimeConfig()` in `lib/env.ts`, called from `instrumentation.ts`. Missing values are logged as an error in production and a warning in development; the server still starts either way.
 
 ### Testing
 
