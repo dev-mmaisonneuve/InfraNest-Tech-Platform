@@ -18,6 +18,12 @@ const requiredRuntimeConfig: Array<[string, string | undefined]> = [
   ["RESEND_API_KEY", env.resendApiKey],
   ["NOTIFICATION_EMAIL", env.notificationEmail],
   ["TURNSTILE_SECRET_KEY", env.turnstileSecretKey],
+  // Without the public site key the widget never renders, so the form sends an
+  // empty token and the secret-key check above rejects every submission.
+  ["NEXT_PUBLIC_TURNSTILE_SITE_KEY", env.turnstileSiteKey],
+  // Checked against the raw value because `env.siteUrl` falls back to localhost:
+  // unset, the sitemap and OG metadata would publish localhost URLs.
+  ["NEXT_PUBLIC_SITE_URL", process.env.NEXT_PUBLIC_SITE_URL],
 ];
 
 export function getMissingRuntimeConfig() {

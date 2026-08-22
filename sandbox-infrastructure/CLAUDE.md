@@ -17,7 +17,9 @@ npm test          # Run tests (Node.js native test runner with tsx)
 
 ### Request Flow
 
-Client form → POST `/api/contact` or `/api/quote` → Zod validation → duplicate throttle check (45s window, email+IP fingerprint) → Cloudflare Turnstile verification → Supabase insert → Resend email notification
+Client form → POST `/api/contact` or `/api/quote` → Zod validation → Cloudflare Turnstile verification → duplicate check (Supabase query for the same email within 45s) → Supabase insert → Resend email notification (best-effort)
+
+Turnstile runs before any database work so unverified traffic never reaches Supabase. The duplicate check queries the stored rows rather than in-process state, because serverless instances do not share memory; it fails open, and the notification email is best-effort once the row is committed — neither can turn a captured lead into an error the visitor sees.
 
 ### Page Structure
 
@@ -34,6 +36,8 @@ Each page exports its own `metadata` object for SEO (title, description, canonic
 ### Key Directories
 
 - `app/api/` — Two API routes: `contact/route.ts` and `quote/route.ts`. All server-side form logic lives here.
+- `app/not-found.tsx` / `app/error.tsx` — Branded 404 and route-level error boundary, both built from the shared design system (`.page-shell`, `.section-heading`, `.hero-actions`). `error.tsx` is a client component and logs the error before rendering.
+- `next.config.ts` — Security headers for every route: CSP, HSTS, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`. The CSP allowlists `challenges.cloudflare.com` (Turnstile) and `plausible.io`; everything else is same-origin, and `next/font` self-hosts so no font CDN is needed. **Adding a third-party script requires adding its host to `contentSecurityPolicy` first, or it will be blocked.** CSP is production-only because the dev server needs `unsafe-eval`.
 - `instrumentation.ts` — Next.js `register()` startup hook; calls `reportRuntimeConfig()` so a misconfigured deployment logs the missing variables on boot. Logs rather than throws, so a missing key never takes down the static marketing pages.
 - `lib/` — Shared utilities: `forms.ts` (Zod schemas), `submissions.ts` (duplicate prevention), `email.ts` (Resend), `turnstile.ts` (bot verification), `supabase.ts` (DB client), `env.ts` (env var reads plus the startup config check), `types.ts` (shared TypeScript types), `brand-assets.ts` (centralises all asset paths — `badge` drives favicon, `socialPreview` drives OG/Twitter preview image via `/opengraph-image` dynamic route).
 - `components/` — React components; form components (`contact-form.tsx`, `quote-form.tsx`) are `"use client"` and manage their own state.
@@ -89,7 +93,7 @@ Copy `.env.example` to `.env.local`. Required: `SUPABASE_URL`, `SUPABASE_SERVICE
 
 `NOTIFICATION_FROM` sets the notification sender and must be an address on a domain verified in Resend. Left unset, the sender falls back to `onboarding@resend.dev`, which only delivers to the Resend account owner — so production lead emails silently go nowhere.
 
-The five variables the forms depend on (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`, `TURNSTILE_SECRET_KEY`) are checked once at server start by `reportRuntimeConfig()` in `lib/env.ts`, called from `instrumentation.ts`. Missing values are logged as an error in production and a warning in development; the server still starts either way.
+The seven variables the forms and metadata depend on (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `NEXT_PUBLIC_SITE_URL`) are checked once at server start by `reportRuntimeConfig()` in `lib/env.ts`, called from `instrumentation.ts`. Missing values are logged as an error in production and a warning in development; the server still starts either way.
 
 ### Testing
 
