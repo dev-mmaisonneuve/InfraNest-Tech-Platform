@@ -21,9 +21,9 @@ jobs:
         working-directory: sandbox-infrastructure
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # Keep this matching the Node version the Vercel project builds with.
           node-version: "22"
