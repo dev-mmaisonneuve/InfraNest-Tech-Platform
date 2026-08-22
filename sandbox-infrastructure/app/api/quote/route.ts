@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendNotificationEmail } from "@/lib/email";
 import { quoteSchema } from "@/lib/forms";
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
+import { isDuplicateSubmission, releaseSubmission, validationErrorResponse } from "@/lib/submissions";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: NextRequest) {
@@ -32,8 +32,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const turnstileVerified = await verifyTurnstileToken(parsed.data.turnstileToken);
-  if (!turnstileVerified) {
+  const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
+  if (!turnstile.ok) {
+    releaseSubmission("quote", parsed.data.email, ip);
     return NextResponse.json(
       { ok: false, message: "Spam protection could not be verified. Please refresh and try again." },
       { status: 400 },
@@ -54,13 +55,25 @@ export async function POST(request: NextRequest) {
       budget_range: parsed.data.budget_range,
       source: "website-quote",
       status: "new",
-      turnstile_verified: turnstileVerified,
+      turnstile_verified: turnstile.verified,
     });
 
     if (error) {
       throw error;
     }
+  } catch (error) {
+    console.error("Failed to store quote request", error);
+    releaseSubmission("quote", parsed.data.email, ip);
+    return NextResponse.json(
+      { ok: false, message: "The quote request could not be sent right now. Please try again in a moment." },
+      { status: 500 },
+    );
+  }
 
+  // The request is persisted at this point. A notification failure is an internal
+  // problem to fix, not a reason to tell the visitor their request was lost and
+  // send them into a retry that duplicates the row.
+  try {
     await sendNotificationEmail({
       subject: "New InfraNest quote request",
       heading: "New quote request",
@@ -75,16 +88,12 @@ export async function POST(request: NextRequest) {
         ["Project summary", parsed.data.project_summary],
       ],
     });
-
-    return NextResponse.json({
-      ok: true,
-      message: "Thanks. Your quote request has been submitted and InfraNest will reach out with a practical next step.",
-    });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { ok: false, message: "The quote request could not be sent right now. Please try again in a moment." },
-      { status: 500 },
-    );
+    console.error("Stored quote request but failed to send notification email", error);
   }
+
+  return NextResponse.json({
+    ok: true,
+    message: "Thanks. Your quote request has been submitted and InfraNest will reach out with a practical next step.",
+  });
 }

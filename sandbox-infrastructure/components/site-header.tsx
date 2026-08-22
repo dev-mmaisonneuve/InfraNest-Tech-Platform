@@ -9,16 +9,19 @@ import { navigation } from "@/data/site-content";
 import { brandAssets } from "@/lib/brand-assets";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
 
+// Derived from static nav data, so it is hoisted out of the component: building
+// it inline gave `useScrollSpy` a new array identity every render, which tore
+// down and rebuilt the IntersectionObserver on each one.
+const navSectionIds = navigation
+  .map((item) => item.section)
+  .filter(Boolean)
+  .map((id) => String(id));
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const activeSection = useScrollSpy(
-    navigation
-      .map((item) => item.section)
-      .filter(Boolean)
-      .map((id) => String(id)),
-  );
+  const activeSection = useScrollSpy(navSectionIds);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 55);
@@ -47,7 +50,6 @@ export function SiteHeader() {
           <div className="nav-shell" data-open={isOpen}>
             <nav className="nav-links" aria-label="Primary navigation">
               {navigation.map((item) => {
-                const isHome = pathname === "/" || pathname === "/quote" || pathname === "/contact" || pathname === "/services" || pathname === "/about";
                 const isActive =
                   (item.section && activeSection === item.section && pathname === "/") ||
                   (!item.section && pathname === item.href);

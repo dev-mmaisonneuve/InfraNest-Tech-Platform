@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const serviceIcons: Record<string, React.ReactNode> = {
   "IT operations & technology management": (
@@ -57,7 +57,7 @@ const serviceIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-import { TurnstileWidget } from "@/components/turnstile-widget";
+import { TurnstileWidget, type TurnstileHandle } from "@/components/turnstile-widget";
 import { budgetRanges, quoteOptions, timelineOptions } from "@/data/site-content";
 import type { FormApiResponse } from "@/lib/types";
 
@@ -90,6 +90,7 @@ export function QuoteForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [status, setStatus] = useState<FormApiResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -122,6 +123,8 @@ export function QuoteForm() {
       });
     } finally {
       setIsSubmitting(false);
+      // The submitted token is spent either way, so always ask for a new one.
+      turnstileRef.current?.reset();
     }
   }
 
@@ -178,8 +181,8 @@ export function QuoteForm() {
             onChange={(value) => setForm((current) => ({ ...current, company: value }))}
           />
 
-          <div className="field field-full">
-            <label>Service interest</label>
+          <div className="field field-full" role="group" aria-labelledby="service-interest-label">
+            <label id="service-interest-label">Service interest</label>
             <div className="checkbox-grid">
               {quoteOptions.map((option) => (
                 <label className="checkbox-card" key={option.value}>
@@ -246,7 +249,7 @@ export function QuoteForm() {
           </div>
         </div>
 
-        <TurnstileWidget onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
+        <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
         <p className="form-note">Production requests are protected with Turnstile and routed directly into Supabase and your business inbox.</p>
 
         {status ? (

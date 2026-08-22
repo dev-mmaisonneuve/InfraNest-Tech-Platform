@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { CurrentYear } from "@/components/current-year";
 import { company, navigation } from "@/data/site-content";
 import { brandAssets } from "@/lib/brand-assets";
 
@@ -54,7 +55,7 @@ export function SiteFooter() {
                 <a className="footer-contact-link" href={`mailto:${company.email}`}>{company.email}</a>
                 <a className="footer-contact-link" href={`tel:${company.phone.replace(/[^\d]/g, "")}`}>{company.phone}</a>
               </div>
-              <span className="footer-legal">&copy; {new Date().getFullYear()} InfraNest Technologies.<br />All rights reserved.</span>
+              <span className="footer-legal">&copy; <CurrentYear fallback={new Date().getFullYear()} /> InfraNest Technologies.<br />All rights reserved.</span>
             </div>
 
           </div>

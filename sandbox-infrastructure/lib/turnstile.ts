@@ -1,12 +1,29 @@
 import { env, isProduction } from "@/lib/env";
 
-export async function verifyTurnstileToken(token?: string) {
+export type TurnstileResult = {
+  /** Whether the submission is allowed to proceed. */
+  ok: boolean;
+  /** Whether Cloudflare actually validated a token, for accurate record-keeping. */
+  verified: boolean;
+};
+
+export async function verifyTurnstileToken(token?: string): Promise<TurnstileResult> {
   if (!env.turnstileSecretKey) {
-    return !isProduction;
+    if (isProduction) {
+      // Without this the site silently rejects every submission with a generic
+      // spam-protection error and nothing points at the missing config.
+      console.error(
+        "TURNSTILE_SECRET_KEY is not set. All form submissions will be rejected until it is configured.",
+      );
+      return { ok: false, verified: false };
+    }
+
+    // Local development convenience: allow through, but never claim it was checked.
+    return { ok: true, verified: false };
   }
 
   if (!token) {
-    return false;
+    return { ok: false, verified: false };
   }
 
   const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
@@ -21,9 +38,10 @@ export async function verifyTurnstileToken(token?: string) {
   });
 
   if (!response.ok) {
-    return false;
+    return { ok: false, verified: false };
   }
 
   const payload = (await response.json()) as { success?: boolean };
-  return Boolean(payload.success);
+  const success = Boolean(payload.success);
+  return { ok: success, verified: success };
 }

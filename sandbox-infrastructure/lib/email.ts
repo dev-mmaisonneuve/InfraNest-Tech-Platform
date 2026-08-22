@@ -52,10 +52,18 @@ export async function sendNotificationEmail({ subject, heading, rows }: EmailPar
     </div>
   `;
 
-  await resend.emails.send({
-    from: `${company.shortName} Website <onboarding@resend.dev>`,
+  // Resend resolves with `{ data, error }` rather than rejecting, so an unchecked
+  // call reports success even when the send was refused.
+  const { error } = await resend.emails.send({
+    // `onboarding@resend.dev` only delivers to the Resend account owner, so a
+    // verified sending domain must be supplied via NOTIFICATION_FROM in production.
+    from: env.notificationFrom ?? `${company.shortName} Website <onboarding@resend.dev>`,
     to: env.notificationEmail,
     subject,
     html,
   });
+
+  if (error) {
+    throw new Error(`Resend rejected the notification email: ${error.name} - ${error.message}`);
+  }
 }

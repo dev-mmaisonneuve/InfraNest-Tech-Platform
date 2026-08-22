@@ -4,6 +4,7 @@ export const env = {
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   resendApiKey: process.env.RESEND_API_KEY,
   notificationEmail: process.env.NOTIFICATION_EMAIL,
+  notificationFrom: process.env.NOTIFICATION_FROM,
   turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,
   turnstileSiteKey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
 };

@@ -28,3 +28,11 @@ create table if not exists public.quote_requests (
   status text not null default 'new',
   turnstile_verified boolean not null default false
 );
+
+-- Both tables sit in the `public` schema, so PostgREST would otherwise expose
+-- every lead's name, email, phone, and message to anyone holding the project's
+-- anon key. Enabling RLS with no policies denies all anon/authenticated access.
+-- The API routes use the service role key, which bypasses RLS, so they are
+-- unaffected. Add explicit policies here if a dashboard ever needs read access.
+alter table public.leads enable row level security;
+alter table public.quote_requests enable row level security;

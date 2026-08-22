@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { FormApiResponse } from "@/lib/types";
-import { TurnstileWidget } from "@/components/turnstile-widget";
+import { TurnstileWidget, type TurnstileHandle } from "@/components/turnstile-widget";
 
 type ContactFormState = {
   name: string;
@@ -28,6 +28,7 @@ export function ContactForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [status, setStatus] = useState<FormApiResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,6 +61,8 @@ export function ContactForm() {
       });
     } finally {
       setIsSubmitting(false);
+      // The submitted token is spent either way, so always ask for a new one.
+      turnstileRef.current?.reset();
     }
   }
 
@@ -114,7 +117,7 @@ export function ContactForm() {
           />
         </div>
 
-        <TurnstileWidget onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
+        <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
         <p className="form-note">Spam protection is enforced automatically in production with Cloudflare Turnstile.</p>
 
         {status ? (

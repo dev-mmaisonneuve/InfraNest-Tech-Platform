@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { sendNotificationEmail } from "@/lib/email";
 import { contactSchema } from "@/lib/forms";
 import { getSupabaseServerClient } from "@/lib/supabase";
-import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
+import { isDuplicateSubmission, releaseSubmission, validationErrorResponse } from "@/lib/submissions";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function POST(request: NextRequest) {
@@ -32,8 +32,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const turnstileVerified = await verifyTurnstileToken(parsed.data.turnstileToken);
-  if (!turnstileVerified) {
+  const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
+  if (!turnstile.ok) {
+    releaseSubmission("contact", parsed.data.email, ip);
     return NextResponse.json(
       { ok: false, message: "Spam protection could not be verified. Please refresh and try again." },
       { status: 400 },
@@ -51,13 +52,25 @@ export async function POST(request: NextRequest) {
       message: parsed.data.message,
       source: "website-contact",
       status: "new",
-      turnstile_verified: turnstileVerified,
+      turnstile_verified: turnstile.verified,
     });
 
     if (error) {
       throw error;
     }
+  } catch (error) {
+    console.error("Failed to store contact submission", error);
+    releaseSubmission("contact", parsed.data.email, ip);
+    return NextResponse.json(
+      { ok: false, message: "The message could not be sent right now. Please try again in a moment." },
+      { status: 500 },
+    );
+  }
 
+  // The lead is persisted at this point. A notification failure is an internal
+  // problem to fix, not a reason to tell the visitor their message was lost and
+  // send them into a retry that duplicates the row.
+  try {
     await sendNotificationEmail({
       subject: "New InfraNest contact form submission",
       heading: "New contact form submission",
@@ -69,13 +82,9 @@ export async function POST(request: NextRequest) {
         ["Message", parsed.data.message],
       ],
     });
-
-    return NextResponse.json({ ok: true, message: "Thanks. Your message is in and InfraNest will follow up shortly." });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { ok: false, message: "The message could not be sent right now. Please try again in a moment." },
-      { status: 500 },
-    );
+    console.error("Stored contact lead but failed to send notification email", error);
   }
+
+  return NextResponse.json({ ok: true, message: "Thanks. Your message is in and InfraNest will follow up shortly." });
 }

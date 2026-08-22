@@ -1,8 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import { quoteOptions } from "@/data/site-content";
 import { contactSchema, quoteSchema } from "@/lib/forms";
 import { createSubmissionFingerprint } from "@/lib/submissions";
+
+const baseQuote = {
+  name: "Casey Founder",
+  email: "casey@example.com",
+  project_summary: "We need structure around support and SaaS ownership.",
+};
 
 test("contact schema accepts a valid submission", () => {
   const result = contactSchema.safeParse({
@@ -25,6 +32,35 @@ test("quote schema requires at least one service", () => {
   });
 
   assert.equal(result.success, false);
+});
+
+test("quote schema accepts every service the form renders", () => {
+  const result = quoteSchema.safeParse({
+    ...baseQuote,
+    service_interest: quoteOptions.map((option) => option.value),
+  });
+
+  assert.equal(result.success, true);
+});
+
+test("quote schema rejects services that are not offered", () => {
+  const result = quoteSchema.safeParse({
+    ...baseQuote,
+    service_interest: ["Underwater basket weaving"],
+  });
+
+  assert.equal(result.success, false);
+});
+
+test("quote schema removes duplicate service selections", () => {
+  const service = quoteOptions[0].value;
+  const result = quoteSchema.safeParse({
+    ...baseQuote,
+    service_interest: [service, service],
+  });
+
+  assert.equal(result.success, true);
+  assert.deepEqual(result.success && result.data.service_interest, [service]);
 });
 
 test("submission fingerprints are stable", () => {

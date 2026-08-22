@@ -30,6 +30,15 @@ export function isDuplicateSubmission(route: string, email: string, ip: string) 
   return false;
 }
 
+/**
+ * Clears a reservation taken by `isDuplicateSubmission` when the submission did
+ * not actually go through, so a visitor hitting a server error or an expired
+ * spam-protection token can retry immediately instead of waiting out the window.
+ */
+export function releaseSubmission(route: string, email: string, ip: string) {
+  recentSubmissions.delete(createSubmissionFingerprint(route, email, ip));
+}
+
 export function validationErrorResponse(issues: Parameters<typeof formatZodErrors>[0]): FormApiResponse {
   return {
     ok: false,

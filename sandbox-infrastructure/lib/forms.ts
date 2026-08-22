@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+import { quoteOptions } from "@/data/site-content";
+
+/** Derived from the rendered checkboxes so the cap can never drift from the UI. */
+const serviceValues = quoteOptions.map((option) => option.value);
+
 const optionalText = z
   .string()
   .trim()
@@ -31,7 +36,11 @@ export const quoteSchema = z.object({
   service_interest: z
     .array(z.string().trim().min(1))
     .min(1, "Select at least one service.")
-    .max(6, "Select up to six services."),
+    .max(serviceValues.length, `Select up to ${serviceValues.length} services.`)
+    .refine((values) => values.every((value) => serviceValues.includes(value)), {
+      message: "Select services from the listed options.",
+    })
+    .transform((values) => [...new Set(values)]),
   project_summary: requiredText("Project summary", 2500),
   timeline: optionalText,
   budget_range: optionalText,

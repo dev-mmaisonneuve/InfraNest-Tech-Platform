@@ -90,15 +90,16 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
+        {/* Must be the first focusable element so it is reachable on the first Tab. */}
+        <a className="skip-link" href="#main-content">
+          Skip to content
+        </a>
         <div className="site-background" aria-hidden="true" />
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
         <BackToTop />
         <RevealObserver />
-        <a className="skip-link" href="#main-content">
-          Skip to content
-        </a>
         {plausibleDomain ? (
           <Script
             defer
