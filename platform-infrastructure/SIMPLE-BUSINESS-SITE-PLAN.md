@@ -1,9 +1,9 @@
 # InfraNest Full Website Build Plan
 
 ## Summary
-Build a full functioning v1 website in `/Users/mikemsnnve/Documents/Playground/sandbox-infrastructure` by replacing the current single static page with a `Next.js` app deployed on `Vercel`, using `Supabase` for lead storage and `Resend` for email notifications. The site will launch with four public pages: Home, Services, About, and Contact, plus two working lead flows: a general contact form and a quote/service request form.
+Build a full functioning v1 website in `/Users/mikemsnnve/Documents/Playground/platform-infrastructure` by replacing the current single static page with a `Next.js` app deployed on `Vercel`, using `Supabase` for lead storage and `Resend` for email notifications. The site will launch with four public pages: Home, Services, About, and Contact, plus two working lead flows: a general contact form and a quote/service request form.
 
-This plan prioritizes a polished user experience, real business functionality, and long-term manageability. The current [`index.html`](/Users/mikemsnnve/Documents/Playground/sandbox-infrastructure/index.html) can be used as a visual and content reference, but the design does not need to be preserved exactly. During implementation, we should either refine the current direction into a more premium version or redesign it entirely if that produces a more impressive result. No client login, portal, payments, blog, or scheduling in the first release.
+This plan prioritizes a polished user experience, real business functionality, and long-term manageability. The current [`index.html`](/Users/mikemsnnve/Documents/Playground/platform-infrastructure/index.html) can be used as a visual and content reference, but the design does not need to be preserved exactly. During implementation, we should either refine the current direction into a more premium version or redesign it entirely if that produces a more impressive result. No client login, portal, payments, blog, or scheduling in the first release.
 
 ## Product Direction
 - Position the site as a premium startup service website: clear offer, strong visual identity, trust signals, and an obvious next step.
@@ -153,5 +153,5 @@ This plan prioritizes a polished user experience, real business functionality, a
 - Content will be edited in code by default.
 - Submission review happens in Supabase, not a custom internal dashboard.
 - Blog, case studies, booking, CRM integration, auth, and payments are out of scope for v1.
-- The build workspace is `/Users/mikemsnnve/Documents/Playground/sandbox-infrastructure`.
-- The existing [`index.html`](/Users/mikemsnnve/Documents/Playground/sandbox-infrastructure/index.html) is only a reference point, not a design constraint.
+- The build workspace is `/Users/mikemsnnve/Documents/Playground/platform-infrastructure`.
+- The existing [`index.html`](/Users/mikemsnnve/Documents/Playground/platform-infrastructure/index.html) is only a reference point, not a design constraint.

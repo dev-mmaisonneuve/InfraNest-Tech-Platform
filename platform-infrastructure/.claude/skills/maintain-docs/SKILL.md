@@ -5,12 +5,12 @@ description: Review and rewrite CLAUDE.md and README.md in this project to keep 
 
 # Maintain docs
 
-Keeps `sandbox-infrastructure/CLAUDE.md` and `sandbox-infrastructure/README.md` clean, aligned, and free of redundant or stale content. Run this whenever asked to audit, trim, or sync this project's docs — or proactively after a change big enough to make either file stale (new route, new env var, renamed directory, etc).
+Keeps `platform-infrastructure/CLAUDE.md` and `platform-infrastructure/README.md` clean, aligned, and free of redundant or stale content. Run this whenever asked to audit, trim, or sync this project's docs — or proactively after a change big enough to make either file stale (new route, new env var, renamed directory, etc).
 
 ## Files in scope
 
-- `sandbox-infrastructure/CLAUDE.md` — agent-facing, high priority
-- `sandbox-infrastructure/README.md` — human-facing
+- `platform-infrastructure/CLAUDE.md` — agent-facing, high priority
+- `platform-infrastructure/README.md` — human-facing
 
 Do not touch the repo-root `README.md` or the asset-folder READMEs (`assets/README.md`, `public/assets/README.md`) — those are out of scope for this skill.
 

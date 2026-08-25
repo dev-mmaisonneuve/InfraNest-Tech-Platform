@@ -97,4 +97,4 @@ The seven variables the forms and metadata depend on (`SUPABASE_URL`, `SUPABASE_
 
 ### Testing
 
-Tests use Node.js native test runner (`node --import tsx --test`). Test file at `tests/forms.test.ts` covers Zod schema validation and submission fingerprinting logic.
+Tests use Node.js native test runner (`node --import tsx --test`). Test file at `tests/forms.test.ts` covers Zod schema validation, service selection rules, and email normalisation.

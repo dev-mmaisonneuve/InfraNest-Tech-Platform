@@ -1,6 +1,6 @@
 <!-- Placeholder logo — replace with the official InfraNest logo when ready -->
 <p align="center">
-  <img src="sandbox-infrastructure/public/assets/infra-logo-ui.png" alt="InfraNest Technologies" width="220">
+  <img src="platform-infrastructure/public/assets/infra-logo-ui.png" alt="InfraNest Technologies" width="220">
 </p>
 
 <h1 align="center">InfraNest Technologies</h1>
@@ -18,7 +18,7 @@ InfraNest helps businesses with IT operations, cloud infrastructure, and workpla
 
 ## What's included
 
-- **`sandbox-infrastructure/`** — the InfraNest marketing website. See [its README](sandbox-infrastructure/README.md) for setup and local development instructions, and [its CLAUDE.md](sandbox-infrastructure/CLAUDE.md) for a deeper technical/architecture reference.
+- **`platform-infrastructure/`** — the InfraNest marketing website. See [its README](platform-infrastructure/README.md) for setup and local development instructions, and [its CLAUDE.md](platform-infrastructure/CLAUDE.md) for a deeper technical/architecture reference.
 
 This repository is structured to support additional applications and services over time as InfraNest grows.
 
@@ -31,4 +31,4 @@ This repository is structured to support additional applications and services ov
 
 ## Getting started
 
-To run the website locally, see the setup instructions in [`sandbox-infrastructure/README.md`](sandbox-infrastructure/README.md).
+To run the website locally, see the setup instructions in [`platform-infrastructure/README.md`](platform-infrastructure/README.md).
