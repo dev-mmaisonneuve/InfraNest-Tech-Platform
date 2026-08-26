@@ -6,10 +6,10 @@ Multi-page marketing site for InfraNest Technologies — a managed IT services c
 
 - `Next.js 15` App Router (static + server-rendered pages)
 - `TypeScript`
-- `Supabase` for lead storage (`leads` and `quote_requests` tables)
-- `Resend` for email notifications on new submissions
+- `Amazon DynamoDB` for lead storage (`leads` and `quote_requests` tables)
+- `Amazon SES` for email notifications on new submissions
 - `Cloudflare Turnstile` for bot/spam protection on forms
-- `Vercel` for deployment
+- `AWS Amplify Hosting` for deployment
 - `Plausible` for optional analytics
 
 ## Local development
@@ -40,11 +40,11 @@ npm test          # Run tests (Node.js native test runner with tsx)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `SUPABASE_URL` | Yes | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key |
-| `RESEND_API_KEY` | Yes | Resend API key for email |
+| `LEADS_TABLE_NAME` | Yes | DynamoDB table for contact form leads |
+| `QUOTE_REQUESTS_TABLE_NAME` | Yes | DynamoDB table for quote requests |
+| `AWS_REGION` | No | Defaults to `us-east-1`. Lambda sets this automatically in Amplify, so it only matters locally |
 | `NOTIFICATION_EMAIL` | Yes | Email address for lead notifications |
-| `NOTIFICATION_FROM` | Prod | Sender address, on a domain verified in Resend. Unset, it falls back to `onboarding@resend.dev`, which only delivers to the Resend account owner |
+| `NOTIFICATION_FROM` | Yes | Sender address, on a domain verified in SES. SES refuses unverified senders, so there is no fallback |
 | `TURNSTILE_SECRET_KEY` | Yes | Cloudflare Turnstile secret |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Yes | Cloudflare Turnstile site key |
 | `NEXT_PUBLIC_SITE_URL` | Yes | Canonical site URL |
@@ -53,15 +53,23 @@ npm test          # Run tests (Node.js native test runner with tsx)
 
 ## Database
 
-Apply [`supabase/schema.sql`](supabase/schema.sql) to your Supabase project to create the `leads` and `quote_requests` tables used by the API routes.
+Run [`infrastructure/create-tables.sh`](infrastructure/create-tables.sh) to create the `leads` and `quote_requests` DynamoDB tables used by the API routes:
 
-The file is applied by hand, so committing a change to it does nothing on its own. It also enables row level security on both tables — without that, PostgREST exposes every lead's name, email, phone, and message to anyone holding the project's anon key. The API routes use the service role key, which bypasses RLS, so applying it does not affect them.
+```bash
+./infrastructure/create-tables.sh us-east-1
+```
+
+The script is applied by hand, so committing a change to it does nothing on its own. It is idempotent — existing tables are skipped.
+
+Both tables use `email` as the partition key and `created_at` as the sort key. That is not incidental: it is what makes the duplicate-submission check a bounded range query against a single partition rather than a table scan. The script also enables point-in-time recovery, since leads are business records.
+
+AWS credentials are never read from environment variables. Locally the default credential chain applies; in Amplify the compute role supplies them, and it should be scoped to `dynamodb:PutItem` and `dynamodb:Query` on just these two tables plus `ses:SendEmail`.
 
 ## Production checklist
 
-- [ ] Apply `supabase/schema.sql` to the live project, including the RLS statements and the `(email, created_at)` indexes.
-- [ ] Set `NOTIFICATION_FROM` to an address on a Resend-verified domain, and send a test lead through both forms to confirm it arrives.
-- [ ] Set all variables listed above in Vercel. Anything missing is logged on server start — check the deployment logs for `Missing required environment variables`.
+- [ ] Run `infrastructure/create-tables.sh` against the live account to create both DynamoDB tables.
+- [ ] Verify the sending domain in SES and set `NOTIFICATION_FROM` to an address on it, then send a test lead through both forms to confirm it arrives. Note that SES starts in a sandbox that only delivers to verified addresses.
+- [ ] Set all variables listed above in Amplify. Anything missing is logged on server start — check the deployment logs for `Missing required environment variables`.
 - [ ] Confirm `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set. With the secret set but the site key missing, the widget never renders and every submission is rejected.
 
 ## Security headers

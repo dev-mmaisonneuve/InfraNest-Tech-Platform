@@ -1,14 +1,12 @@
-import { Resend } from "resend";
+import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 
-import { company } from "@/data/site-content";
 import { env } from "@/lib/env";
 
-function getResendClient() {
-  if (!env.resendApiKey) {
-    throw new Error("Resend is not configured.");
-  }
+let sesClient: SESv2Client | undefined;
 
-  return new Resend(env.resendApiKey);
+function getSesClient() {
+  sesClient ??= new SESv2Client({ region: env.awsRegion });
+  return sesClient;
 }
 
 type EmailParams = {
@@ -31,7 +29,13 @@ export async function sendNotificationEmail({ subject, heading, rows }: EmailPar
     throw new Error("Notification email is not configured.");
   }
 
-  const resend = getResendClient();
+  // SES only accepts a sender on a verified identity, so there is no equivalent
+  // of the old Resend shared-sender fallback to degrade to. Failing loudly here
+  // is better than a send that SES refuses for reasons the caller cannot see.
+  if (!env.notificationFrom) {
+    throw new Error("NOTIFICATION_FROM is not configured.");
+  }
+
   const safeHeading = escapeHtml(heading);
 
   const html = `
@@ -52,18 +56,19 @@ export async function sendNotificationEmail({ subject, heading, rows }: EmailPar
     </div>
   `;
 
-  // Resend resolves with `{ data, error }` rather than rejecting, so an unchecked
-  // call reports success even when the send was refused.
-  const { error } = await resend.emails.send({
-    // `onboarding@resend.dev` only delivers to the Resend account owner, so a
-    // verified sending domain must be supplied via NOTIFICATION_FROM in production.
-    from: env.notificationFrom ?? `${company.shortName} Website <onboarding@resend.dev>`,
-    to: env.notificationEmail,
-    subject,
-    html,
-  });
-
-  if (error) {
-    throw new Error(`Resend rejected the notification email: ${error.name} - ${error.message}`);
-  }
+  // Unlike Resend, which resolved with `{ data, error }` and so reported success
+  // on an unchecked call, the AWS SDK rejects on a refused send. The throw
+  // propagates to the route, which logs it without failing the visitor's request.
+  await getSesClient().send(
+    new SendEmailCommand({
+      FromEmailAddress: env.notificationFrom,
+      Destination: { ToAddresses: [env.notificationEmail] },
+      Content: {
+        Simple: {
+          Subject: { Data: subject, Charset: "UTF-8" },
+          Body: { Html: { Data: html, Charset: "UTF-8" } },
+        },
+      },
+    }),
+  );
 }

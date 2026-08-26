@@ -1,8 +1,10 @@
 export const env = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  supabaseUrl: process.env.SUPABASE_URL,
-  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  resendApiKey: process.env.RESEND_API_KEY,
+  // Lambda sets AWS_REGION automatically, so this resolves correctly in Amplify
+  // without anyone configuring it. The fallback only matters locally.
+  awsRegion: process.env.AWS_REGION ?? "us-east-1",
+  leadsTableName: process.env.LEADS_TABLE_NAME ?? "infranest-leads",
+  quoteRequestsTableName: process.env.QUOTE_REQUESTS_TABLE_NAME ?? "infranest-quote-requests",
   notificationEmail: process.env.NOTIFICATION_EMAIL,
   notificationFrom: process.env.NOTIFICATION_FROM,
   turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,
@@ -13,10 +15,16 @@ export const isProduction = process.env.NODE_ENV === "production";
 
 /** Everything the two form endpoints need in order to work end to end. */
 const requiredRuntimeConfig: Array<[string, string | undefined]> = [
-  ["SUPABASE_URL", env.supabaseUrl],
-  ["SUPABASE_SERVICE_ROLE_KEY", env.supabaseServiceRoleKey],
-  ["RESEND_API_KEY", env.resendApiKey],
+  // Checked against the raw values rather than the `env` fields below, because
+  // those fall back to defaults. A default table name that does not exist in the
+  // account fails at write time with a ResourceNotFoundException per submission,
+  // which is exactly the silent breakage this check exists to pre-empt.
+  ["LEADS_TABLE_NAME", process.env.LEADS_TABLE_NAME],
+  ["QUOTE_REQUESTS_TABLE_NAME", process.env.QUOTE_REQUESTS_TABLE_NAME],
   ["NOTIFICATION_EMAIL", env.notificationEmail],
+  // SES rejects any sender that is not on a verified identity, so unlike the
+  // previous Resend setup there is no usable fallback to degrade to.
+  ["NOTIFICATION_FROM", env.notificationFrom],
   ["TURNSTILE_SECRET_KEY", env.turnstileSecretKey],
   // Without the public site key the widget never renders, so the form sends an
   // empty token and the secret-key check above rejects every submission.
@@ -36,8 +44,8 @@ export function getMissingRuntimeConfig() {
  * This logs rather than throwing on purpose: the marketing pages are static and
  * work fine without any of these, so failing hard would take the whole site down
  * over a missing key that only the forms need. It matters because the failure it
- * catches is otherwise silent — a missing RESEND_API_KEY leaves the lead stored
- * and the visitor thanked, with nothing surfacing that no one was notified.
+ * catches is otherwise silent — a missing NOTIFICATION_FROM leaves the lead
+ * stored and the visitor thanked, with nothing surfacing that no one was notified.
  */
 export function reportRuntimeConfig() {
   const missing = getMissingRuntimeConfig();

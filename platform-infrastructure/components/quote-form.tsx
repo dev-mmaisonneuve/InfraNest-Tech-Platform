@@ -250,7 +250,7 @@ export function QuoteForm() {
         </div>
 
         <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
-        <p className="form-note">Production requests are protected with Turnstile and routed directly into Supabase and your business inbox.</p>
+        <p className="form-note">Requests are protected with Cloudflare Turnstile and go straight to the InfraNest team.</p>
 
         {status ? (
           <div className={`form-status ${status.ok ? "success" : "error"}`} role="status">

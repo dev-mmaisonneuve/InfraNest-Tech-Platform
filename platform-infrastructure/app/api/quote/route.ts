@@ -1,10 +1,16 @@
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { NextRequest, NextResponse } from "next/server";
 
+import { getDynamoDocumentClient } from "@/lib/dynamo";
 import { sendNotificationEmail } from "@/lib/email";
+import { env } from "@/lib/env";
 import { quoteSchema } from "@/lib/forms";
-import { getSupabaseServerClient } from "@/lib/supabase";
 import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+
+const duplicateMessage =
+  "A recent quote request from this email is already being processed. Please wait a moment.";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -24,7 +30,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(validationErrorResponse(parsed.error.issues), { status: 400 });
   }
 
-  // Verified before any database work so unverified traffic never reaches Supabase.
+  // Verified before any database work so unverified traffic never reaches DynamoDB.
   const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
   if (!turnstile.ok) {
     return NextResponse.json(
@@ -34,33 +40,41 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabase = getSupabaseServerClient();
+    const client = getDynamoDocumentClient();
 
-    if (await isDuplicateSubmission(supabase, "quote_requests", parsed.data.email)) {
-      return NextResponse.json(
-        { ok: false, message: "A recent quote request from this email is already being processed. Please wait a moment." },
-        { status: 429 },
-      );
+    if (await isDuplicateSubmission(client, env.quoteRequestsTableName, parsed.data.email)) {
+      return NextResponse.json({ ok: false, message: duplicateMessage }, { status: 429 });
     }
 
-    const { error } = await supabase.from("quote_requests").insert({
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone,
-      company: parsed.data.company,
-      service_interest: parsed.data.service_interest,
-      project_summary: parsed.data.project_summary,
-      timeline: parsed.data.timeline,
-      budget_range: parsed.data.budget_range,
-      source: "website-quote",
-      status: "new",
-      turnstile_verified: turnstile.verified,
-    });
-
-    if (error) {
-      throw error;
-    }
+    await client.send(
+      new PutCommand({
+        TableName: env.quoteRequestsTableName,
+        Item: {
+          email: parsed.data.email,
+          created_at: new Date().toISOString(),
+          name: parsed.data.name,
+          phone: parsed.data.phone,
+          company: parsed.data.company,
+          service_interest: parsed.data.service_interest,
+          project_summary: parsed.data.project_summary,
+          timeline: parsed.data.timeline,
+          budget_range: parsed.data.budget_range,
+          source: "website-quote",
+          status: "new",
+          turnstile_verified: turnstile.verified,
+        },
+        // The duplicate check above cannot catch two genuinely simultaneous
+        // requests. Without this guard the second write would silently replace
+        // the first, since both share a partition key and a same-millisecond
+        // sort key — losing a real lead rather than merely duplicating one.
+        ConditionExpression: "attribute_not_exists(email)",
+      }),
+    );
   } catch (error) {
+    if (error instanceof ConditionalCheckFailedException) {
+      return NextResponse.json({ ok: false, message: duplicateMessage }, { status: 429 });
+    }
+
     console.error("Failed to store quote request", error);
     return NextResponse.json(
       { ok: false, message: "The quote request could not be sent right now. Please try again in a moment." },
