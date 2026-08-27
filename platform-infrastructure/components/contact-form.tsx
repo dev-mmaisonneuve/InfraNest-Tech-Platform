@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 
 import type { FormApiResponse } from "@/lib/types";
@@ -121,7 +122,10 @@ export function ContactForm() {
         </div>
 
         <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
-        <p className="form-note">Spam protection is enforced automatically in production with Cloudflare Turnstile.</p>
+        <p className="form-note">
+          Spam protection is enforced automatically in production with Cloudflare Turnstile. See how we handle your
+          information in our <Link href="/privacy">privacy policy</Link>.
+        </p>
 
         {status ? (
           <div className={`form-status ${status.ok ? "success" : "error"}`} role="status">
