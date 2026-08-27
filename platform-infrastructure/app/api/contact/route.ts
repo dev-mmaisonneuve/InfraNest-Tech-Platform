@@ -6,7 +6,7 @@ import { getDynamoDocumentClient } from "@/lib/dynamo";
 import { sendAcknowledgmentEmail, sendNotificationEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { contactSchema } from "@/lib/forms";
-import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
+import { isDuplicateSubmission, validationErrorResponse, wasRecentlyAcknowledged } from "@/lib/submissions";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const duplicateMessage =
@@ -39,8 +39,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let createdAt = "";
+
   try {
     const client = getDynamoDocumentClient();
+    createdAt = new Date().toISOString();
 
     if (await isDuplicateSubmission(client, env.leadsTableName, parsed.data.email)) {
       return NextResponse.json({ ok: false, message: duplicateMessage }, { status: 429 });
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
         TableName: env.leadsTableName,
         Item: {
           email: parsed.data.email,
-          created_at: new Date().toISOString(),
+          created_at: createdAt,
           name: parsed.data.name,
           phone: parsed.data.phone,
           company: parsed.data.company,
@@ -102,7 +105,14 @@ export async function POST(request: NextRequest) {
   // already stored, so a failure here must not surface as an error that sends
   // the visitor into a retry.
   try {
-    await sendAcknowledgmentEmail("contact", parsed.data.email);
+    // Rate limited separately from the submission throttle: this email goes to
+    // whatever address the visitor typed, so without a longer per-address cap
+    // the forms could be used to mail a stranger repeatedly.
+    if (await wasRecentlyAcknowledged(getDynamoDocumentClient(), [env.leadsTableName, env.quoteRequestsTableName], parsed.data.email, createdAt)) {
+      console.info("Skipping acknowledgment: address was acknowledged recently");
+    } else {
+      await sendAcknowledgmentEmail("contact", parsed.data.email);
+    }
   } catch (error) {
     console.error("Stored contact lead but failed to send visitor acknowledgment", error);
   }

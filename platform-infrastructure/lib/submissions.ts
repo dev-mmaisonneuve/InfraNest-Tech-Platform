@@ -58,6 +58,66 @@ export async function isDuplicateSubmission(
   }
 }
 
+/**
+ * How long an address is spared a second acknowledgment email.
+ *
+ * Much longer than the 45-second submission throttle, and for a different
+ * purpose. The throttle stops accidental double-submits; this stops the forms
+ * being used to send repeated unsolicited mail to someone else's address.
+ */
+const acknowledgmentWindowMs = 24 * 60 * 60 * 1000;
+
+/**
+ * Whether this address has already been sent an acknowledgment recently.
+ *
+ * The submission throttle is not sufficient protection on its own: it is scoped
+ * to 45 seconds and to a single table, so alternating between the contact and
+ * quote forms bypasses it entirely, and a script can simply wait it out. Since
+ * the acknowledgment goes to whatever address the visitor typed, that would let
+ * the site be used to mail a stranger repeatedly.
+ *
+ * Both tables are checked, over a much longer window, so an address receives at
+ * most one acknowledgment per day no matter which form is used or how often.
+ *
+ * Note this fails CLOSED, unlike `isDuplicateSubmission` which fails open. The
+ * costs are asymmetric in opposite directions: there, refusing a real lead is
+ * worse than storing a duplicate; here, skipping one acknowledgment is a minor
+ * inconvenience while sending unsolicited mail risks the SES reputation that
+ * internal lead notifications also depend on.
+ */
+export async function wasRecentlyAcknowledged(
+  client: DynamoDBDocumentClient,
+  tableNames: string[],
+  email: string,
+  currentCreatedAt: string,
+): Promise<boolean> {
+  const since = new Date(Date.now() - acknowledgmentWindowMs).toISOString();
+
+  try {
+    const results = await Promise.all(
+      tableNames.map((tableName) =>
+        client.send(
+          new QueryCommand({
+            TableName: tableName,
+            // Bounded above by the submission being processed, so the row just
+            // written does not count as evidence of a previous acknowledgment.
+            KeyConditionExpression: "#email = :email AND #created_at BETWEEN :since AND :before",
+            ExpressionAttributeNames: { "#email": "email", "#created_at": "created_at" },
+            ExpressionAttributeValues: { ":email": email, ":since": since, ":before": currentCreatedAt },
+            Limit: 1,
+            ProjectionExpression: "#email",
+          }),
+        ),
+      ),
+    );
+
+    return results.some((result) => (result.Items?.length ?? 0) > 0);
+  } catch (error) {
+    console.error("Acknowledgment rate-limit check failed; skipping the acknowledgment", error);
+    return true;
+  }
+}
+
 export function validationErrorResponse(issues: Parameters<typeof formatZodErrors>[0]): FormApiResponse {
   return {
     ok: false,
