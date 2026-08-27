@@ -45,6 +45,7 @@ export function SiteFooter() {
                   <Link key={item.href} href={item.href}>{item.label}</Link>
                 ))}
                 <Link href="/quote">Quote</Link>
+                <Link href="/privacy">Privacy</Link>
               </nav>
             </div>
 
