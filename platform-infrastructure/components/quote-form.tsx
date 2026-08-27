@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 
 const serviceIcons: Record<string, React.ReactNode> = {
@@ -250,7 +251,10 @@ export function QuoteForm() {
         </div>
 
         <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
-        <p className="form-note">Requests are protected with Cloudflare Turnstile and go straight to the InfraNest team.</p>
+        <p className="form-note">
+          Requests are protected with Cloudflare Turnstile and go straight to the InfraNest team. See how we handle
+          your information in our <Link href="/privacy">privacy policy</Link>.
+        </p>
 
         {status ? (
           <div className={`form-status ${status.ok ? "success" : "error"}`} role="status">
