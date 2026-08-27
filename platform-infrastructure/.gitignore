@@ -6,3 +6,6 @@ coverage
 dist
 .DS_Store
 tsconfig.tsbuildinfo
+
+# Generated during the Amplify build from console environment variables.
+.env.production

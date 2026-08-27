@@ -1,0 +1,43 @@
+# AWS Amplify build specification.
+#
+# Lives at the repo root rather than in the app directory because this is a
+# monorepo-style layout: `appRoot` tells Amplify the Next.js app is in a
+# subdirectory. Amplify uses this file in preference to the build settings
+# configured in the console, so the deployment config is version-controlled
+# and reviewable rather than click-configured.
+version: 1
+applications:
+  - appRoot: platform-infrastructure
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci --cache .npm --prefer-offline
+        build:
+          commands:
+            # Environment variables set in the Amplify console reach the build but
+            # NOT the SSR compute runtime — that separation is deliberate on AWS's
+            # part. Next.js reads `.env.production` at build time, and Amplify makes
+            # those values available to the compute function, which is AWS's
+            # documented way to pass server-side config through.
+            #
+            # Without this, every server-side variable is `undefined` at request
+            # time: `lib/turnstile.ts` rejects every submission, and the write and
+            # notification steps never run. `NEXT_PUBLIC_*` values are unaffected
+            # because Next.js inlines them into the bundle during the build.
+            #
+            # `|| true` keeps a missing variable from failing the build outright.
+            # `reportRuntimeConfig()` in `lib/env.ts` already names anything absent
+            # in the deployment logs, which is a far clearer signal than a build
+            # step exiting non-zero.
+            - env | grep -e LEADS_TABLE_NAME -e QUOTE_REQUESTS_TABLE_NAME -e NOTIFICATION_ -e TURNSTILE_SECRET_KEY > .env.production || true
+            - env | grep -e NEXT_PUBLIC_ >> .env.production || true
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - .next/cache/**/*
+          - .npm/**/*
