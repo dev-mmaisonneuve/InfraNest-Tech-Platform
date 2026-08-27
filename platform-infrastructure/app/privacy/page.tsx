@@ -49,8 +49,8 @@ export default function PrivacyPage() {
             <li>For quote requests: the services you select, and any timeline and budget range you choose</li>
           </ul>
           <p>
-            Only your name, email address, and message are required. Every other field is optional and the form
-            works without them.
+            On the contact form, only your name, email address, and message are required. A quote request also
+            needs at least one service selection and a short project summary. Every other field is optional.
           </p>
 
           <h2>Why we collect it</h2>
@@ -73,9 +73,10 @@ export default function PrivacyPage() {
           <h2>Spam protection</h2>
           <p>
             Both forms are protected by Cloudflare Turnstile, which helps confirm that a submission comes from a
-            person rather than an automated script. To do this, Cloudflare receives your IP address and technical
-            information about your browser. This happens only when you submit a form, and InfraNest never receives
-            that data itself. Cloudflare&rsquo;s handling of it is governed by{" "}
+            person rather than an automated script. The Turnstile widget loads as soon as you open the contact or
+            quote page, so Cloudflare receives your IP address and technical information about your browser at
+            that point &mdash; before you submit anything, and whether or not you go on to submit at all. InfraNest
+            never receives that data itself. Cloudflare&rsquo;s handling of it is governed by{" "}
             <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">
               Cloudflare&rsquo;s privacy policy
             </a>
