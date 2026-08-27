@@ -82,6 +82,7 @@ export function ContactForm() {
             value={form.name}
             error={fieldErrors.name?.[0]}
             onChange={(value) => setForm((current) => ({ ...current, name: value }))}
+          required
           />
           <Field
             label="Email"
@@ -90,6 +91,7 @@ export function ContactForm() {
             value={form.email}
             error={fieldErrors.email?.[0]}
             onChange={(value) => setForm((current) => ({ ...current, email: value }))}
+          required
           />
           <Field
             label="Phone"
@@ -114,6 +116,7 @@ export function ContactForm() {
             multiline
             full
             onChange={(value) => setForm((current) => ({ ...current, message: value }))}
+          required
           />
         </div>
 
@@ -143,18 +146,43 @@ type FieldProps = {
   multiline?: boolean;
   full?: boolean;
   error?: string;
+  required?: boolean;
 };
 
-function Field({ label, name, value, onChange, type = "text", multiline = false, full = false, error }: FieldProps) {
+function Field({ label, name, value, onChange, type = "text", multiline = false, full = false, error, required = false }: FieldProps) {
+  // Without these, a screen reader announces the label and the empty field but
+  // never the reason it was rejected — the error text is visually adjacent but
+  // programmatically unrelated to the input.
+  const errorId = `${name}-error`;
+  const describedBy = error ? errorId : undefined;
+  const shared = {
+    id: name,
+    name,
+    value,
+    required,
+    "aria-required": required || undefined,
+    "aria-invalid": error ? (true as const) : undefined,
+    "aria-describedby": describedBy,
+  };
+
   return (
     <div className={full ? "field field-full" : "field"}>
       <label htmlFor={name}>{label}</label>
       {multiline ? (
-        <textarea id={name} name={name} value={value} onChange={(event) => onChange(event.target.value)} />
+        <textarea {...shared} onChange={(event) => onChange(event.target.value)} />
       ) : (
-        <input id={name} name={name} type={type} inputMode={type === "tel" ? "tel" : undefined} value={value} onChange={(event) => onChange(event.target.value)} />
+        <input
+          {...shared}
+          type={type}
+          inputMode={type === "tel" ? "tel" : undefined}
+          onChange={(event) => onChange(event.target.value)}
+        />
       )}
-      {error ? <span className="error-text">{error}</span> : null}
+      {error ? (
+        <span className="error-text" id={errorId}>
+          {error}
+        </span>
+      ) : null}
     </div>
   );
 }
