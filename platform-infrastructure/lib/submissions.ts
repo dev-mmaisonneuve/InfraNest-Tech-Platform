@@ -93,17 +93,27 @@ export async function wasRecentlyAcknowledged(
 ): Promise<boolean> {
   const since = new Date(Date.now() - acknowledgmentWindowMs).toISOString();
 
+  // DynamoDB's BETWEEN includes both bounds, and the route writes the current
+  // row before this runs — so passing `currentCreatedAt` directly would always
+  // match that row, always report an earlier acknowledgment, and silently stop
+  // the email from ever being sent. A sort key can carry only one condition, so
+  // the upper bound is made exclusive by stepping back a millisecond rather than
+  // by combining `>= :since` with `< :before`.
+  const before = new Date(Date.parse(currentCreatedAt) - 1).toISOString();
+
+  if (before < since) {
+    return false;
+  }
+
   try {
     const results = await Promise.all(
       tableNames.map((tableName) =>
         client.send(
           new QueryCommand({
             TableName: tableName,
-            // Bounded above by the submission being processed, so the row just
-            // written does not count as evidence of a previous acknowledgment.
             KeyConditionExpression: "#email = :email AND #created_at BETWEEN :since AND :before",
             ExpressionAttributeNames: { "#email": "email", "#created_at": "created_at" },
-            ExpressionAttributeValues: { ":email": email, ":since": since, ":before": currentCreatedAt },
+            ExpressionAttributeValues: { ":email": email, ":since": since, ":before": before },
             Limit: 1,
             ProjectionExpression: "#email",
           }),
