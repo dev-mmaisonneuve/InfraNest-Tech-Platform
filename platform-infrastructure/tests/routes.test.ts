@@ -9,9 +9,13 @@ import assert from "node:assert/strict";
  * is refused with a 429 and no second write, and that a failing notification
  * still returns success to the visitor because the lead is already stored.
  *
- * DynamoDB and SES are mocked at the module boundary. Turnstile is not mocked —
- * outside production with no secret configured `verifyTurnstileToken` returns
- * `{ ok: true, verified: false }`, which is the real code path for a local run.
+ * DynamoDB, SES and Turnstile are all mocked at the module boundary.
+ *
+ * Turnstile is mocked rather than left to its real implementation on purpose. Its
+ * permissive branch only applies when TURNSTILE_SECRET_KEY is absent, so a shell
+ * or CI job that happens to export the real secret would make every fixture here
+ * fail with a 400 — the tests would depend on ambient environment rather than on
+ * the code under test.
  */
 
 type Sent = { name: string; input: Record<string, unknown> };
@@ -30,15 +34,24 @@ const state = {
   emails: [] as string[],
   queryItems: [] as unknown[],
   emailThrows: false,
+  turnstileOk: true,
 };
 
-function reset(options: { queryItems?: unknown[]; emailThrows?: boolean } = {}) {
+function reset(options: { queryItems?: unknown[]; emailThrows?: boolean; turnstileOk?: boolean } = {}) {
   state.sent = [];
   state.emails = [];
   state.queryItems = options.queryItems ?? [];
   state.emailThrows = options.emailThrows ?? false;
+  state.turnstileOk = options.turnstileOk ?? true;
   return state;
 }
+
+mock.module("@/lib/turnstile", {
+  namedExports: {
+    verifyTurnstileToken: () =>
+      Promise.resolve({ ok: state.turnstileOk, verified: state.turnstileOk }),
+  },
+});
 
 mock.module("@/lib/dynamo", {
   namedExports: {
@@ -199,4 +212,14 @@ test("quote: a submission with no services selected is rejected", async () => {
 
   assert.equal(res.status, 400);
   assert.equal(sent.length, 0);
+});
+
+test("contact: a failed Turnstile check is rejected before any database work", async () => {
+  const { sent } = reset({ turnstileOk: false });
+
+  const { POST } = await import("@/app/api/contact/route");
+  const res = await POST(request(validContact) as never);
+
+  assert.equal(res.status, 400);
+  assert.equal(sent.length, 0, "unverified traffic must never reach DynamoDB");
 });
