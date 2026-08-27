@@ -1,5 +1,6 @@
 import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 
+import { acknowledgment, company } from "@/data/site-content";
 import { env } from "@/lib/env";
 
 let sesClient: SESv2Client | undefined;
@@ -59,10 +60,26 @@ export async function sendNotificationEmail({ subject, heading, rows }: EmailPar
   // Unlike Resend, which resolved with `{ data, error }` and so reported success
   // on an unchecked call, the AWS SDK rejects on a refused send. The throw
   // propagates to the route, which logs it without failing the visitor's request.
+  await send({ to: env.notificationEmail, subject, html });
+}
+
+type SendParams = {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+};
+
+async function send({ to, subject, html, replyTo }: SendParams) {
+  if (!env.notificationFrom) {
+    throw new Error("NOTIFICATION_FROM is not configured.");
+  }
+
   await getSesClient().send(
     new SendEmailCommand({
       FromEmailAddress: env.notificationFrom,
-      Destination: { ToAddresses: [env.notificationEmail] },
+      Destination: { ToAddresses: [to] },
+      ReplyToAddresses: replyTo ? [replyTo] : undefined,
       Content: {
         Simple: {
           Subject: { Data: subject, Charset: "UTF-8" },
@@ -71,4 +88,45 @@ export async function sendNotificationEmail({ subject, heading, rows }: EmailPar
       },
     }),
   );
+}
+
+/**
+ * Sends the visitor an immediate acknowledgment of their submission.
+ *
+ * The contact page promises a reply "within one business day"; without this the
+ * visitor sees a success banner and then silence, with no way to tell whether
+ * anything actually arrived.
+ *
+ * Two deliberate constraints, both about not becoming a spam relay. The forms
+ * accept an arbitrary email address from an anonymous visitor, so this endpoint
+ * can be pointed at a stranger:
+ *
+ *   - Nothing the visitor typed is echoed back, so the email cannot be used to
+ *     deliver a message to a third party under this domain.
+ *   - The body is fixed copy from `data/site-content.ts`, identical every time.
+ *
+ * Turnstile verification and the duplicate-submission throttle both run before
+ * this is reached, which is what limits how often it can be triggered at all.
+ */
+export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: string) {
+  const copy = acknowledgment[kind];
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a; line-height: 1.6;">
+      <h1 style="font-size: 22px; margin-bottom: 16px;">${escapeHtml(copy.heading)}</h1>
+      <p style="margin: 0 0 16px;">${escapeHtml(copy.body)}</p>
+      <p style="margin: 0 0 24px; color: #334155; font-size: 14px;">${escapeHtml(acknowledgment.footer)}</p>
+      <hr style="border: none; border-top: 1px solid #dbe3ef; margin: 24px 0;">
+      <p style="margin: 0; font-size: 13px; color: #334155;">
+        ${escapeHtml(company.name)}<br>
+        ${escapeHtml(company.serviceArea)}<br>
+        <a href="mailto:${escapeHtml(company.email)}" style="color: #0b6bcb;">${escapeHtml(company.email)}</a>
+        &nbsp;·&nbsp; ${escapeHtml(company.phone)}
+      </p>
+    </div>
+  `;
+
+  // Reply-To points at the monitored inbox rather than the no-reply sender, so a
+  // visitor who simply hits reply reaches a person.
+  await send({ to, subject: copy.subject, html, replyTo: env.notificationEmail });
 }
