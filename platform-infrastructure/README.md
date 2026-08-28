@@ -42,6 +42,7 @@ npm test          # Run tests (Node.js native test runner with tsx)
 |----------|----------|-------------|
 | `LEADS_TABLE_NAME` | Yes | DynamoDB table for contact form leads |
 | `QUOTE_REQUESTS_TABLE_NAME` | Yes | DynamoDB table for quote requests |
+| `ACKNOWLEDGMENTS_TABLE_NAME` | Yes | DynamoDB table holding one row per address that has been sent an acknowledgment |
 | `AWS_REGION` | No | Defaults to `us-east-1`. Lambda sets this automatically in Amplify, so it only matters locally |
 | `NOTIFICATION_EMAIL` | Yes | Email address for lead notifications |
 | `NOTIFICATION_FROM` | Yes | Sender address, on a domain verified in SES. SES refuses unverified senders, so there is no fallback |
@@ -63,7 +64,7 @@ The script is applied by hand, so committing a change to it does nothing on its 
 
 Both tables use `email` as the partition key and `created_at` as the sort key. That is not incidental: it is what makes the duplicate-submission check a bounded range query against a single partition rather than a table scan. The script also enables point-in-time recovery, since leads are business records.
 
-AWS credentials are never read from environment variables. Locally the default credential chain applies; in Amplify the compute role supplies them, and it should be scoped to `dynamodb:PutItem` and `dynamodb:Query` on just these two tables plus `ses:SendEmail`.
+AWS credentials are never read from environment variables. Locally the default credential chain applies; in Amplify the compute role supplies them. The role must be scoped to exactly what the app uses: `dynamodb:PutItem` and `dynamodb:Query` on the two lead tables, `dynamodb:PutItem` on the acknowledgments table, and `ses:SendEmail` on the sending identity. Omitting the acknowledgments grant fails silently — submissions succeed while every acknowledgment is skipped, because the claim helper deliberately fails closed.
 
 ## Production checklist
 

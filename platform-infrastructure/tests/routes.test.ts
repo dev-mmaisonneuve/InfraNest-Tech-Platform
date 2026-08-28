@@ -141,8 +141,18 @@ test("contact: the duplicate check runs before the write", async () => {
   const { POST } = await import("@/app/api/contact/route");
   await POST(request(validContact) as never);
 
+  // Asserted as an ordering property rather than an exact sequence: the
+  // acknowledgment rate-limit check issues further queries after the write, and
+  // this test is about the duplicate check preceding it, not the total count.
   const order = sent.map((s) => s.name);
-  assert.deepEqual(order, ["QueryCommand", "PutCommand"], "query must precede the write");
+  const firstPut = order.indexOf("PutCommand");
+  assert.ok(firstPut > 0, "expected a write");
+  assert.equal(order[0], "QueryCommand", "the duplicate check must run first");
+  assert.equal(
+    order.slice(0, firstPut).filter((n) => n !== "QueryCommand").length,
+    0,
+    "nothing but the duplicate check may precede the write",
+  );
 });
 
 test("contact: a recent duplicate is refused with 429 and never written", async () => {

@@ -273,6 +273,27 @@ export const nextSteps = [
   { step: "Define the right path", detail: "A short call to shape the engagement if there's a fit." },
 ];
 
+/**
+ * Copy for the automatic acknowledgment sent to a visitor after they submit a form.
+ *
+ * Deliberately contains no field the visitor typed. The forms accept free text
+ * from anyone, so reflecting it back would let the site be used to deliver a
+ * message to a third party under the InfraNest domain.
+ */
+export const acknowledgment = {
+  contact: {
+    subject: "We received your message — InfraNest Technologies",
+    heading: "Thanks for getting in touch.",
+    body: "Your message has reached InfraNest directly — no ticket queue, no bot. You'll hear back from a person within one business day.",
+  },
+  quote: {
+    subject: "We received your quote request — InfraNest Technologies",
+    heading: "Thanks for your request.",
+    body: "Your quote request has reached InfraNest. We'll review the details and reply within one business day with a practical starting point, not a sales pitch.",
+  },
+  footer: "If you need to add anything, reply to this email and it will reach us directly.",
+};
+
 export const faqItems = [
   {
     question: "How quickly does InfraNest respond?",

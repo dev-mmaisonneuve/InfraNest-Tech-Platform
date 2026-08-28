@@ -3,10 +3,10 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getDynamoDocumentClient } from "@/lib/dynamo";
-import { sendNotificationEmail } from "@/lib/email";
+import { sendAcknowledgmentEmail, sendNotificationEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { contactSchema } from "@/lib/forms";
-import { isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
+import { claimAcknowledgmentSlot, isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const duplicateMessage =
@@ -96,6 +96,22 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Stored contact lead but failed to send notification email", error);
+  }
+
+  // Best-effort for the same reason as the notification above: the lead is
+  // already stored, so a failure here must not surface as an error that sends
+  // the visitor into a retry.
+  try {
+    // Claimed atomically rather than inferred from the lead tables: concurrent
+    // requests for one address would otherwise each fail to see the others and
+    // all send, which is the email-bombing case this guard exists to prevent.
+    if (await claimAcknowledgmentSlot(getDynamoDocumentClient(), env.acknowledgmentsTableName, parsed.data.email)) {
+      await sendAcknowledgmentEmail("contact", parsed.data.email);
+    } else {
+      console.info("Skipping acknowledgment: address was acknowledged recently");
+    }
+  } catch (error) {
+    console.error("Stored contact lead but failed to send visitor acknowledgment", error);
   }
 
   return NextResponse.json({ ok: true, message: "Thanks. Your message is in and InfraNest will follow up shortly." });
