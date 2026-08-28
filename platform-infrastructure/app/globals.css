@@ -12,6 +12,11 @@
   --accent-strong: #a8ddff;
   --accent-green: #8eedc3;
   --danger: #ff8b93;
+  /* Accent-family blue that is dark enough to use AS TEXT on the light
+     backgrounds. --accent (#70c2ff) is a surface/glow colour at 1.9:1 against
+     white — fine for borders and decoration, a WCAG failure for anything that
+     must be read. This one measures 5.7:1 on white and 5.1:1 on --bg. */
+  --accent-ink: #166ba6;
   --border: #cdd8e8;
   --border-strong: #8bbfe9;
   --shadow: 0 24px 60px rgba(16, 24, 40, 0.12);
@@ -850,7 +855,7 @@ a {
 
 .field label {
   font-size: 0.82rem;
-  color: #1a7fc4;
+  color: var(--accent-ink);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   font-weight: 600;
@@ -1009,7 +1014,7 @@ a {
 }
 
 .contact-list a {
-  color: #1a7fc4;
+  color: var(--accent-ink);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -1342,7 +1347,7 @@ a {
 }
 
 .footer-contact-link:hover {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .footer-legal {
@@ -1384,7 +1389,7 @@ a {
   align-items: flex-start;
   gap: 0.45rem;
   font-size: 0.875rem;
-  color: #1a7fc4;
+  color: var(--accent-ink);
   padding: 0.5rem 0.75rem;
   background: rgba(102, 182, 255, 0.08);
   border-radius: 0.6rem;
@@ -1580,7 +1585,7 @@ details.faq-item summary::after {
   content: "+";
   font-size: 1.3rem;
   font-weight: 300;
-  color: var(--accent);
+  color: var(--accent-ink);
   flex-shrink: 0;
   transition: transform 200ms ease;
   line-height: 1;
