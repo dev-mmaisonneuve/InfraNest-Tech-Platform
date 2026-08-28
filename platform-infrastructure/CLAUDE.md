@@ -21,7 +21,7 @@ Client form → POST `/api/contact` or `/api/quote` → Zod validation → Cloud
 
 Turnstile runs before any database work so unverified traffic never reaches DynamoDB. The duplicate check queries the stored items rather than in-process state, because serverless instances do not share memory; it fails open, and the notification email is best-effort once the item is committed — neither can turn a captured lead into an error the visitor sees.
 
-Both tables are keyed on `email` (partition) + `created_at` (sort), which is what makes the duplicate check a bounded range query on one partition. The write carries `ConditionExpression: attribute_not_exists(email)` so two simultaneous requests cannot silently overwrite each other on a same-millisecond sort key; that failure is caught and returned as the same 429 as the duplicate check.
+The lead tables are keyed on `email` (partition) + `created_at` (sort), which is what makes the duplicate check a bounded range query on one partition. The write carries `ConditionExpression: attribute_not_exists(email)` so two simultaneous requests cannot silently overwrite each other on a same-millisecond sort key; that failure is caught and returned as the same 429 as the duplicate check.
 
 ### Page Structure
 
@@ -46,7 +46,7 @@ Each page exports its own `metadata` object for SEO (title, description, canonic
 - `data/site-content.ts` — **Single source of truth** for all marketing copy, navigation, service options, form options, and content arrays. Always edit here first when changing visible text, form options, or content blocks. Exports: `company`, `navigation`, `homeContent`, `services`, `serviceBestFor`, `aboutContent`, `contactDetails`, `quoteOptions`, `budgetRanges`, `timelineOptions`, `testimonials`, `platforms`, `nextSteps`, `faqItems`. In `navigation`, items without a `section` property highlight by `pathname` match instead of scroll-spy — "Contact" links directly to `/contact` this way.
 - `app/sitemap.ts` — Auto-generates `/sitemap.xml`; reads `NEXT_PUBLIC_SITE_URL`. Lists all 5 routes with priority weights.
 - `app/robots.ts` — Auto-generates `/robots.txt`; allows all crawlers, disallows `/api/`, references sitemap.
-- `infrastructure/create-tables.sh` — Creates the `leads` and `quote_requests` DynamoDB tables with the required key schema and point-in-time recovery. Applied manually, like the schema file it replaced — committing a change to it does nothing on its own.
+- `infrastructure/create-tables.sh` — Creates the `leads` and `quote_requests` DynamoDB tables (composite key, point-in-time recovery) plus the `acknowledgments` table (keyed on `email`, TTL on `expires_at`). Applied manually, like the schema file it replaced — committing a change to it does nothing on its own.
 
 ### Services
 
@@ -91,7 +91,7 @@ All UI is built from a shared CSS design system — no component library. Key co
 
 ### Environment Variables
 
-Copy `.env.example` to `.env.local`. Required: `LEADS_TABLE_NAME`, `QUOTE_REQUESTS_TABLE_NAME`, `NOTIFICATION_EMAIL`, `NOTIFICATION_FROM`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `NEXT_PUBLIC_SITE_URL` (e.g. `https://infranests.com` — used by sitemap, robots.txt, and OG metadata). Optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
+Copy `.env.example` to `.env.local`. Required: `LEADS_TABLE_NAME`, `QUOTE_REQUESTS_TABLE_NAME`, `ACKNOWLEDGMENTS_TABLE_NAME`, `NOTIFICATION_EMAIL`, `NOTIFICATION_FROM`, `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `NEXT_PUBLIC_SITE_URL` (e.g. `https://infranests.com` — used by sitemap, robots.txt, and OG metadata). Optional: `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
 
 `AWS_REGION` defaults to `us-east-1` and is set automatically by Lambda in Amplify, so it only matters locally. AWS credentials come from the compute role via the default provider chain — no access keys in env vars.
 

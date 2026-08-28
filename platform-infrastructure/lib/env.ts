@@ -5,6 +5,7 @@ export const env = {
   awsRegion: process.env.AWS_REGION ?? "us-east-1",
   leadsTableName: process.env.LEADS_TABLE_NAME ?? "infranest-leads",
   quoteRequestsTableName: process.env.QUOTE_REQUESTS_TABLE_NAME ?? "infranest-quote-requests",
+  acknowledgmentsTableName: process.env.ACKNOWLEDGMENTS_TABLE_NAME ?? "infranest-acknowledgments",
   notificationEmail: process.env.NOTIFICATION_EMAIL,
   notificationFrom: process.env.NOTIFICATION_FROM,
   turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,
@@ -21,6 +22,7 @@ const requiredRuntimeConfig: Array<[string, string | undefined]> = [
   // which is exactly the silent breakage this check exists to pre-empt.
   ["LEADS_TABLE_NAME", process.env.LEADS_TABLE_NAME],
   ["QUOTE_REQUESTS_TABLE_NAME", process.env.QUOTE_REQUESTS_TABLE_NAME],
+  ["ACKNOWLEDGMENTS_TABLE_NAME", process.env.ACKNOWLEDGMENTS_TABLE_NAME],
   ["NOTIFICATION_EMAIL", env.notificationEmail],
   // SES rejects any sender that is not on a verified identity, so unlike the
   // previous Resend setup there is no usable fallback to degrade to.

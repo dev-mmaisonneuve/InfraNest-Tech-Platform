@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 
 import type { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
-import { isDuplicateSubmission, wasRecentlyAcknowledged } from "@/lib/submissions";
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
+
+import { claimAcknowledgmentSlot, isDuplicateSubmission } from "@/lib/submissions";
 
 type SentCommand = { input: Record<string, unknown> };
 
@@ -85,47 +87,34 @@ test("aliases both key attributes so reserved words cannot break the query", asy
   assert.equal(sent[0].input.KeyConditionExpression, "#email = :email AND #created_at >= :since");
 });
 
-// ── wasRecentlyAcknowledged ───────────────────────────────────────────────────
-// This guard stops the forms being used to mail a stranger repeatedly. Its
-// failure mode is silent in both directions: too strict and no visitor ever
-// gets an acknowledgment, too loose and the site becomes a spam relay.
+// ── claimAcknowledgmentSlot ──────────────────────────────────────────────────
+// Guards against the forms being used to mail a stranger repeatedly. Its failure
+// modes are silent in both directions: too strict and no visitor is ever
+// acknowledged, too loose and the site becomes a spam relay.
 
-const CURRENT = "2026-08-27T12:00:00.000Z";
+test("claims the slot with a conditional write, not a read", async () => {
+  // A read-then-decide check cannot be safe here: concurrent requests each look
+  // for evidence of the others and may all find none, so all send. Only a
+  // conditional write is atomic enough to let exactly one win.
+  const { client, sent } = stubClient({});
 
-test("does not treat the submission being processed as a prior acknowledgment", async () => {
-  // The route writes the current row before this runs. DynamoDB's BETWEEN
-  // includes both bounds, so an inclusive upper bound would match that row and
-  // suppress every acknowledgment forever.
-  const { client, sent } = stubClient({ Items: [] });
-
-  const result = await wasRecentlyAcknowledged(client, ["leads"], "casey@example.com", CURRENT);
-
-  assert.equal(result, false);
-  const values = sent[0].input.ExpressionAttributeValues as Record<string, string>;
-  assert.ok(
-    values[":before"] < CURRENT,
-    `upper bound ${values[":before"]} must be strictly before ${CURRENT}`,
-  );
+  assert.equal(await claimAcknowledgmentSlot(client, "acks", "casey@example.com"), true);
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].input.TableName, "acks");
+  assert.match(String(sent[0].input.ConditionExpression), /attribute_not_exists\(email\)/);
 });
 
-test("reports a prior acknowledgment when an earlier submission exists", async () => {
-  const { client } = stubClient({ Items: [{ email: "casey@example.com" }] });
+test("refuses the slot when another request already holds it", async () => {
+  // This is what DynamoDB raises when the condition fails — the losing side of a
+  // concurrent race, which must not send.
+  const { client } = stubClient(() => {
+    throw new ConditionalCheckFailedException({ message: "conditional request failed", $metadata: {} });
+  });
 
-  assert.equal(await wasRecentlyAcknowledged(client, ["leads"], "casey@example.com", CURRENT), true);
+  assert.equal(await claimAcknowledgmentSlot(client, "acks", "casey@example.com"), false);
 });
 
-test("checks every table, so alternating between the two forms cannot bypass it", async () => {
-  const { client, sent } = stubClient({ Items: [] });
-
-  await wasRecentlyAcknowledged(client, ["leads", "quote_requests"], "casey@example.com", CURRENT);
-
-  assert.deepEqual(
-    sent.map((s) => s.input.TableName),
-    ["leads", "quote_requests"],
-  );
-});
-
-test("fails closed when the query throws", async () => {
+test("fails closed when the claim errors for any other reason", async () => {
   // Opposite of isDuplicateSubmission on purpose: skipping one acknowledgment is
   // a minor inconvenience, while sending unsolicited mail risks the sending
   // reputation that internal lead notifications also depend on.
@@ -133,27 +122,34 @@ test("fails closed when the query throws", async () => {
     throw new Error("DynamoDB unavailable");
   });
 
-  assert.equal(await wasRecentlyAcknowledged(client, ["leads"], "casey@example.com", CURRENT), true);
+  assert.equal(await claimAcknowledgmentSlot(client, "acks", "casey@example.com"), false);
 });
 
-test("looks back 24 hours from now, far longer than the submission throttle", async () => {
-  // The lower bound is relative to now rather than to the submission timestamp,
-  // so it is asserted against now — comparing it to the fixture timestamp would
-  // measure nothing.
-  const { client, sent } = stubClient({ Items: [] });
+test("allows a new claim only once the 24 hour window has passed", async () => {
+  const { client, sent } = stubClient({});
   const before = Date.now();
 
-  await wasRecentlyAcknowledged(client, ["leads"], "casey@example.com", CURRENT);
+  await claimAcknowledgmentSlot(client, "acks", "casey@example.com");
 
   const values = sent[0].input.ExpressionAttributeValues as Record<string, string>;
   const lookbackMs = before - Date.parse(values[":since"]);
   const dayMs = 24 * 60 * 60 * 1000;
 
-  assert.ok(
-    Math.abs(lookbackMs - dayMs) < 5_000,
-    `looked back ${lookbackMs}ms, expected ~${dayMs}ms`,
-  );
-  // Materially longer than the 45s duplicate throttle, which is the point: that
-  // window is short enough to simply wait out.
+  assert.ok(Math.abs(lookbackMs - dayMs) < 5_000, `window was ${lookbackMs}ms, expected ~${dayMs}ms`);
+  // Materially longer than the 45s submission throttle, which is short enough to
+  // simply wait out.
   assert.ok(lookbackMs > 45_000, "must be far longer than the submission throttle");
+});
+
+test("sets a TTL well beyond the window so cleanup cannot reopen it early", async () => {
+  // DynamoDB may take up to 48 hours to delete an expired item, so TTL is only
+  // garbage collection — but it must never remove a row the condition still
+  // needs to compare against.
+  const { client, sent } = stubClient({});
+
+  await claimAcknowledgmentSlot(client, "acks", "casey@example.com");
+
+  const item = sent[0].input.Item as Record<string, unknown>;
+  const ttlMs = Number(item.expires_at) * 1000 - Date.parse(String(item.sent_at));
+  assert.ok(ttlMs > 24 * 60 * 60 * 1000, "TTL must outlast the acknowledgment window");
 });

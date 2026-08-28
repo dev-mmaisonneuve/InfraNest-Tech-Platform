@@ -30,7 +30,7 @@ applications:
             # `reportRuntimeConfig()` in `lib/env.ts` already names anything absent
             # in the deployment logs, which is a far clearer signal than a build
             # step exiting non-zero.
-            - env | grep -e LEADS_TABLE_NAME -e QUOTE_REQUESTS_TABLE_NAME -e NOTIFICATION_ -e TURNSTILE_SECRET_KEY > .env.production || true
+            - env | grep -e LEADS_TABLE_NAME -e QUOTE_REQUESTS_TABLE_NAME -e ACKNOWLEDGMENTS_TABLE_NAME -e NOTIFICATION_ -e TURNSTILE_SECRET_KEY > .env.production || true
             - env | grep -e NEXT_PUBLIC_ >> .env.production || true
             - npm run build
       artifacts:

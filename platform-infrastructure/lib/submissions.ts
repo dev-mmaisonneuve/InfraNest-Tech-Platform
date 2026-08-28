@@ -1,4 +1,5 @@
-import { QueryCommand, type DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
+import { PutCommand, QueryCommand, type DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 import { formatZodErrors } from "@/lib/forms";
 import type { FormApiResponse } from "@/lib/types";
@@ -68,63 +69,63 @@ export async function isDuplicateSubmission(
 const acknowledgmentWindowMs = 24 * 60 * 60 * 1000;
 
 /**
- * Whether this address has already been sent an acknowledgment recently.
+ * Claims the right to send this address an acknowledgment, returning false if
+ * another request already holds it.
  *
- * The submission throttle is not sufficient protection on its own: it is scoped
- * to 45 seconds and to a single table, so alternating between the contact and
- * quote forms bypasses it entirely, and a script can simply wait it out. Since
- * the acknowledgment goes to whatever address the visitor typed, that would let
- * the site be used to mail a stranger repeatedly.
+ * This is a conditional write rather than a read-then-decide, because reading
+ * the lead tables cannot answer the question safely. Concurrent submissions for
+ * one address each write their own row and then look for an earlier one; with
+ * requests arriving out of order, and DynamoDB queries being eventually
+ * consistent by default, each can conclude it is the first and send. Pre-solved
+ * Turnstile tokens fired in parallel turn that into an email-bombing vector,
+ * which is exactly what this guard exists to prevent.
  *
- * Both tables are checked, over a much longer window, so an address receives at
- * most one acknowledgment per day no matter which form is used or how often.
+ * A single conditional PutItem is atomic within a partition, so exactly one
+ * concurrent request can win the slot no matter how many race for it.
  *
- * Note this fails CLOSED, unlike `isDuplicateSubmission` which fails open. The
- * costs are asymmetric in opposite directions: there, refusing a real lead is
- * worse than storing a duplicate; here, skipping one acknowledgment is a minor
- * inconvenience while sending unsolicited mail risks the SES reputation that
- * internal lead notifications also depend on.
+ * `expires_at` drives TTL, which is garbage collection only — DynamoDB may take
+ * up to 48 hours to delete an expired item, so the window is enforced by the
+ * `sent_at` comparison in the condition rather than by expiry.
+ *
+ * Fails CLOSED, deliberately unlike `isDuplicateSubmission` which fails open.
+ * The costs are asymmetric in opposite directions: refusing a real lead is worse
+ * than storing a duplicate, but skipping one acknowledgment is a minor
+ * inconvenience next to sending unsolicited mail and damaging the sending
+ * reputation that internal lead notifications also depend on.
  */
-export async function wasRecentlyAcknowledged(
+export async function claimAcknowledgmentSlot(
   client: DynamoDBDocumentClient,
-  tableNames: string[],
+  tableName: string,
   email: string,
-  currentCreatedAt: string,
 ): Promise<boolean> {
-  const since = new Date(Date.now() - acknowledgmentWindowMs).toISOString();
-
-  // DynamoDB's BETWEEN includes both bounds, and the route writes the current
-  // row before this runs — so passing `currentCreatedAt` directly would always
-  // match that row, always report an earlier acknowledgment, and silently stop
-  // the email from ever being sent. A sort key can carry only one condition, so
-  // the upper bound is made exclusive by stepping back a millisecond rather than
-  // by combining `>= :since` with `< :before`.
-  const before = new Date(Date.parse(currentCreatedAt) - 1).toISOString();
-
-  if (before < since) {
-    return false;
-  }
+  const now = Date.now();
+  const since = new Date(now - acknowledgmentWindowMs).toISOString();
 
   try {
-    const results = await Promise.all(
-      tableNames.map((tableName) =>
-        client.send(
-          new QueryCommand({
-            TableName: tableName,
-            KeyConditionExpression: "#email = :email AND #created_at BETWEEN :since AND :before",
-            ExpressionAttributeNames: { "#email": "email", "#created_at": "created_at" },
-            ExpressionAttributeValues: { ":email": email, ":since": since, ":before": before },
-            Limit: 1,
-            ProjectionExpression: "#email",
-          }),
-        ),
-      ),
+    await client.send(
+      new PutCommand({
+        TableName: tableName,
+        Item: {
+          email,
+          sent_at: new Date(now).toISOString(),
+          // Two windows of slack so TTL never removes a row the condition still
+          // needs to see.
+          expires_at: Math.floor((now + acknowledgmentWindowMs * 2) / 1000),
+        },
+        ConditionExpression: "attribute_not_exists(email) OR #sent_at < :since",
+        ExpressionAttributeNames: { "#sent_at": "sent_at" },
+        ExpressionAttributeValues: { ":since": since },
+      }),
     );
 
-    return results.some((result) => (result.Items?.length ?? 0) > 0);
-  } catch (error) {
-    console.error("Acknowledgment rate-limit check failed; skipping the acknowledgment", error);
     return true;
+  } catch (error) {
+    if (error instanceof ConditionalCheckFailedException) {
+      return false;
+    }
+
+    console.error("Acknowledgment slot claim failed; skipping the acknowledgment", error);
+    return false;
   }
 }
 
