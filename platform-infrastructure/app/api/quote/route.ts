@@ -10,7 +10,7 @@ import { claimAcknowledgmentSlot, isDuplicateSubmission, validationErrorResponse
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const duplicateMessage =
-  "A recent quote request from this email is already being processed. Please wait a moment.";
+  "We've already received a recent request from this address. Please wait a moment before sending another.";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { ok: false, message: "The form submission could not be read. Please try again." },
+      { ok: false, message: "Something went wrong sending your message. Please try again." },
       { status: 400 },
     );
   }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
   if (!turnstile.ok) {
     return NextResponse.json(
-      { ok: false, message: "Spam protection could not be verified. Please refresh and try again." },
+      { ok: false, message: "We couldn't verify your submission. Please refresh the page and try again." },
       { status: 400 },
     );
   }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     console.error("Failed to store quote request", error);
     return NextResponse.json(
-      { ok: false, message: "The quote request could not be sent right now. Please try again in a moment." },
+      { ok: false, message: "Something went wrong sending your request. Please try again in a moment." },
       { status: 500 },
     );
   }
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     // requests for one address would otherwise each fail to see the others and
     // all send, which is the email-bombing case this guard exists to prevent.
     if (await claimAcknowledgmentSlot(getDynamoDocumentClient(), env.acknowledgmentsTableName, parsed.data.email)) {
-      await sendAcknowledgmentEmail("quote", parsed.data.email);
+      await sendAcknowledgmentEmail("quote", parsed.data.email, parsed.data.name);
     } else {
       console.info("Skipping acknowledgment: address was acknowledged recently");
     }
@@ -122,6 +122,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    message: "Thanks. Your quote request has been submitted and InfraNest will reach out with a practical next step.",
+    message: "Thanks — your request has been sent. We'll review it and be in touch soon.",
   });
 }

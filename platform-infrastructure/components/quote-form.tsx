@@ -120,7 +120,7 @@ export function QuoteForm() {
     } catch {
       setStatus({
         ok: false,
-        message: "The quote request could not be sent right now. Please try again in a moment.",
+        message: "Something went wrong sending your request. Please try again in a moment.",
       });
     } finally {
       setIsSubmitting(false);
@@ -255,8 +255,8 @@ export function QuoteForm() {
 
         <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
         <p className="form-note">
-          Requests are protected with Cloudflare Turnstile and go straight to the InfraNest team. See how we handle
-          your information in our <Link href="/privacy">privacy policy</Link>.
+          This form is protected against spam and abuse. See how we handle your
+          information in our <Link href="/privacy">privacy policy</Link>.
         </p>
 
         {status ? (
@@ -270,7 +270,7 @@ export function QuoteForm() {
         </button>
 
         <p className="form-note" style={{ textAlign: "center", fontSize: "0.85rem" }}>
-          No commitment required. InfraNest will reply with a practical starting point, not a sales pitch.
+          No commitment required.
         </p>
       </div>
     </form>

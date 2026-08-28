@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { HeroSpotlightWrapper } from "@/components/hero-spotlight-wrapper";
 import { SectionHeading } from "@/components/section-heading";
-import { aboutContent, homeContent, services, testimonials } from "@/data/site-content";
+import { aboutContent, homeContent, services, expectations } from "@/data/site-content";
 
 // The 4 services featured on the home page
 const featuredServices = [services[0], services[1], services[3], services[5]];
@@ -160,7 +160,7 @@ export default function HomePage() {
       <section className="section section-tinted" id="services">
         <div className="container">
           <SectionHeading
-            eyebrow="Service lanes"
+            eyebrow="Services"
             title="Technology support built around how your business actually works."
             description="InfraNest is designed for companies that need more than ad hoc help, but are not ready for a large in-house IT team."
             reveal
@@ -222,27 +222,19 @@ export default function HomePage() {
       </section>
 
       {/* ─── Testimonials ─── */}
-      <section className="section" id="testimonials">
+      <section className="section" id="what-to-expect">
         <div className="container">
           <SectionHeading
-            eyebrow="From the field"
-            title="What clients say after the first engagement."
-            description="These reflect what working with InfraNest is typically like, from early conversations to steady ongoing support."
+            eyebrow="What to expect"
+            title="What working with InfraNest looks like."
+            description="From the first conversation through ongoing support, here is what engagements consistently involve."
             reveal
           />
           <div className="trust-grid">
-            {testimonials.map((t, i) => (
-              <article className="testimonial-card" key={t.name} data-reveal data-delay={String(i + 1)}>
-                <p className="testimonial-quote">{t.quote}</p>
-                <div className="testimonial-attribution">
-                  <div className="testimonial-avatar" aria-hidden="true">
-                    {t.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="testimonial-name">{t.name}</div>
-                    <div className="testimonial-company">{t.company}</div>
-                  </div>
-                </div>
+            {expectations.map((item, i) => (
+              <article className="testimonial-card" key={item.title} data-reveal data-delay={String(i + 1)}>
+                <h3 className="expectation-title">{item.title}</h3>
+                <p className="expectation-body">{item.body}</p>
               </article>
             ))}
           </div>
@@ -263,7 +255,7 @@ export default function HomePage() {
                 still shaping the right engagement.
               </p>
               <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-                No commitment required. Most responses within one business day.
+                No commitment required. Most responses within 24 hours.
               </p>
             </div>
 

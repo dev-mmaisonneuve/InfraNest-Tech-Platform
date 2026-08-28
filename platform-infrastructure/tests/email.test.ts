@@ -93,3 +93,72 @@ test("the notification itself still fails loudly without a recipient", async () 
   );
   assert.equal(sesSends.length, 0);
 });
+
+// ── toSafeFirstName ──────────────────────────────────────────────────────────
+// The only place visitor-supplied text is echoed into the acknowledgment, which
+// goes to an address the same visitor chose. Escaping is not sufficient on its
+// own: a "name" that is syntactically harmless can still smuggle a URL, a phone
+// number, or a sentence of instructions into a stranger's inbox under this
+// domain. These pin the allowlist, not just the escaping.
+
+test("keeps an ordinary first name and drops the rest of the input", async () => {
+  const { toSafeFirstName } = await import("@/lib/email");
+
+  assert.equal(toSafeFirstName("Casey Founder"), "Casey");
+  assert.equal(toSafeFirstName("  Mike   M.  "), "Mike");
+});
+
+test("preserves punctuation that genuinely occurs inside names", async () => {
+  const { toSafeFirstName } = await import("@/lib/email");
+
+  assert.equal(toSafeFirstName("Anne-Marie Dubois"), "Anne-Marie");
+  assert.equal(toSafeFirstName("O'Brien"), "O'Brien");
+  assert.equal(toSafeFirstName("Zoë Müller"), "Zoë");
+});
+
+test("strips markup, links and digits rather than relying on escaping", async () => {
+  const { toSafeFirstName } = await import("@/lib/email");
+
+  // No whitespace, so this is one token; every angle bracket, paren and digit
+  // is stripped, leaving inert letters rather than anything resembling markup.
+  assert.equal(toSafeFirstName("<script>alert(1)</script>"), "scriptalertscript");
+  assert.equal(toSafeFirstName("Call 6175551234 now"), "Call");
+  assert.equal(toSafeFirstName("http://evil.example"), "httpevilexample");
+});
+
+test("refuses a marketing sentence disguised as a name", async () => {
+  const { toSafeFirstName } = await import("@/lib/email");
+
+  // Only the first token survives, so a sentence cannot be delivered as a
+  // greeting no matter how it is punctuated.
+  assert.equal(toSafeFirstName("URGENT: your account is suspended, visit example.com"), "URGENT");
+});
+
+test("caps length so a long token cannot dominate the email", async () => {
+  const { toSafeFirstName } = await import("@/lib/email");
+
+  assert.equal(toSafeFirstName("A".repeat(200)).length, 40);
+});
+
+test("yields nothing usable when the token is punctuation or too short", async () => {
+  const { toSafeFirstName } = await import("@/lib/email");
+
+  assert.equal(toSafeFirstName("!!!"), "");
+  assert.equal(toSafeFirstName("123456"), "");
+  assert.equal(toSafeFirstName(""), "");
+  assert.equal(toSafeFirstName("X"), "", "a single stray letter reads as noise, not a name");
+});
+
+test("greets by name when safe and impersonally when not", async () => {
+  sesSends.length = 0;
+  fakeEnv.notificationEmail = "info@infranests.com";
+  const { sendAcknowledgmentEmail } = await import("@/lib/email");
+
+  await sendAcknowledgmentEmail("contact", "casey@example.com", "Casey Founder");
+  const named = JSON.stringify(sesSends[0]);
+  assert.match(named, /Hi Casey,/);
+
+  sesSends.length = 0;
+  await sendAcknowledgmentEmail("contact", "casey@example.com", "!!!");
+  assert.match(JSON.stringify(sesSends[0]), /Hi there,/);
+});

@@ -91,6 +91,33 @@ async function send({ to, subject, html, replyTo }: SendParams) {
 }
 
 /**
+ * Reduces a submitted name to a first name that is safe to render in an email.
+ *
+ * The name field accepts 120 characters of arbitrary text from an anonymous
+ * visitor, and this is the only place any of it is echoed back — to an address
+ * that same visitor chose. Escaping alone is not enough: an unescaped-looking
+ * but syntactically valid "name" could still carry a phone number, a URL, or a
+ * sentence of instructions into a stranger's inbox under the InfraNest domain.
+ *
+ * So this is an allowlist, not a filter. Only the first whitespace-separated
+ * token is used, only letters and the marks that legitimately appear inside
+ * names survive, and the result is capped. Anything else yields an empty string
+ * and the caller falls back to an impersonal greeting.
+ */
+export function toSafeFirstName(name: string): string {
+  const firstToken = name.trim().split(/\s+/)[0] ?? "";
+
+  const letters = firstToken
+    // Unicode letters and combining marks, plus the hyphen and apostrophe that
+    // appear in names like Anne-Marie or O'Brien. Everything else is dropped.
+    .replace(/[^\p{L}\p{M}'\u2019-]/gu, "")
+    .slice(0, 40);
+
+  // A token that was mostly punctuation leaves a stub that reads as noise.
+  return letters.length >= 2 ? letters : "";
+}
+
+/**
  * Sends the visitor an immediate acknowledgment of their submission.
  *
  * The contact page promises a reply "within one business day"; without this the
@@ -108,7 +135,7 @@ async function send({ to, subject, html, replyTo }: SendParams) {
  * Turnstile verification and the duplicate-submission throttle both run before
  * this is reached, which is what limits how often it can be triggered at all.
  */
-export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: string) {
+export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: string, name?: string) {
   // The footer promises that replying reaches InfraNest directly, which is only
   // true when Reply-To points at the monitored inbox. Without NOTIFICATION_EMAIL
   // the send would still succeed — SES only requires the sender — but replies
@@ -120,12 +147,16 @@ export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: str
   }
 
   const copy = acknowledgment[kind];
+  const firstName = toSafeFirstName(name ?? "");
+  const greeting = firstName ? `Hi ${escapeHtml(firstName)},` : "Hi there,";
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a; line-height: 1.6;">
       <h1 style="font-size: 22px; margin-bottom: 16px;">${escapeHtml(copy.heading)}</h1>
+      <p style="margin: 0 0 16px;">${greeting}</p>
       <p style="margin: 0 0 16px;">${escapeHtml(copy.body)}</p>
-      <p style="margin: 0 0 24px; color: #334155; font-size: 14px;">${escapeHtml(acknowledgment.footer)}</p>
+      <p style="margin: 0 0 16px; color: #334155;">${escapeHtml(acknowledgment.footer)}</p>
+      <p style="margin: 0 0 24px;">${escapeHtml(acknowledgment.signOff)}<br>${escapeHtml(company.name)}</p>
       <hr style="border: none; border-top: 1px solid #dbe3ef; margin: 24px 0;">
       <p style="margin: 0; font-size: 13px; color: #334155;">
         ${escapeHtml(company.name)}<br>
