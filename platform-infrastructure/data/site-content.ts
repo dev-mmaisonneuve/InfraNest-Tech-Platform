@@ -4,6 +4,7 @@ export const company = {
   email: process.env.NEXT_PUBLIC_FORMSPREE_FALLBACK_EMAIL ?? "info@infranests.com",
   phone: "(617) 302-7580",
   serviceArea: "Greater Boston, MA and remote support across the U.S.",
+  linkedIn: "https://www.linkedin.com/company/infranest-tech/",
   schedulingNote: "Most inquiries receive a response within 24 hours.",
 };
 
