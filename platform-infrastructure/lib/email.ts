@@ -91,30 +91,44 @@ async function send({ to, subject, html, replyTo }: SendParams) {
 }
 
 /**
- * Reduces a submitted name to a first name that is safe to render in an email.
+ * Returns a first name safe to render in an email, or an empty string.
  *
  * The name field accepts 120 characters of arbitrary text from an anonymous
  * visitor, and this is the only place any of it is echoed back — to an address
- * that same visitor chose. Escaping alone is not enough: an unescaped-looking
- * but syntactically valid "name" could still carry a phone number, a URL, or a
- * sentence of instructions into a stranger's inbox under the InfraNest domain.
+ * that same visitor chose. Escaping alone is not enough: an escaped string can
+ * still carry a phone number, a URL, or a sentence of instructions into a
+ * stranger's inbox under the InfraNest domain.
  *
- * So this is an allowlist, not a filter. Only the first whitespace-separated
- * token is used, only letters and the marks that legitimately appear inside
- * names survive, and the result is capped. Anything else yields an empty string
- * and the caller falls back to an impersonal greeting.
+ * This validates rather than sanitises, which matters. Stripping disallowed
+ * characters would turn "http://evil.example" into "httpevilexample" — still
+ * attacker-chosen text, now laundered into something that passes. Input that is
+ * not name-shaped is rejected outright so the caller falls back to a neutral
+ * greeting.
+ *
+ * Surrounding punctuation is trimmed first, so "(Casey)" and "Casey," are
+ * accepted; punctuation *inside* the token still rejects it.
  */
 export function toSafeFirstName(name: string): string {
   const firstToken = name.trim().split(/\s+/)[0] ?? "";
 
-  const letters = firstToken
-    // Unicode letters and combining marks, plus the hyphen and apostrophe that
-    // appear in names like Anne-Marie or O'Brien. Everything else is dropped.
-    .replace(/[^\p{L}\p{M}'\u2019-]/gu, "")
-    .slice(0, 40);
+  // Leading and trailing non-letters are cosmetic; interior ones are the signal
+  // that this is not a name.
+  const trimmed = firstToken.replace(/^[^\p{L}]+/u, "").replace(/[^\p{L}]+$/u, "");
 
-  // A token that was mostly punctuation leaves a stub that reads as noise.
-  return letters.length >= 2 ? letters : "";
+  // A real first name is letters, plus the hyphen or apostrophe found in names
+  // like Anne-Marie and O'Brien. Anything else and we do not use it at all.
+  if (!/^\p{L}[\p{L}\p{M}'\u2019-]*$/u.test(trimmed)) {
+    return "";
+  }
+
+  // Rejected rather than truncated, for the same reason: a 200-character token
+  // is not a name, and shortening it would again manufacture an acceptable one.
+  if (trimmed.length > 40) {
+    return "";
+  }
+
+  const letterCount = (trimmed.match(/\p{L}/gu) ?? []).length;
+  return letterCount >= 2 ? trimmed : "";
 }
 
 /**
