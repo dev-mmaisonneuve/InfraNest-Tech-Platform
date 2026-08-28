@@ -64,7 +64,7 @@ The script is applied by hand, so committing a change to it does nothing on its 
 
 Both tables use `email` as the partition key and `created_at` as the sort key. That is not incidental: it is what makes the duplicate-submission check a bounded range query against a single partition rather than a table scan. The script also enables point-in-time recovery, since leads are business records.
 
-AWS credentials are never read from environment variables. Locally the default credential chain applies; in Amplify the compute role supplies them, and it should be scoped to `dynamodb:PutItem` and `dynamodb:Query` on just these two tables plus `ses:SendEmail`.
+AWS credentials are never read from environment variables. Locally the default credential chain applies; in Amplify the compute role supplies them. The role must be scoped to exactly what the app uses: `dynamodb:PutItem` and `dynamodb:Query` on the two lead tables, `dynamodb:PutItem` on the acknowledgments table, and `ses:SendEmail` on the sending identity. Omitting the acknowledgments grant fails silently — submissions succeed while every acknowledgment is skipped, because the claim helper deliberately fails closed.
 
 ## Production checklist
 

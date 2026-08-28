@@ -109,6 +109,16 @@ async function send({ to, subject, html, replyTo }: SendParams) {
  * this is reached, which is what limits how often it can be triggered at all.
  */
 export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: string) {
+  // The footer promises that replying reaches InfraNest directly, which is only
+  // true when Reply-To points at the monitored inbox. Without NOTIFICATION_EMAIL
+  // the send would still succeed — SES only requires the sender — but replies
+  // would go to the unmonitored sending address, making the email a lie. Refuse
+  // instead: the route treats this as best-effort, so the visitor's submission
+  // is unaffected and the misconfiguration is logged rather than papered over.
+  if (!env.notificationEmail) {
+    throw new Error("Notification email is not configured; refusing to send an acknowledgment that promises replies reach us.");
+  }
+
   const copy = acknowledgment[kind];
 
   const html = `
