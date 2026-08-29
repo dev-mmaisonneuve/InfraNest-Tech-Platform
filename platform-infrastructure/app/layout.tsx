@@ -37,7 +37,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "InfraNest Technologies | Premium IT Operations and Cloud Support",
+    default: "InfraNest Technologies | Managed IT Operations and Cloud Support",
     template: "%s | InfraNest Technologies",
   },
   description:

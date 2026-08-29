@@ -58,7 +58,7 @@ export default function AboutPage() {
               <p className="meta-copy">{aboutContent.story}</p>
               <ul className="meta-list">
                 <li>{company.serviceArea}</li>
-                <li>Premium-but-approachable support style</li>
+                <li>Professional, approachable support</li>
                 <li>Designed for long-term manageability, not one-time fixes</li>
               </ul>
             </div>
@@ -73,7 +73,7 @@ export default function AboutPage() {
               </p>
             </article>
             <article className="card" data-reveal data-delay="2">
-              <h3>How engagements feel</h3>
+              <h3>What it's like to work with us</h3>
               <p>
                 Clear communication, steady follow-through, and practical recommendations. The goal is a calm, credible
                 experience for business owners and lean teams.

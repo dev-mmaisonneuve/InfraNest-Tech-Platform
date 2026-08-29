@@ -20,7 +20,7 @@ export default function QuotePage() {
       <div className="container stack">
         <SectionHeading
           eyebrow="Request a quote"
-          title="Shape the right engagement."
+          title="Tell us what you need."
           description="For businesses that need hands-on help with IT operations, cloud systems, SaaS administration, or managed support."
           h1
           reveal
@@ -31,16 +31,16 @@ export default function QuotePage() {
             <div className="stack" style={{ gap: "1.1rem" }}>
               <span className="eyebrow">How this works</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
-                A thoughtful starting point.
+                A straightforward starting point.
               </h2>
               <p className="meta-copy">
-                Share a little context about your environment and current needs. InfraNest responds with the most
-                sensible first step, not a bloated intake process.
+                Share a little context about your environment and current needs, and we'll come back with a sensible
+                first step.
               </p>
               <ul className="meta-list">
                 <li>Ideal for scoped support requests and ongoing service conversations</li>
                 <li>Use it for cloud, SaaS, IT operations, or broader technology cleanup</li>
-                <li>Most new quote requests receive a response within one business day</li>
+                <li>Most new quote requests receive a response within 24 hours</li>
               </ul>
             </div>
           </div>

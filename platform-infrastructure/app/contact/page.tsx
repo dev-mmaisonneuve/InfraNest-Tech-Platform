@@ -44,7 +44,7 @@ export default function ContactPage() {
         <SectionHeading
           eyebrow="Contact"
           title="Get in touch. We'll take it from there."
-          description="Use the contact form for general questions, or jump to the quote page if you already know you need a scoped engagement."
+          description="Use the contact form for general questions, or request a quote if you already know what you need."
           h1
           reveal
         />
@@ -54,7 +54,7 @@ export default function ContactPage() {
             <div className="stack">
               <span className="eyebrow">Direct contact</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
-                Clear response times and a low-friction path in.
+                We respond quickly, and getting started is simple.
               </h2>
 
               <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 0.85rem", borderRadius: "999px", background: "rgba(142, 237, 195, 0.18)", border: "1px solid rgba(142, 237, 195, 0.45)", fontSize: "0.82rem", fontWeight: 600, color: "#0a6b4f" }}>

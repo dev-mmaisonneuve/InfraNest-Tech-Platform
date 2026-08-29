@@ -4,14 +4,18 @@ export const company = {
   email: process.env.NEXT_PUBLIC_FORMSPREE_FALLBACK_EMAIL ?? "info@infranests.com",
   phone: "(617) 302-7580",
   serviceArea: "Greater Boston, MA and remote support across the U.S.",
-  linkedIn: "https://www.linkedin.com",
-  schedulingNote: "Most inquiries receive a response within one business day.",
+  linkedIn: "https://www.linkedin.com/company/infranest-tech/",
+  schedulingNote: "Most inquiries receive a response within 24 hours.",
 };
 
 export const navigation = [
   { href: "/#hero", label: "Home", section: "hero" },
-  { href: "/#services", label: "Services", section: "services" },
-  { href: "/#about-preview", label: "About", section: "about-preview" },
+  // Services and About point at the full pages rather than homepage anchors:
+  // both pages carry substantially more detail, and having the nav land on a
+  // scroll position meant the same label went to two different places
+  // depending on which page you clicked it from.
+  { href: "/services", label: "Services" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -23,7 +27,7 @@ export const homeContent = {
   primaryCta: { href: "/quote", label: "Request a quote" },
   secondaryCta: { href: "/services", label: "View services" },
   stats: [
-    { value: "1 day", label: "Typical first response", icon: "clock" },
+    { value: "24 hrs", label: "Typical response time", icon: "clock" },
     { value: "End-to-end IT", label: "From daily operations to cloud infrastructure", icon: "grid" },
     { value: "Boston + US remote", label: "Local anchor, nationwide reach", icon: "globe" },
   ],
@@ -182,38 +186,14 @@ export const contactDetails = [
 ];
 
 export const quoteOptions = [
-  {
-    value: "IT operations & technology management",
-    badge: "IT",
-  },
-  {
-    value: "Cloud & platform engineering",
-    badge: "CL",
-  },
-  {
-    value: "SaaS & workspace administration",
-    badge: "SA",
-  },
-  {
-    value: "Managed IT services & support",
-    badge: "MS",
-  },
-  {
-    value: "Workplace technology & collaboration",
-    badge: "WC",
-  },
-  {
-    value: "Web presence & managed hosting",
-    badge: "WH",
-  },
-  {
-    value: "Security & access foundations",
-    badge: "SF",
-  },
-  {
-    value: "Flexible engagement models",
-    badge: "FE",
-  },
+  { value: "IT operations & technology management" },
+  { value: "Cloud & platform engineering" },
+  { value: "SaaS & workspace administration" },
+  { value: "Managed IT services & support" },
+  { value: "Workplace technology & collaboration" },
+  { value: "Web presence & managed hosting" },
+  { value: "Security & access foundations" },
+  { value: "Flexible engagement models" },
 ];
 
 export const budgetRanges = [
@@ -243,21 +223,26 @@ export const serviceBestFor = [
   "Businesses that prefer project-based, advisory, or ongoing support structured around their workflow",
 ];
 
-export const testimonials = [
+/**
+ * What a client can expect, stated in InfraNest's own voice.
+ *
+ * Deliberately not testimonials. Anonymous quotes attributed to unnamed people
+ * read as invented, and the previous section undercut itself by explaining that
+ * the quotes were only representative. These make the same points as claims we
+ * stand behind rather than as words put in a customer's mouth.
+ */
+export const expectations = [
   {
-    quote: "InfraNest cleaned up our Google Workspace and finally gave us consistent user offboarding. Feels like we have a real IT team for the first time.",
-    name: "Operations Manager",
-    company: "35-person consulting firm, Boston",
+    title: "A clear picture in the first week",
+    body: "We start by mapping what you actually run: accounts, access, devices, and the issues that keep resurfacing. You get a straight assessment, not a sales document.",
   },
   {
-    quote: "We moved from reactive panic to a stable support model in about three weeks. Fast onboarding, clear communication throughout.",
-    name: "Founder",
-    company: "Digital agency, remote",
+    title: "One point of contact",
+    body: "Device setup, SaaS administration, cloud questions, and vendor coordination all go to the same place, so nothing falls between providers.",
   },
   {
-    quote: "Having one reliable point of contact for everything from device setup to cloud billing reviews has saved us more time than we expected.",
-    name: "VP of Operations",
-    company: "SaaS startup, Greater Boston",
+    title: "Fewer recurring problems",
+    body: "The work targets causes rather than symptoms: consistent onboarding and offboarding, tidy access, and documentation your team can follow without us.",
   },
 ];
 
@@ -268,9 +253,9 @@ export const platforms = [
 ];
 
 export const nextSteps = [
-  { step: "Submit your message", detail: "Goes directly to InfraNest — no ticket queue, no bot." },
-  { step: "Receive a direct reply", detail: "You'll hear back within one business day." },
-  { step: "Define the right path", detail: "A short call to shape the engagement if there's a fit." },
+  { step: "Send your message", detail: "Tell us what you need help with and include any relevant details." },
+  { step: "We review and reply", detail: "You'll hear back within 24 hours." },
+  { step: "Discuss next steps", detail: "If a call makes sense, we'll schedule a short one to understand your needs and recommend a path forward." },
 ];
 
 /**
@@ -282,22 +267,23 @@ export const nextSteps = [
  */
 export const acknowledgment = {
   contact: {
-    subject: "We received your message — InfraNest Technologies",
-    heading: "Thanks for getting in touch.",
-    body: "Your message has reached InfraNest directly — no ticket queue, no bot. You'll hear back from a person within one business day.",
+    subject: "Thanks for contacting InfraNest Technologies",
+    heading: "Thanks for reaching out.",
+    body: "We've received your message and will follow up within 24 hours.",
   },
   quote: {
-    subject: "We received your quote request — InfraNest Technologies",
-    heading: "Thanks for your request.",
-    body: "Your quote request has reached InfraNest. We'll review the details and reply within one business day with a practical starting point, not a sales pitch.",
+    subject: "Thanks for your quote request — InfraNest Technologies",
+    heading: "Thanks for reaching out.",
+    body: "We've received your quote request. We'll review the details and follow up within 24 hours with a suggested starting point.",
   },
-  footer: "If you need to add anything, reply to this email and it will reach us directly.",
+  footer: "If you'd like to add anything in the meantime, simply reply to this email.",
+  signOff: "Best,",
 };
 
 export const faqItems = [
   {
     question: "How quickly does InfraNest respond?",
-    answer: "Most new inquiries receive a reply within one business day. Ongoing clients have a direct line for faster turnaround on urgent issues.",
+    answer: "Most new inquiries receive a reply within 24 hours. Ongoing clients have a direct line for faster turnaround on urgent issues.",
   },
   {
     question: "Do you require long-term contracts?",

@@ -82,7 +82,7 @@ export default function OpenGraphImage() {
                       "linear-gradient(135deg, #65b6ff 0%, #8fddb9 100%)",
                   }}
                 />
-                Premium IT operations and cloud support
+                Managed IT operations and cloud support
               </div>
               <img
                 src={logoDataUri}

@@ -1420,6 +1420,23 @@ a {
   border-color: var(--border-strong);
 }
 
+/* Expectation cards reuse .testimonial-card's surface treatment; these replace
+   the quote/attribution typography that section no longer uses. */
+.expectation-title {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: 1.08rem;
+  line-height: 1.35;
+  margin-bottom: 0.6rem;
+  color: var(--text);
+}
+
+.expectation-body {
+  color: var(--muted);
+  font-size: 0.97rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
 .testimonial-quote {
   font-family: var(--font-serif), Georgia, "Times New Roman", serif;
   font-style: italic;

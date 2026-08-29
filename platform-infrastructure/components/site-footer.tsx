@@ -55,6 +55,14 @@ export function SiteFooter() {
               <div className="footer-contact-stack">
                 <a className="footer-contact-link" href={`mailto:${company.email}`}>{company.email}</a>
                 <a className="footer-contact-link" href={`tel:${company.phone.replace(/[^\d]/g, "")}`}>{company.phone}</a>
+                <a
+                  className="footer-contact-link"
+                  href={company.linkedIn}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
               </div>
               <span className="footer-legal">&copy; <CurrentYear fallback={new Date().getFullYear()} /> InfraNest Technologies.<br />All rights reserved.</span>
             </div>

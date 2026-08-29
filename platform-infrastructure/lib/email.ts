@@ -91,6 +91,47 @@ async function send({ to, subject, html, replyTo }: SendParams) {
 }
 
 /**
+ * Returns a first name safe to render in an email, or an empty string.
+ *
+ * The name field accepts 120 characters of arbitrary text from an anonymous
+ * visitor, and this is the only place any of it is echoed back — to an address
+ * that same visitor chose. Escaping alone is not enough: an escaped string can
+ * still carry a phone number, a URL, or a sentence of instructions into a
+ * stranger's inbox under the InfraNest domain.
+ *
+ * This validates rather than sanitises, which matters. Stripping disallowed
+ * characters would turn "http://evil.example" into "httpevilexample" — still
+ * attacker-chosen text, now laundered into something that passes. Input that is
+ * not name-shaped is rejected outright so the caller falls back to a neutral
+ * greeting.
+ *
+ * Surrounding punctuation is trimmed first, so "(Casey)" and "Casey," are
+ * accepted; punctuation *inside* the token still rejects it.
+ */
+export function toSafeFirstName(name: string): string {
+  const firstToken = name.trim().split(/\s+/)[0] ?? "";
+
+  // Leading and trailing non-letters are cosmetic; interior ones are the signal
+  // that this is not a name.
+  const trimmed = firstToken.replace(/^[^\p{L}]+/u, "").replace(/[^\p{L}]+$/u, "");
+
+  // A real first name is letters, plus the hyphen or apostrophe found in names
+  // like Anne-Marie and O'Brien. Anything else and we do not use it at all.
+  if (!/^\p{L}[\p{L}\p{M}'\u2019-]*$/u.test(trimmed)) {
+    return "";
+  }
+
+  // Rejected rather than truncated, for the same reason: a 200-character token
+  // is not a name, and shortening it would again manufacture an acceptable one.
+  if (trimmed.length > 40) {
+    return "";
+  }
+
+  const letterCount = (trimmed.match(/\p{L}/gu) ?? []).length;
+  return letterCount >= 2 ? trimmed : "";
+}
+
+/**
  * Sends the visitor an immediate acknowledgment of their submission.
  *
  * The contact page promises a reply "within one business day"; without this the
@@ -108,7 +149,7 @@ async function send({ to, subject, html, replyTo }: SendParams) {
  * Turnstile verification and the duplicate-submission throttle both run before
  * this is reached, which is what limits how often it can be triggered at all.
  */
-export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: string) {
+export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: string, name?: string) {
   // The footer promises that replying reaches InfraNest directly, which is only
   // true when Reply-To points at the monitored inbox. Without NOTIFICATION_EMAIL
   // the send would still succeed — SES only requires the sender — but replies
@@ -120,12 +161,16 @@ export async function sendAcknowledgmentEmail(kind: "contact" | "quote", to: str
   }
 
   const copy = acknowledgment[kind];
+  const firstName = toSafeFirstName(name ?? "");
+  const greeting = firstName ? `Hi ${escapeHtml(firstName)},` : "Hi there,";
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0f172a; line-height: 1.6;">
       <h1 style="font-size: 22px; margin-bottom: 16px;">${escapeHtml(copy.heading)}</h1>
+      <p style="margin: 0 0 16px;">${greeting}</p>
       <p style="margin: 0 0 16px;">${escapeHtml(copy.body)}</p>
-      <p style="margin: 0 0 24px; color: #334155; font-size: 14px;">${escapeHtml(acknowledgment.footer)}</p>
+      <p style="margin: 0 0 16px; color: #334155;">${escapeHtml(acknowledgment.footer)}</p>
+      <p style="margin: 0 0 24px;">${escapeHtml(acknowledgment.signOff)}<br>${escapeHtml(company.name)}</p>
       <hr style="border: none; border-top: 1px solid #dbe3ef; margin: 24px 0;">
       <p style="margin: 0; font-size: 13px; color: #334155;">
         ${escapeHtml(company.name)}<br>

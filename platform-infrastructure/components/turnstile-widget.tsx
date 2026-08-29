@@ -128,7 +128,11 @@ export function TurnstileWidget({ onToken, ref }: TurnstileWidgetProps) {
   }, [containerId, siteKey]);
 
   if (!siteKey) {
-    return <p className="form-note">Turnstile is not configured locally. Forms will still work outside production for development.</p>;
+    // Render nothing rather than developer-facing text. This branch is reached
+    // whenever the public site key is absent — including a misconfigured
+    // production deploy — and the missing configuration is already reported by
+    // reportRuntimeConfig() and the server-side check in lib/turnstile.ts.
+    return null;
   }
 
   return (

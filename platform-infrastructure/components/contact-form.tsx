@@ -58,7 +58,7 @@ export function ContactForm() {
     } catch {
       setStatus({
         ok: false,
-        message: "The message could not be sent right now. Please try again in a moment.",
+        message: "Something went wrong sending your message. Please try again in a moment.",
       });
     } finally {
       setIsSubmitting(false);
@@ -123,7 +123,7 @@ export function ContactForm() {
 
         <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
         <p className="form-note">
-          Spam protection is enforced automatically in production with Cloudflare Turnstile. See how we handle your
+          This form is protected against spam and abuse. See how we handle your
           information in our <Link href="/privacy">privacy policy</Link>.
         </p>
 
