@@ -33,6 +33,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # A dependency can carry a published CVE and still typecheck, test and
+      # build cleanly — none of those steps ask whether anything is known-broken.
+      # Fails on high and critical only: moderate advisories in transitive dev
+      # dependencies would block merges without a corresponding real risk.
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
+      # Catches what types and tests cannot: exhaustive hook dependency arrays,
+      # raw <img> where next/image belongs, and the jsx-a11y rules.
+      - name: Lint
+        run: npm run lint
+
       # Cheapest checks first so a failure reports quickly.
       - name: Typecheck
         run: npx tsc --noEmit

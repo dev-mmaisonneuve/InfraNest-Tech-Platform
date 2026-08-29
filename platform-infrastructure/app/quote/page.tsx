@@ -34,7 +34,7 @@ export default function QuotePage() {
                 A straightforward starting point.
               </h2>
               <p className="meta-copy">
-                Share a little context about your environment and current needs, and we'll come back with a sensible
+                Share a little context about your environment and current needs, and we&rsquo;ll come back with a sensible
                 first step.
               </p>
               <ul className="meta-list">
