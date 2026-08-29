@@ -64,7 +64,7 @@ export function SiteFooter() {
                   LinkedIn
                 </a>
               </div>
-              <span className="footer-legal">&copy; <CurrentYear /> InfraNest Technologies.<br />All rights reserved.</span>
+              <span className="footer-legal">&copy; <CurrentYear fallback={new Date().getFullYear()} /> InfraNest Technologies.<br />All rights reserved.</span>
             </div>
 
           </div>
