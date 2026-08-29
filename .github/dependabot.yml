@@ -20,6 +20,25 @@ updates:
         update-types: [minor, patch]
     # Majors arrive as individual PRs: next@16 is a deliberate migration, not
     # something to sweep in with a routine batch.
+    #
+    # Except for two specific versions the plugin ecosystem cannot yet parse:
+    # TypeScript 7 fails with "typescript-eslint does not support TS 7.0", and
+    # ESLint 10 breaks eslint-plugin-react's rule loader. Without this Dependabot
+    # reopens an unmergeable PR on every release of either.
+    #
+    # Scoped to those version ranges rather than to semver-major, because ignore
+    # rules apply to SECURITY updates as well as routine ones. Ignoring all
+    # majors would mean a vulnerability fixed only in a future major never gets a
+    # remediation PR — silently turning a temporary incompatibility into a
+    # permanent security blind spot. As written, TypeScript 8 and ESLint 11 still
+    # surface, and any fix outside these two ranges still reaches us.
+    #
+    # Remove each entry once its ecosystem support lands — tracked in INT-44.
+    ignore:
+      - dependency-name: typescript
+        versions: ["7.x"]
+      - dependency-name: eslint
+        versions: ["10.x"]
     commit-message:
       prefix: "deps"
       include: scope
