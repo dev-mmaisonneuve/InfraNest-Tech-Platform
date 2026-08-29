@@ -73,7 +73,7 @@ export default function AboutPage() {
               </p>
             </article>
             <article className="card" data-reveal data-delay="2">
-              <h3>What it's like to work with us</h3>
+              <h3>What it&rsquo;s like to work with us</h3>
               <p>
                 Clear communication, steady follow-through, and practical recommendations. The goal is a calm, credible
                 experience for business owners and lean teams.

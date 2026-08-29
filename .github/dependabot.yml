@@ -1,0 +1,35 @@
+version: 2
+
+updates:
+  # The Next.js app. Grouped so a routine week produces one reviewable PR
+  # instead of a dozen, and capped so the queue stays small enough to actually
+  # read — an ignored Dependabot backlog is how the postcss and sharp
+  # advisories accumulated unnoticed in the first place.
+  - package-ecosystem: npm
+    directory: /platform-infrastructure
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      production-dependencies:
+        dependency-type: production
+        update-types: [minor, patch]
+      development-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+    # Majors arrive as individual PRs: next@16 is a deliberate migration, not
+    # something to sweep in with a routine batch.
+    commit-message:
+      prefix: "deps"
+      include: scope
+
+  # Keeps actions/checkout and actions/setup-node current. These run with repo
+  # credentials, so a stale pinned action is a supply-chain concern rather than
+  # a housekeeping one.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"
