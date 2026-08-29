@@ -20,6 +20,18 @@ updates:
         update-types: [minor, patch]
     # Majors arrive as individual PRs: next@16 is a deliberate migration, not
     # something to sweep in with a routine batch.
+    #
+    # Except for the lint and type toolchain. A TypeScript or ESLint major
+    # cannot be merged until the plugin ecosystem catches up — the first
+    # attempts failed with "typescript-eslint does not support TS 7.0" and an
+    # eslint-plugin-react API break on ESLint 10 — so Dependabot would reopen an
+    # unmergeable PR on every release. Upgrading these is deliberate work
+    # scheduled when support lands, not a routine bump.
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
     commit-message:
       prefix: "deps"
       include: scope
