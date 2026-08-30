@@ -143,11 +143,11 @@ export default function HomePage() {
                   </div>
                   <div className="hero-feature-row">
                     <span className="hero-feature-dot" aria-hidden="true" />
-                    <span>1-day typical first response</span>
+                    <span>Typical first response within one business day</span>
                   </div>
                   <div className="hero-feature-row">
                     <span className="hero-feature-dot" aria-hidden="true" />
-                    <span>Greater Boston anchor &amp; remote US coverage</span>
+                    <span>Based in Greater Boston with remote coverage across the U.S.</span>
                   </div>
                 </div>
               </div>
@@ -158,7 +158,7 @@ export default function HomePage() {
 
       {/* ─── Services ─── */}
       <section className="section section-tinted" id="services">
-        <div className="container">
+        <div className="container section-layout">
           <SectionHeading
             eyebrow="Services"
             title="Technology support built around how your business actually works."
@@ -167,35 +167,33 @@ export default function HomePage() {
             pulse
           />
 
-          <div className="service-grid">
-            {featuredServices.map((service, index) => (
-              <article className="service-card" key={service.title} data-reveal data-delay={String(index + 1)}>
-                <div className="card-icon-wrap">{serviceIcons[index]}</div>
-                <h3>{service.title}</h3>
-                <p>{service.description}</p>
-                <ul>
-                  {service.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+          <div className="section-content">
+            <div className="service-grid">
+              {featuredServices.map((service, index) => (
+                <article className="service-card" key={service.title} data-reveal data-delay={String(index + 1)}>
+                  <div className="card-icon-wrap">{serviceIcons[index]}</div>
+                  <h3>{service.title}</h3>
+                  <p>{service.description}</p>
+                  <ul>
+                    {service.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
 
-          <div className="inline-actions" style={{ marginTop: "1.5rem" }}>
-            <Link className="button-secondary" href="/services">
-              View all services
-            </Link>
-            <Link className="button-subtle" href="/quote">
-              Request a quote →
-            </Link>
+            <div className="inline-actions">
+              <Link className="button-secondary" href="/services">View all services</Link>
+              <Link className="button-subtle" href="/quote">Request a quote →</Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ─── Why InfraNest ─── */}
       <section className="section" id="about-preview">
-        <div className="container">
+        <div className="container section-layout">
           <SectionHeading
             eyebrow="Why InfraNest"
             title="Three principles that shape every engagement."
@@ -203,20 +201,20 @@ export default function HomePage() {
             reveal
           />
 
-          <div className="cards-grid">
-            {aboutContent.pillars.map((pillar, index) => (
-              <article className="about-card" key={pillar.title} data-reveal data-delay={String(index + 1)}>
-                <div className="card-icon-wrap">{pillarIcons[index]}</div>
-                <h3>{pillar.title}</h3>
-                <p>{pillar.body}</p>
-              </article>
-            ))}
-          </div>
+          <div className="section-content">
+            <div className="cards-grid">
+              {aboutContent.pillars.map((pillar, index) => (
+                <article className="about-card" key={pillar.title} data-reveal data-delay={String(index + 1)}>
+                  <div className="card-icon-wrap">{pillarIcons[index]}</div>
+                  <h3>{pillar.title}</h3>
+                  <p>{pillar.body}</p>
+                </article>
+              ))}
+            </div>
 
-          <div className="inline-actions" style={{ marginTop: "1.5rem" }}>
-            <Link className="button-secondary" href="/about">
-              Learn more about InfraNest
-            </Link>
+            <div className="inline-actions">
+              <Link className="button-secondary" href="/about">Learn more about InfraNest</Link>
+            </div>
           </div>
         </div>
       </section>

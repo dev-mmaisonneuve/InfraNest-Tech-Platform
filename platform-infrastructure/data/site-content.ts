@@ -3,7 +3,7 @@ export const company = {
   shortName: "InfraNest",
   email: process.env.NEXT_PUBLIC_FORMSPREE_FALLBACK_EMAIL ?? "info@infranests.com",
   phone: "(617) 302-7580",
-  serviceArea: "Greater Boston, MA and remote support across the U.S.",
+  serviceArea: "Greater Boston, Massachusetts, with remote support across the U.S.",
   linkedIn: "https://www.linkedin.com/company/infranest-tech/",
   schedulingNote: "Most inquiries receive a response within 24 hours.",
 };
@@ -20,16 +20,16 @@ export const navigation = [
 ];
 
 export const homeContent = {
-  eyebrow: "Managed IT for lean, growing teams",
+  eyebrow: "Reliable IT support for growing businesses",
   title: "Keep your technology reliable, secure, and ready to scale.",
   description:
-    "InfraNest gives lean teams dependable IT operations, cloud infrastructure, web presence, and managed business support, without the overhead of building a full internal IT department.",
+    "InfraNest gives growing teams dependable IT operations, cloud infrastructure, web services, and managed business support without the overhead of building a full internal IT department.",
   primaryCta: { href: "/quote", label: "Request a quote" },
   secondaryCta: { href: "/services", label: "View services" },
   stats: [
     { value: "24 hrs", label: "Typical response time", icon: "clock" },
     { value: "End-to-end IT", label: "From daily operations to cloud infrastructure", icon: "grid" },
-    { value: "Boston + US remote", label: "Local anchor, nationwide reach", icon: "globe" },
+    { value: "Boston + U.S. remote", label: "Local presence, nationwide reach", icon: "globe" },
   ],
   trustPoints: [
     {
@@ -120,7 +120,7 @@ export const services = [
   {
     title: "Web Presence & Managed Hosting",
     description:
-      "Helping small businesses get online with a clean site, reliable hosting, and ongoing updates.",
+      "We help small businesses get online with clean websites, reliable hosting, and ongoing support.",
     bullets: [
       "Website design and build (simple, modern, fast)",
       "Hosting, DNS, SSL, and go-live setup",
@@ -136,7 +136,7 @@ export const services = [
       "Access audits and least-privilege cleanup",
       "MFA, SSO, and identity hardening guidance",
       "Endpoint and device management standardization (MDM baseline)",
-      "Security baseline reviews and improvement plan",
+      "Security baseline review and improvement plan",
     ],
   },
   {

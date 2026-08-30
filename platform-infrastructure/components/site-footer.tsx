@@ -32,7 +32,7 @@ export function SiteFooter() {
                 />
               </div>
               <p className="footer-tagline">
-                Dependable IT operations, cloud infrastructure, and managed business support for lean, growing teams.
+                Dependable IT operations, cloud infrastructure, and managed business support for growing teams.
               </p>
               <span className="footer-area">{company.serviceArea}</span>
             </div>
