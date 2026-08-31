@@ -105,6 +105,17 @@ a {
   left: 1rem;
 }
 
+/* The skip link is a sibling of the header, not a descendant, so the
+   .site-header override below cannot reach it — yet it renders directly over
+   that fixed dark bar, where --accent-ink is only 2.64:1. It also has two
+   possible backdrops: the full-bleed dark header at the top of the page, and
+   the light page background once [data-scrolled] insets the header into a
+   pill. This colour clears 3:1 against both (3.56:1 on the page, 3.79:1 on the
+   header), so the ring holds whichever one is behind it. */
+.skip-link:focus-visible {
+  outline-color: #0e86cc;
+}
+
 /* The skip link's target is a container rather than a control. It is focused
    programmatically so the next Tab continues from the content, and a ring
    around the whole page would be noise rather than information. */
