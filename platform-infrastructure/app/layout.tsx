@@ -76,11 +76,10 @@ export const metadata: Metadata = {
       "Managed IT operations, cloud platform support, SaaS administration, and hands-on business technology support for small businesses.",
     images: [brandAssets.socialPreview.src],
   },
-  icons: {
-    icon: brandAssets.badge.src,
-    shortcut: brandAssets.badge.src,
-    apple: brandAssets.badge.src,
-  },
+  // Icons come from the app/icon.png and app/apple-icon.png file
+  // conventions, sized for their actual render targets — the previous
+  // metadata block pointed every role, favicon included, at the 83kB
+  // 425x425 badge.
 };
 
 export default function RootLayout({

@@ -5,8 +5,12 @@ import { ImageResponse } from "next/og";
 
 import { brandAssets } from "@/lib/brand-assets";
 
+// Read from the brand-masters directory, not public/: this runs at build
+// time and inlines the bytes, and the OG card renders the logo at 520x200 —
+// the full-resolution master is the right source for it. Nothing serves the
+// file itself.
 const logoDataUri = `data:image/png;base64,${readFileSync(
-  join(process.cwd(), "public", "assets", "Infra-logo.png"),
+  join(process.cwd(), "assets", "Infra-logo.png"),
 ).toString("base64")}`;
 
 export const alt = "InfraNest Technologies managed IT and cloud support";
