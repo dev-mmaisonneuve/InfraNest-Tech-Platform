@@ -722,6 +722,11 @@ a {
   margin-bottom: 0.15rem;
 }
 
+.stat-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
 .stat-value {
   font-family: var(--font-display), Arial, sans-serif;
   font-size: 1.3rem;
@@ -2010,6 +2015,56 @@ details.faq-item[open] .faq-answer {
   .js [data-reveal="left"],
   .js [data-reveal="right"] {
     transform: translateY(18px);
+  }
+
+  /* Proof points as a hairline list instead of three stacked cards. The
+     values here are phrases, not numerals — "Boston + US remote" cannot
+     survive a 98px column at 320px — so rows, not columns. Card chrome
+     (border, fill, blur, icon plate) comes off; the typography carries it. */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.15rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .stat-card:hover {
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+    border-color: var(--border);
+  }
+
+  .stat-icon {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 0.6rem;
+    flex-shrink: 0;
+  }
+
+  .stat-copy {
+    gap: 0.05rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.82rem;
+    line-height: 1.35;
   }
 }
 
