@@ -25,6 +25,30 @@
   --radius-md: 18px;
   --radius-sm: 12px;
   --max-width: 1240px;
+
+  /* ── Fluid type scale ──────────────────────────────────────────────────
+     One continuous scale from 320px to desktop, replacing the previous
+     split where a max-width:760px block re-set headings in 14vw/10vw —
+     which made type LARGER as screens got smaller (60px h1 on a 430px
+     phone vs 42px on a 768px tablet) and snapped 22px at the boundary.
+     Slopes are tuned so the desktop sizes are unchanged: --step-h1 still
+     reaches its 4.6rem cap at ~1330px, --step-h2 its 2.9rem cap by
+     ~1290px. Phones land at ~32px / ~26px. */
+  --step-h1: clamp(2rem, 0.9rem + 4.5vw, 4.6rem);
+  --step-h2: clamp(1.6rem, 1.05rem + 2.3vw, 2.9rem);
+  --step-h3: clamp(1.08rem, 1rem + 0.4vw, 1.18rem);
+  --step-lead: clamp(1.02rem, 0.94rem + 0.42vw, 1.18rem);
+  --step-body: 1.0625rem;
+  --text-md: 0.9375rem;
+  --text-sm: 0.85rem;
+  --text-xs: 0.75rem;
+
+  /* ── Spacing ───────────────────────────────────────────────────────────
+     Section rhythm and card padding scale continuously instead of halving
+     at one breakpoint. */
+  --section-pad: clamp(3rem, 1.9rem + 4.1vw, 5.5rem);
+  --card-pad: clamp(1.15rem, 0.9rem + 1.1vw, 1.75rem);
+  --lead-lh: 1.6;
 }
 
 *,
@@ -202,7 +226,7 @@ a {
 /* ─── Sections ─── */
 
 .section {
-  padding: 5.5rem 0;
+  padding: var(--section-pad) 0;
 }
 
 .section-heading {
@@ -212,19 +236,22 @@ a {
 
 .section-heading h1,
 .section-heading h2 {
-  margin: 0.85rem 0 0;
+  /* Tighter than before (0.85rem): the eyebrow is this heading's label and
+     should read as attached to it, not floating above it. */
+  margin: 0.6rem 0 0;
   font-family: var(--font-display), Arial, sans-serif;
-  font-size: clamp(1.85rem, 4.5vw, 2.9rem);
+  font-size: var(--step-h2);
   line-height: 1.12;
   letter-spacing: -0.022em;
   font-weight: 800;
+  text-wrap: balance;
 }
 
 .section-heading p {
-  margin: 1.1rem 0 0;
+  margin: 0.8rem 0 0;
   color: var(--muted);
-  font-size: 1.125rem;
-  line-height: 1.82;
+  font-size: var(--step-lead);
+  line-height: var(--lead-lh);
   max-width: 44rem;
 }
 
@@ -250,18 +277,23 @@ a {
 .hero-copy h1 {
   margin: 0;
   font-family: var(--font-display), Arial, sans-serif;
-  font-size: clamp(2.6rem, 5.5vw, 4.6rem);
+  font-size: var(--step-h1);
   line-height: 1.06;
   letter-spacing: -0.025em;
   font-weight: 800;
+  text-wrap: balance;
 }
 
 .hero-copy p {
   margin: 0;
   color: var(--muted);
-  font-size: 1.18rem;
+  font-size: var(--step-lead);
   max-width: 42rem;
-  line-height: 1.82;
+  /* 1.82 was a desktop value carried onto phones, where lines are short and
+     that much leading reads as disconnection rather than air. Fluid between
+     ~1.55 on narrow measures and ~1.75 on wide ones; em units because a
+     unitless number cannot participate in calc with a length. */
+  line-height: clamp(1.55em, 1.35em + 0.5vw, 1.8em);
 }
 
 .hero-actions,
@@ -704,7 +736,7 @@ a {
 .process-card,
 .about-card,
 .contact-card {
-  padding: 1.75rem;
+  padding: var(--card-pad);
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: #ffffff;
@@ -732,7 +764,7 @@ a {
 .card :is(h2, h3) {
   margin: 0 0 0.6rem;
   font-family: var(--font-display), Arial, sans-serif;
-  font-size: 1.18rem;
+  font-size: var(--step-h3);
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.015em;
@@ -749,7 +781,7 @@ a {
 .about-card li {
   margin: 0;
   color: var(--muted);
-  line-height: 1.76;
+  line-height: 1.62;
   font-size: 1rem;
 }
 
@@ -1881,26 +1913,7 @@ details.faq-item[open] .faq-answer {
     padding: 1.5rem;
   }
 
-  .hero-copy h1 {
-    font-size: clamp(2.5rem, 14vw, 4rem);
-  }
 
-  .section-heading h1,
-  .section-heading h2 {
-    font-size: clamp(1.9rem, 10vw, 2.8rem);
-  }
-
-  .section {
-    padding: 2.75rem 0;
-  }
-
-  /* Horizontal reveal offsets become vertical on phones: the sideways slide
-     is what created the overflow, and at this width it reads as a glitch
-     rather than motion design. */
-  .js [data-reveal="left"],
-  .js [data-reveal="right"] {
-    transform: translateY(18px);
-  }
 }
 
 /* ─── Scroll Reveal ─── */
@@ -1918,6 +1931,17 @@ details.faq-item[open] .faq-answer {
 
 .js [data-reveal="left"]  { transform: translateX(-22px); }
 .js [data-reveal="right"] { transform: translateX(22px); }
+
+/* Horizontal reveal offsets become vertical on phones: the sideways slide is
+   what created the 10px overflow, and at this width it reads as a glitch
+   rather than motion design. Placed after the base rules — the media query
+   adds no specificity, so source order is what makes this win. */
+@media (max-width: 760px) {
+  .js [data-reveal="left"],
+  .js [data-reveal="right"] {
+    transform: translateY(18px);
+  }
+}
 
 [data-reveal].is-visible,
 .reveal-fallback [data-reveal] {
