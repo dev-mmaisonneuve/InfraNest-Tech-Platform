@@ -30,7 +30,7 @@ export default function QuotePage() {
           <div className="info-panel" style={{ padding: "1.5rem" }} data-reveal="left">
             <div className="stack" style={{ gap: "1.1rem" }}>
               <span className="eyebrow">How this works</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
+              <h2 className="panel-heading">
                 A straightforward starting point.
               </h2>
               <p className="meta-copy">

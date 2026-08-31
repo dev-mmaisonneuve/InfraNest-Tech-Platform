@@ -34,7 +34,7 @@ export default function PrivacyPage() {
           description={`How InfraNest handles the information you share through this website. Last updated ${lastUpdated}.`}
         />
 
-        <div className="panel" style={{ padding: "2rem", maxWidth: "72ch" }}>
+        <div className="panel" style={{ padding: "var(--card-pad)", maxWidth: "72ch" }}>
           <h2>What we collect</h2>
           <p>
             InfraNest only collects information you choose to submit through the contact form or the quote request

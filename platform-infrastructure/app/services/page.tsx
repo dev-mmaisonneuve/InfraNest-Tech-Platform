@@ -141,11 +141,11 @@ export default function ServicesPage() {
         </div>
 
         {/* ─── CTA ─── */}
-        <div className="panel" style={{ padding: "2rem" }}>
+        <div className="panel" style={{ padding: "var(--card-pad)" }}>
           <div className="section-split">
             <div className="stack">
               <span className="eyebrow">Next step</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.9rem, 4vw, 2.6rem)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08 }}>
+              <h2 className="cta-heading">
                 If you already know the business needs hands-on support, start with the quote flow.
               </h2>
               <p className="meta-copy">

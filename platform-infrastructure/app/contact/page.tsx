@@ -53,7 +53,7 @@ export default function ContactPage() {
           <div className="info-panel" style={{ padding: "1.75rem" }} data-reveal="left">
             <div className="stack">
               <span className="eyebrow">Direct contact</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
+              <h2 className="panel-heading">
                 We respond quickly, and getting started is simple.
               </h2>
 
@@ -98,7 +98,7 @@ export default function ContactPage() {
         <div className="stack" style={{ gap: "1.25rem" }} data-reveal>
           <div>
             <span className="eyebrow">FAQ</span>
-            <h2 style={{ margin: "0.75rem 0 0.5rem", fontFamily: "var(--font-display)", fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.15 }}>
+            <h2 className="cta-heading" style={{ margin: "0.75rem 0 0.5rem" }}>
               Common questions answered.
             </h2>
             <p style={{ color: "var(--muted)", fontSize: "1rem", lineHeight: 1.7, maxWidth: "38rem" }}>

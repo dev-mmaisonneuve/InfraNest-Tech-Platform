@@ -249,6 +249,28 @@ a {
   text-wrap: balance;
 }
 
+/* Panel and CTA headings — previously six inline style objects across four
+   pages, in three slightly different sizes for the same role. One fluid size
+   per role, on the shared scale. */
+.panel-heading {
+  margin: 0;
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.cta-heading {
+  margin: 0;
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: clamp(1.45rem, 1.1rem + 1.6vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
 .section-heading p {
   margin: 0.8rem 0 0;
   color: var(--muted);
