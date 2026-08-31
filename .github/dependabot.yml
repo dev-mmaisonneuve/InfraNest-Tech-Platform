@@ -21,22 +21,33 @@ updates:
     # Majors arrive as individual PRs: next@16 is a deliberate migration, not
     # something to sweep in with a routine batch.
     #
-    # Except for two specific versions the plugin ecosystem cannot yet parse:
-    # TypeScript 7 fails with "typescript-eslint does not support TS 7.0", and
-    # ESLint 10 breaks eslint-plugin-react's rule loader. Without this Dependabot
-    # reopens an unmergeable PR on every release of either.
+    # Two exceptions, both re-verified on 2026-08-30 against typescript@7.0.2
+    # and eslint@10.9.1, and both still failing:
     #
-    # Scoped to those version ranges rather than to semver-major, because ignore
-    # rules apply to SECURITY updates as well as routine ones. Ignoring all
-    # majors would mean a vulnerability fixed only in a future major never gets a
-    # remediation PR — silently turning a temporary incompatibility into a
-    # permanent security blind spot. As written, TypeScript 8 and ESLint 11 still
-    # surface, and any fix outside these two ranges still reaches us.
+    #   TypeScript 7.0 — "typescript-eslint does not support TS 7.0".
+    #   ESLint 10      — breaks eslint-plugin-react's rule loader.
+    #
+    # Without these entries Dependabot reopens an unmergeable PR on every
+    # release of either.
+    #
+    # Both are scoped to version ranges rather than to semver-major, because
+    # ignore rules apply to SECURITY updates as well as routine ones. Ignoring a
+    # whole major would mean a vulnerability fixed only in that major never
+    # produces a remediation PR — turning a temporary incompatibility into a
+    # permanent blind spot.
+    #
+    # TypeScript is pinned to 7.0.x rather than 7.x because upstream states
+    # support targets TS >=7.1 (typescript-eslint#10940). 7.0 is a dead end by
+    # design, so ignoring the whole major would silence the very release that
+    # unblocks us; scoped this way, 7.1 arrives as an ordinary PR and announces
+    # itself. ESLint cannot work that way — the fix has to ship in
+    # eslint-plugin-react, not in a new ESLint version, so no version range can
+    # signal it, and that half is date-driven in INT-44 instead.
     #
     # Remove each entry once its ecosystem support lands — tracked in INT-44.
     ignore:
       - dependency-name: typescript
-        versions: ["7.x"]
+        versions: ["7.0.x"]
       - dependency-name: eslint
         versions: ["10.x"]
     commit-message:
