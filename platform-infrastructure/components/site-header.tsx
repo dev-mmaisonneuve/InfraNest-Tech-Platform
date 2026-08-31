@@ -24,6 +24,7 @@ export function SiteHeader() {
   const activeSection = useScrollSpy(navSectionIds);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const navRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 55);
@@ -42,6 +43,36 @@ export function SiteHeader() {
     navRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
   }, [isOpen]);
 
+  // A scroll gesture on a phone can start anywhere, and the open panel is
+  // position: fixed — without a lock the whole page slides underneath it.
+  // Inline styles override the stylesheet's overflow-x: clip while open and
+  // hand back to it on close. The padding compensates for a disappearing
+  // scrollbar on desktop-sized windows so the layout does not shift.
+  useEffect(() => {
+    if (!isOpen) return;
+    const root = document.documentElement;
+    const scrollbar = window.innerWidth - root.clientWidth;
+    const prevOverflow = root.style.overflow;
+    const prevPadding = root.style.paddingRight;
+    root.style.overflow = "hidden";
+    if (scrollbar > 0) root.style.paddingRight = `${scrollbar}px`;
+    return () => {
+      root.style.overflow = prevOverflow;
+      root.style.paddingRight = prevPadding;
+    };
+  }, [isOpen]);
+
+  // Tapping anywhere outside the header (the open panel is part of it)
+  // closes the menu — the other half of the scroll-lock expectation.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setIsOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [isOpen]);
+
   // Escape closes the menu and returns focus to the control that opened it.
   // Without the second half, focus would be left on a link that has just been
   // hidden, and the next Tab would resume from an unpredictable place.
@@ -57,7 +88,7 @@ export function SiteHeader() {
   }, [isOpen]);
 
   return (
-    <header className="site-header" data-scrolled={scrolled}>
+    <header className="site-header" data-scrolled={scrolled} ref={headerRef}>
       <div className="header-bg" aria-hidden="true" />
       <div className="container">
         <div className="header-row">
@@ -96,11 +127,11 @@ export function SiteHeader() {
               Request a quote
             </Link>
             {/*
-              No aria-label here on purpose. One would override the visible
-              "Menu"/"Close" text as the accessible name, so speech-input users
-              saying "click Menu" would find nothing matching (WCAG 2.5.3).
-              The visible text is already a good name; aria-expanded carries the
-              state and aria-controls names what it operates on.
+              Icon-only control, so the aria-label is required rather than
+              harmful: with no visible text there is nothing for it to
+              override, which is the opposite of the situation when this
+              button said "Menu" (WCAG 2.5.3 cut the label then). The three
+              lines morph into an X via CSS keyed off aria-expanded.
             */}
             <button
               ref={toggleRef}
@@ -108,9 +139,14 @@ export function SiteHeader() {
               type="button"
               aria-expanded={isOpen}
               aria-controls="primary-navigation"
+              aria-label={isOpen ? "Close navigation" : "Open navigation"}
               onClick={() => setIsOpen((value) => !value)}
             >
-              {isOpen ? "Close" : "Menu"}
+              <svg className="nav-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </svg>
             </button>
           </div>
         </div>

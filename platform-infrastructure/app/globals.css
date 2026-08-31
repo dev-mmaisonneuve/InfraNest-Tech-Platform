@@ -1343,14 +1343,39 @@ a {
   color: #ffffff;
 }
 
+/* Hamburger-to-X morph, keyed off aria-expanded so the visual state can
+   never disagree with the accessible one. */
+.nav-icon line {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 200ms ease, opacity 140ms ease;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-icon line:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-icon line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-icon line:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
 .nav-toggle {
   display: none;
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.85);
+  /* 44x44 touch target, visually quiet: the icon is the control, not a
+     third card competing with the logo chip and the bar. */
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -1783,12 +1808,34 @@ details.faq-item[open] .faq-answer {
     width: min(calc(100% - 1.5rem), var(--max-width));
   }
 
-  .header-row {
-    min-height: 4.4rem;
+  .header-row,
+  .site-header[data-scrolled="true"] .header-row {
+    /* One 56px bar in both scroll states. The desktop shrink-to-pill
+       animation reads as polish at 77px; at phone size it just made the
+       bar twitch. */
+    min-height: 3.5rem;
   }
 
   .site-header[data-scrolled="true"] {
     padding: 0 1rem;
+  }
+
+  /* The wordmark PNG carries its own baked-in white plate, so the CSS card
+     around it doubled the surface: a 52px white box inside a 70px bar. With
+     the card stripped, the image's own plate — cropped by a small radius —
+     is the chip, and the bar reads as one surface with two elements. */
+  .brand-mark,
+  .site-header[data-scrolled="true"] .brand-mark {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .brand-wordmark,
+  .site-header[data-scrolled="true"] .brand-wordmark {
+    height: 2rem;
+    border-radius: 0.5rem;
   }
 
   .site-header[data-scrolled="true"] .header-bg {
@@ -1860,23 +1907,36 @@ details.faq-item[open] .faq-answer {
   }
 
   .nav-links {
+    /* Attached to the bar: full bleed, square top corners, the header's own
+       background — opening extends the header downward instead of floating
+       a fourth surface under it. Hidden via visibility rather than display
+       so the open/close can actually transition (display cannot animate,
+       which is why the old menu popped). The backdrop blur went with the
+       old card: at 0.97 alpha it was invisible and cost compositing. */
     position: fixed;
-    top: 5rem;
-    left: 1rem;
-    right: 1rem;
-    display: none;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    display: flex;
     flex-direction: column;
     align-items: stretch;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1.25rem 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(4, 10, 20, 0.97);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      visibility 0s linear 180ms;
   }
 
   .nav-shell[data-open="true"] .nav-links {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 180ms ease, transform 180ms ease;
   }
 
   .nav-links a {
@@ -1905,10 +1965,6 @@ details.faq-item[open] .faq-answer {
 
   .brand-copy span {
     display: none;
-  }
-
-  .brand-wordmark {
-    height: 2.25rem;
   }
 
 
@@ -1976,6 +2032,11 @@ details.faq-item[open] .faq-answer {
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
+  }
+
+  .nav-links,
+  .nav-icon line {
     transition: none !important;
   }
 }
