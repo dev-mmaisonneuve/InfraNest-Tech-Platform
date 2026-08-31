@@ -21,13 +21,20 @@ const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
   display: "swap",
-  weight: ["600", "700", "800", "900"],
+  // 700 for card/panel headings, 800 for page and section headings. The 600
+  // and 900 files shipped unused: no display-font rule asks for either (the
+  // one font-weight: 900 in the CSS is a checkbox glyph set in Inter, which
+  // is variable and covers it for free).
+  weight: ["700", "800"],
 });
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   variable: "--font-serif",
-  style: ["normal", "italic"],
+  // Kept deliberately — the italic accent is part of the brand's voice. The
+  // upright style was a second file nothing referenced: every serif use on
+  // the site sets font-style: italic.
+  style: ["italic"],
   weight: "400",
   display: "swap",
 });

@@ -448,6 +448,15 @@ a {
 
 /* ─── Hero Spotlight ─── */
 
+/* All ambient animation inside the spotlight pauses while it is offscreen —
+   on phones it renders ~340px below the fold and was animating unseen from
+   first paint. The wrapper sets data-inview from an IntersectionObserver;
+   with JavaScript absent the attribute never appears and nothing pauses. */
+.hero-spotlight[data-inview="false"] *,
+.hero-spotlight[data-inview="false"] {
+  animation-play-state: paused !important;
+}
+
 .hero-spotlight {
   position: relative;
   min-height: 24rem;
@@ -722,9 +731,11 @@ a {
   padding: 1.25rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.5);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  /* Was rgba(.5) plus backdrop blur — but the backdrop here is the page's
+     own static near-white gradient, so the frost was invisible while the
+     compositor re-sampled it every frame. Slightly more opaque fill, no
+     filter. */
+  background: rgba(255, 255, 255, 0.62);
   color: #0f172a;
 }
 
@@ -1424,6 +1435,10 @@ a {
 }
 
 .site-footer {
+  /* Skippable while offscreen; the placeholder size prevents scroll jumps
+     when it enters. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
   padding: 0.5rem 0 1.25rem;
 }
 
@@ -1903,24 +1918,14 @@ details.faq-item[open] .faq-answer {
     height: 5rem;
   }
 
-  .hero-atmosphere {
-    width: 5.5rem;
-    height: 3.3rem;
-  }
-
-  .hero-glass-slab {
-    width: 3.8rem;
-    height: 5.7rem;
-  }
-
-  .hero-atmosphere-left,
-  .hero-glass-slab-left {
-    left: 1.4rem;
-  }
-
-  .hero-atmosphere-right,
-  .hero-glass-slab-right {
-    right: 1.2rem;
+  /* At phone scale the slabs, atmosphere blobs and particle field shrink to
+     smudges — decoration that does not survive the size but still runs ten
+     infinite animations and two backdrop blurs. The network diagram, packet
+     travel, scan sweep and tunnel glow read fine and stay. */
+  .hero-glass-slab,
+  .hero-atmosphere,
+  .hero-particle-field {
+    display: none;
   }
 
   .nav-toggle {
