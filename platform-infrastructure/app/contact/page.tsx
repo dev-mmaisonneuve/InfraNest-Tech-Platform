@@ -39,7 +39,7 @@ const contactIcons: Record<string, React.ReactNode> = {
 
 export default function ContactPage() {
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container stack">
         <SectionHeading
           eyebrow="Contact"

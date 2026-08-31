@@ -35,7 +35,7 @@ const trustIcons = [
 
 export default function AboutPage() {
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container stack">
 
         {/* ─── Page Heading ─── */}

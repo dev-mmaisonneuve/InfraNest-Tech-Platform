@@ -47,7 +47,7 @@ const heroParticles = ["particle-a", "particle-b", "particle-c", "particle-d", "
 
 export default function HomePage() {
   return (
-    <div id="main-content">
+    <div>
 
       {/* ─── Hero ─── */}
       <section className="hero" id="hero">

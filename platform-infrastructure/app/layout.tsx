@@ -96,7 +96,15 @@ export default function RootLayout({
         </a>
         <div className="site-background" aria-hidden="true" />
         <SiteHeader />
-        <main>{children}</main>
+        {/*
+          The skip link targets this element. A fragment link only moves keyboard
+          focus if its target can receive focus, so without tabIndex the link
+          scrolls the page but leaves focus in the header — the next Tab lands
+          back in the nav, which is the thing the user just asked to skip.
+        */}
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
         <SiteFooter />
         <BackToTop />
         <RevealObserver />

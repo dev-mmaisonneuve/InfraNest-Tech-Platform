@@ -64,7 +64,7 @@ const serviceIcons = [
 
 export default function ServicesPage() {
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container stack">
         <SectionHeading
           eyebrow="Services"

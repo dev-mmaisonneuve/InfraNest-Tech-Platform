@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function QuotePage() {
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container stack">
         <SectionHeading
           eyebrow="Request a quote"

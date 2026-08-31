@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container">
         <div className="section-heading">
           <span className="eyebrow">404</span>
