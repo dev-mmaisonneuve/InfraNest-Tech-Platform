@@ -25,7 +25,7 @@ const lastUpdated = "August 27, 2026";
 
 export default function PrivacyPage() {
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container stack">
         <SectionHeading
           eyebrow="Privacy"

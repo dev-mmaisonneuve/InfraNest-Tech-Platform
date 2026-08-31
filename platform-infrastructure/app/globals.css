@@ -105,6 +105,34 @@ a {
   left: 1rem;
 }
 
+/* The skip link's target is a container rather than a control. It is focused
+   programmatically so the next Tab continues from the content, and a ring
+   around the whole page would be noise rather than information. */
+#main-content:focus {
+  outline: none;
+}
+
+/* Keyboard users need to see where they are (SC 2.4.7), and the indicator has
+   to clear 3:1 against its surroundings (SC 1.4.11). Links and buttons here
+   carry custom colours on custom surfaces, so the browser default cannot be
+   relied on to stay visible across all of them.
+
+   Written with :where() so specificity stays at zero and any component rule
+   still wins. Scoped to genuinely interactive elements: [tabindex="-1"] is
+   excluded, since those are focused by script and should not flash a ring. */
+:where(a[href], button, summary, [tabindex="0"]):focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* --accent-ink measures 2.64:1 on the header's dark surface, so it inverts
+   there: --accent is 7.75:1 on the header and 1.74:1 on the page. Each surface
+   gets the one that works on it. */
+.site-header :where(a[href], button):focus-visible {
+  outline-color: var(--accent);
+}
+
 .container {
   width: min(calc(100% - 2.5rem), var(--max-width));
   margin: 0 auto;
@@ -276,12 +304,14 @@ a {
 .button-subtle {
   padding-inline: 0;
   min-height: unset;
-  color: #1a92d8;
+  /* Was #1a92d8, which measured 3.07:1 on --bg — below AA for text this size
+     (0.94rem/600). --accent-ink is the token that exists for exactly this. */
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
 .button-subtle:hover {
-  color: #1478b8;
+  color: #1060a0;
   transform: translateY(-1px);
 }
 
@@ -545,7 +575,7 @@ a {
   align-items: center;
   gap: 0.35rem;
   font-weight: 600;
-  color: #1a92d8;
+  color: var(--accent-ink);
   font-size: 0.94rem;
 }
 
@@ -877,14 +907,25 @@ a {
 .field input:focus,
 .field textarea:focus,
 .field select:focus {
-  border-color: var(--border-strong);
-  box-shadow: 0 0 0 4px rgba(102, 182, 255, 0.12);
+  border-color: var(--accent-ink);
+  box-shadow: 0 0 0 4px rgba(22, 107, 166, 0.16);
   background: #ffffff;
+}
+
+/* `outline: none` above removes the browser's own focus ring, so keyboard users
+   need an explicit replacement. The border change alone is not enough: it moves
+   only one edge of one element, where a ring reads unambiguously. */
+.field input:focus-visible,
+.field textarea:focus-visible,
+.field select:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
 }
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #6b7d96;
+  /* 4.05:1 previously; placeholders still have to be readable. */
+  color: #5b6b82;
 }
 
 .field textarea {

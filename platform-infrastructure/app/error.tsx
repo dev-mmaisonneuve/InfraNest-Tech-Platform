@@ -19,7 +19,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="page-shell" id="main-content">
+    <div className="page-shell">
       <div className="container">
         <div className="section-heading">
           <span className="eyebrow">Something went wrong</span>
