@@ -143,7 +143,7 @@ export default function HomePage() {
                   </div>
                   <div className="hero-feature-row">
                     <span className="hero-feature-dot" aria-hidden="true" />
-                    <span>1-day typical first response</span>
+                    <span>24-hour typical first response</span>
                   </div>
                   <div className="hero-feature-row">
                     <span className="hero-feature-dot" aria-hidden="true" />

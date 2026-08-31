@@ -90,6 +90,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body suppressHydrationWarning>
+        {/*
+          Reveal animations are progressive enhancement. This runs before first
+          paint: without JavaScript the .js class never lands and content is
+          simply visible. The timer covers the harder failure — HTML delivered
+          but the bundle blocked, failed, or slow — by force-revealing
+          everything unless hydration (RevealObserver) checks in within 2.5s.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'document.documentElement.classList.add("js");window.setTimeout(function(){if(!window.__revealReady)document.documentElement.classList.add("reveal-fallback")},2500);',
+          }}
+        />
         {/* Must be the first focusable element so it is reachable on the first Tab. */}
         <a className="skip-link" href="#main-content">
           Skip to content

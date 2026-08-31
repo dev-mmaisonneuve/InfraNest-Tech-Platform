@@ -35,6 +35,11 @@
 
 html {
   scroll-behavior: smooth;
+  /* Reveal animations translate below-fold elements sideways before the
+     observer clears them; without this the homepage, contact and quote pages
+     all scroll horizontally by ~10px on phones. clip contains the overflow
+     without creating a scroll container the way hidden would. */
+  overflow-x: clip;
 }
 
 body {
@@ -719,12 +724,12 @@ a {
   box-shadow: var(--shadow-card);
 }
 
-.service-card h3,
-.trust-card h3,
-.process-card h3,
-.about-card h3,
-.contact-card h3,
-.card h3 {
+.service-card :is(h2, h3),
+.trust-card :is(h2, h3),
+.process-card :is(h2, h3),
+.about-card :is(h2, h3),
+.contact-card :is(h2, h3),
+.card :is(h2, h3) {
   margin: 0 0 0.6rem;
   font-family: var(--font-display), Arial, sans-serif;
   font-size: 1.18rem;
@@ -1387,10 +1392,16 @@ a {
 .footer-contact-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.1rem;
 }
 
 .footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  /* 0.55rem vertical padding takes the 25px line box to ~44px of tappable
+     area (WCAG 2.5.8 practical guidance) without visually inflating the
+     footer — the stack gap above shrinks to compensate. */
+  padding: 0.55rem 0;
   color: var(--text);
   font-size: 0.91rem;
   font-weight: 600;
@@ -1882,20 +1893,34 @@ details.faq-item[open] .faq-answer {
   .section {
     padding: 2.75rem 0;
   }
+
+  /* Horizontal reveal offsets become vertical on phones: the sideways slide
+     is what created the overflow, and at this width it reads as a glitch
+     rather than motion design. */
+  .js [data-reveal="left"],
+  .js [data-reveal="right"] {
+    transform: translateY(18px);
+  }
 }
 
 /* ─── Scroll Reveal ─── */
 
-[data-reveal] {
+/* Hidden only when the inline bootstrap script has run (.js on <html>), so
+   content stays visible with JavaScript unavailable or blocked. The same
+   script arms a timer that adds .reveal-fallback if hydration has not
+   happened within 2.5s — a slow or failed bundle un-hides everything rather
+   than leaving the visitor a blank page. */
+.js [data-reveal] {
   opacity: 0;
   transform: translateY(22px);
   transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
-[data-reveal="left"]  { transform: translateX(-22px); }
-[data-reveal="right"] { transform: translateX(22px); }
+.js [data-reveal="left"]  { transform: translateX(-22px); }
+.js [data-reveal="right"] { transform: translateX(22px); }
 
-[data-reveal].is-visible {
+[data-reveal].is-visible,
+.reveal-fallback [data-reveal] {
   opacity: 1;
   transform: translate(0, 0);
 }

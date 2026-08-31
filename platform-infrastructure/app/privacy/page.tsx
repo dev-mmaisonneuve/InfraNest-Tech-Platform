@@ -28,6 +28,7 @@ export default function PrivacyPage() {
     <div className="page-shell">
       <div className="container stack">
         <SectionHeading
+          h1
           eyebrow="Privacy"
           title="Privacy Policy"
           description={`How InfraNest handles the information you share through this website. Last updated ${lastUpdated}.`}
