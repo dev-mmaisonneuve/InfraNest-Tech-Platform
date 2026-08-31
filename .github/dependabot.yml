@@ -42,9 +42,9 @@ updates:
     # unblocks us; scoped this way, 7.1 arrives as an ordinary PR and announces
     # itself. ESLint cannot work that way — the fix has to ship in
     # eslint-plugin-react, not in a new ESLint version, so no version range can
-    # signal it, and that half is date-driven in INT-44 instead.
+    # signal it, and that half is date-driven in STM-44 instead.
     #
-    # Remove each entry once its ecosystem support lands — tracked in INT-44.
+    # Remove each entry once its ecosystem support lands — tracked in STM-44.
     ignore:
       - dependency-name: typescript
         versions: ["7.0.x"]
