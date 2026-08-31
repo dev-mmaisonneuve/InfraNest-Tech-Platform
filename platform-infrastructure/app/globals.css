@@ -1646,6 +1646,15 @@ details.faq-item summary {
   user-select: none;
 }
 
+/* .faq-item sets overflow: hidden so its rounded corners clip the answer, and
+   summary fills its content box exactly — no padding on the details, no margin
+   on the summary. A positive outline-offset therefore lands outside the padding
+   box, which is precisely where the clip happens, and the ring vanishes on all
+   four sides. Drawn inside instead; the summary's own 1rem padding leaves room. */
+details.faq-item summary:focus-visible {
+  outline-offset: -3px;
+}
+
 details.faq-item summary::-webkit-details-marker {
   display: none;
 }
