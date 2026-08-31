@@ -129,7 +129,7 @@ export default function AboutPage() {
         </div>
 
         {/* ─── Bottom CTA ─── */}
-        <div className="panel" style={{ padding: "2rem" }}>
+        <div className="panel" style={{ padding: "var(--card-pad)" }}>
           <div className="section-split">
             <div className="stack">
               <span className="eyebrow">Work with InfraNest</span>

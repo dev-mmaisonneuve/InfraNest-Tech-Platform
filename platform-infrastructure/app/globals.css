@@ -2066,6 +2066,25 @@ details.faq-item[open] .faq-answer {
     font-size: 0.82rem;
     line-height: 1.35;
   }
+
+  /* Card icon plates: 44px + 17px margin before a word of content appears,
+     repeated on every card on About, Services and the homepage preview.
+     Kept — they carry brand personality — but at label scale. */
+  .card-icon-wrap {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .card-icon-wrap svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .step-badge {
+    margin-bottom: 0.7rem;
+  }
 }
 
 [data-reveal].is-visible,
