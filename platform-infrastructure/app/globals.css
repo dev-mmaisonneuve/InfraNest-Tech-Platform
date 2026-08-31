@@ -179,12 +179,12 @@ a {
 }
 
 .page-shell {
-  padding: 6rem 0 8rem;
+  padding: clamp(4.5rem, 3.4rem + 3.2vw, 6rem) 0 clamp(3.5rem, 2rem + 4.4vw, 8rem);
 }
 
 .stack {
   display: grid;
-  gap: 1.5rem;
+  gap: clamp(1rem, 0.8rem + 0.9vw, 1.5rem);
 }
 
 .eyebrow {
@@ -231,7 +231,9 @@ a {
 
 .section-heading {
   max-width: 48rem;
-  margin-bottom: 3rem;
+  /* The gap between a section's introduction and the content it introduces
+     was a flat 48px everywhere; fluid so phones spend ~30px. */
+  margin-bottom: clamp(1.8rem, 1.3rem + 1.7vw, 3rem);
 }
 
 .section-heading h1,
@@ -258,7 +260,9 @@ a {
 /* ─── Hero ─── */
 
 .hero {
-  padding: 7rem 0 5.5rem;
+  /* Top padding must clear the fixed header at every width (56px mobile,
+     77px desktop); beyond that it was pure spend. */
+  padding: clamp(5rem, 4rem + 3vw, 7rem) 0 clamp(2.5rem, 1.5rem + 2.8vw, 5.5rem);
   position: relative;
 }
 
@@ -271,11 +275,30 @@ a {
 
 .hero-copy {
   display: grid;
-  gap: 1.5rem;
+  gap: 0;
+}
+
+/* The single 1.5rem gap made eyebrow, headline, paragraph, CTAs and stats
+   read as five equally-weighted objects in a stack. Spacing now encodes the
+   relationships: the eyebrow is the headline's label (close), the paragraph
+   supports it (medium), the CTA row is a separate act (far). */
+.hero-copy .eyebrow {
+  /* Grid items stretch by default, which turned this label into a
+     full-width banner. Sized to its own text it reads as a badge again. */
+  justify-self: start;
+  margin-bottom: 0.75rem;
+}
+
+.hero-copy > p {
+  margin-bottom: 1.6rem;
+}
+
+.hero-copy .hero-actions {
+  margin-bottom: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
 }
 
 .hero-copy h1 {
-  margin: 0;
+  margin: 0 0 1rem;
   font-family: var(--font-display), Arial, sans-serif;
   font-size: var(--step-h1);
   line-height: 1.06;
@@ -662,7 +685,7 @@ a {
 .about-grid,
 .contact-grid {
   display: grid;
-  gap: 1rem;
+  gap: clamp(0.75rem, 0.6rem + 0.55vw, 1rem);
 }
 
 .stats-grid {
@@ -1758,15 +1781,6 @@ details.faq-item[open] .faq-answer {
 @media (max-width: 760px) {
   .container {
     width: min(calc(100% - 1.5rem), var(--max-width));
-  }
-
-  .page-shell {
-    padding-top: 4.25rem;
-    padding-bottom: 4rem;
-  }
-
-  .hero {
-    padding-top: 4.25rem;
   }
 
   .header-row {
