@@ -55,4 +55,9 @@ jobs:
       # Runs without any secrets: every page is static or renders without env
       # vars, and the form routes only read them at request time.
       - name: Build
+        # lib/site-url.ts fails production builds when this is absent, by
+        # design — CI must therefore say what the real site URL is rather
+        # than silently building against a localhost fallback.
+        env:
+          NEXT_PUBLIC_SITE_URL: https://infranests.com
         run: npm run build

@@ -10,6 +10,7 @@ import { company } from "@/data/site-content";
 import { brandAssets } from "@/lib/brand-assets";
 
 import "./globals.css";
+import { siteUrl } from "@/lib/site-url";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,7 +40,6 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -142,10 +142,15 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "ProfessionalService",
               name: company.name,
+              description:
+                "Managed IT operations, cloud infrastructure, SaaS administration, and responsive technology support for small businesses.",
               email: company.email,
               telephone: company.phone,
               areaServed: company.serviceArea,
               url: siteUrl,
+              logo: `${siteUrl}${brandAssets.badge.src}`,
+              image: `${siteUrl}/opengraph-image`,
+              sameAs: [company.linkedIn],
             }),
           }}
         />
