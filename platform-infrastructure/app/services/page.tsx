@@ -68,7 +68,7 @@ export default function ServicesPage() {
       <div className="container stack">
         <SectionHeading
           eyebrow="Services"
-          title="Technology support that keeps your business running smoothly."
+          title="Technology support that runs quietly so your business doesn't have to."
           description="InfraNest focuses on the practical systems, workflows, and operational responsibilities that keep a growing business moving."
           h1
           reveal
@@ -105,7 +105,7 @@ export default function ServicesPage() {
             </div>
             <h3>Who this is for</h3>
             <p>
-              Small businesses and growing teams that need reliable operational coverage, a stronger support structure, and
+              Small businesses and growing teams that need reliable operational coverage, smarter support structure, and
               better technology ownership without building a full internal IT function too early.
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function ServicesPage() {
             <div className="stack">
               <span className="eyebrow">Next step</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.9rem, 4vw, 2.6rem)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08 }}>
-                If your business needs hands-on support, start by requesting a quote.
+                If you already know the business needs hands-on support, start with the quote flow.
               </h2>
               <p className="meta-copy">
                 Share what is happening, the kind of support you need, and your expected timing. InfraNest will reply

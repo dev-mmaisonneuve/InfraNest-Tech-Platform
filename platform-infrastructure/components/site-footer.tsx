@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { CurrentYear } from "@/components/current-year";
-import { company } from "@/data/site-content";
+import { company, navigation } from "@/data/site-content";
 import { brandAssets } from "@/lib/brand-assets";
 
 export function SiteFooter() {
@@ -32,9 +32,21 @@ export function SiteFooter() {
                 />
               </div>
               <p className="footer-tagline">
-                Dependable IT operations, cloud infrastructure, and managed business support for growing teams.
+                Dependable IT operations, cloud infrastructure, and managed business support for lean, growing teams.
               </p>
               <span className="footer-area">{company.serviceArea}</span>
+            </div>
+
+            {/* ─── Navigation column ─── */}
+            <div className="footer-col">
+              <span className="footer-col-label">Navigation</span>
+              <nav className="footer-links">
+                {navigation.map((item) => (
+                  <Link key={item.href} href={item.href}>{item.label}</Link>
+                ))}
+                <Link href="/quote">Quote</Link>
+                <Link href="/privacy">Privacy</Link>
+              </nav>
             </div>
 
             {/* ─── Contact column ─── */}
@@ -51,7 +63,6 @@ export function SiteFooter() {
                 >
                   LinkedIn
                 </a>
-                <Link className="footer-contact-link" href="/privacy">Privacy</Link>
               </div>
               <span className="footer-legal">&copy; <CurrentYear fallback={new Date().getFullYear()} /> InfraNest Technologies.<br />All rights reserved.</span>
             </div>
