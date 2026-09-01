@@ -62,6 +62,25 @@ export function SiteHeader() {
     };
   }, [isOpen]);
 
+  // The menu only exists below 760px, but isOpen is React state and survives a
+  // resize across that boundary — and a phone in landscape is already past it
+  // (an iPhone 14 is 390px portrait, 844px landscape). Rotating with the menu
+  // open would hide the toggle behind the desktop nav while the scroll lock
+  // above stayed applied, leaving the page unscrollable with no visible
+  // control to release it. Closing on the query un-matching resolves both the
+  // lock and the stale data-open state.
+  //
+  // The 760px literal mirrors the breakpoint in globals.css; the two have to
+  // be changed together.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 760px)");
+    const onChange = (event: MediaQueryListEvent) => {
+      if (!event.matches) setIsOpen(false);
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   // Tapping anywhere outside the header (the open panel is part of it)
   // closes the menu — the other half of the scroll-lock expectation.
   useEffect(() => {
