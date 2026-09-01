@@ -127,7 +127,7 @@ export default function ServicesPage() {
         </div>
 
         {/* ─── Platforms ─── */}
-        <div className="panel" style={{ padding: "1.5rem 2rem" }} data-reveal>
+        <div className="panel" style={{ padding: "1.5rem 2rem" }}>
           <div className="stack" style={{ gap: "0.9rem" }}>
             <span className="eyebrow">Platforms we support</span>
             <div className="marquee-track">
