@@ -150,7 +150,7 @@ export function QuoteForm() {
           <p>Give InfraNest enough context to recommend the right starting point without overcomplicating the process.</p>
         </div>
 
-        <div className="form-grid">
+        <div className="form-grid form-grid--quote">
           <Field
             label="Name"
             name="name"

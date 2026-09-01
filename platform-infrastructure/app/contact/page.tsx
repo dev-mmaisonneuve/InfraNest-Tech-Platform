@@ -39,7 +39,7 @@ const contactIcons: Record<string, React.ReactNode> = {
 
 export default function ContactPage() {
   return (
-    <div className="page-shell">
+    <div className="page-shell page-enter">
       <div className="container stack">
         <SectionHeading
           eyebrow="Contact"
@@ -48,7 +48,7 @@ export default function ContactPage() {
           h1
         />
 
-        <div className="section-split contact-split">
+        <div className="section-split contact-split section-split--form">
           <div className="info-panel" style={{ padding: "1.75rem" }}>
             <div className="stack">
               <span className="eyebrow">Direct contact</span>
