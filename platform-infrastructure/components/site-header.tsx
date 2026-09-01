@@ -56,6 +56,7 @@ export function SiteHeader() {
                 const isActive =
                   (item.section && activeSection === item.section && pathname === "/") ||
                   (!item.section && pathname === item.href);
+
                 return (
                   <Link key={item.href} href={item.href} data-active={isActive}>
                     {item.label}
@@ -64,6 +65,7 @@ export function SiteHeader() {
               })}
             </nav>
           </div>
+
         </div>
       </div>
     </header>

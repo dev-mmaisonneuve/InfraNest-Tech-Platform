@@ -1427,7 +1427,7 @@ a {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   gap: 2rem 4rem;
   align-items: start;
 }
