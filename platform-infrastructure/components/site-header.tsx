@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { navigation } from "@/data/site-content";
+import { company, navigation } from "@/data/site-content";
 import { brandAssets } from "@/lib/brand-assets";
 import { useScrollSpy } from "@/lib/use-scroll-spy";
 
@@ -123,8 +123,13 @@ export function SiteHeader() {
             />
           </Link>
 
-          <div className="nav-shell" data-open={isOpen}>
-            <nav className="nav-links" id="primary-navigation" ref={navRef} aria-label="Primary navigation">
+          {/*
+            On mobile the shell itself is the panel — a full-height sheet
+            below the bar rather than a strip that ends mid-page. On desktop
+            it is an inert wrapper and all of this collapses to a row.
+          */}
+          <div className="nav-shell" id="primary-navigation" data-open={isOpen}>
+            <nav className="nav-links" ref={navRef} aria-label="Primary navigation">
               {navigation.map((item) => {
                 const isActive =
                   (item.section && activeSection === item.section && pathname === "/") ||
@@ -139,6 +144,18 @@ export function SiteHeader() {
                 Request a quote
               </Link>
             </nav>
+
+            {/* Mobile only. Gives the open menu somewhere to end, and puts the
+                two things a visitor on a phone most wants — a number to call
+                and an address to write to — one tap from anywhere. */}
+            <div className="nav-panel-contact">
+              <a href={`tel:${company.phone.replace(/[^\d]/g, "")}`}>{company.phone}</a>
+              <a href={`mailto:${company.email}`}>{company.email}</a>
+              <div className="nav-panel-social">
+                <a href={company.linkedIn} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href={company.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
+              </div>
+            </div>
           </div>
 
           <div className="nav-actions">

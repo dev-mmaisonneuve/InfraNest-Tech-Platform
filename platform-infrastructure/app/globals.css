@@ -46,8 +46,8 @@
   /* ── Spacing ───────────────────────────────────────────────────────────
      Section rhythm and card padding scale continuously instead of halving
      at one breakpoint. */
-  --section-pad: clamp(3rem, 1.9rem + 4.1vw, 5.5rem);
-  --card-pad: clamp(1.15rem, 0.9rem + 1.1vw, 1.75rem);
+  --section-pad: clamp(3.5rem, 2.4rem + 4.1vw, 5.5rem);
+  --card-pad: clamp(1.3rem, 1.05rem + 1.1vw, 1.75rem);
   --lead-lh: 1.6;
 }
 
@@ -233,7 +233,7 @@ a {
   max-width: 48rem;
   /* The gap between a section's introduction and the content it introduces
      was a flat 48px everywhere; fluid so phones spend ~30px. */
-  margin-bottom: clamp(1.8rem, 1.3rem + 1.7vw, 3rem);
+  margin-bottom: clamp(2.1rem, 1.6rem + 1.7vw, 3rem);
 }
 
 .section-heading h1,
@@ -311,9 +311,6 @@ a {
   margin-bottom: 0.75rem;
 }
 
-.hero-copy > p {
-  margin-bottom: 1.6rem;
-}
 
 .hero-copy .hero-actions {
   margin-bottom: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
@@ -330,10 +327,15 @@ a {
 }
 
 .hero-copy p {
-  margin: 0;
+  margin-top: 0;
   color: var(--muted);
   font-size: var(--step-lead);
   max-width: 42rem;
+  /* Separates the supporting copy from the CTA row. This lived in a
+     `.hero-copy > p` rule above, which has the same specificity as this one
+     and lost on source order — so the margin was silently 0 and the
+     paragraph ran into the buttons. */
+  margin-bottom: 1.75rem;
   /* 1.82 was a desktop value carried onto phones, where lines are short and
      that much leading reads as disconnection rather than air. Fluid between
      ~1.55 on narrow measures and ~1.75 on wide ones; em units because a
@@ -1299,7 +1301,8 @@ a {
   gap: 1.35rem;
 }
 
-.mobile-nav-quote {
+.mobile-nav-quote,
+.nav-panel-contact {
   display: none;
 }
 
@@ -1834,57 +1837,141 @@ details.faq-item[open] .faq-answer {
     justify-content: center;
   }
 
-  .nav-shell {
-    position: static;
-  }
+  /* The shell is the panel: a full-height sheet from under the bar to the
+     bottom of the screen. The previous version was a strip sized to its own
+     content, which left a hard edge across the middle of the page and read
+     as a slab dropped on top of it.
 
-  .nav-links {
-    /* Attached to the bar: full bleed, square top corners, the header's own
-       background — opening extends the header downward instead of floating
-       a fourth surface under it. Hidden via visibility rather than display
-       so the open/close can actually transition (display cannot animate,
-       which is why the old menu popped). The backdrop blur went with the
-       old card: at 0.97 alpha it was invisible and cost compositing. */
+     The background is fully opaque. At rgba(.97) the page showed through —
+     invisible in isolation, but --text (#111827) against the composited
+     panel (11,17,27) differs by about 6 per channel, so headings ghosted
+     through as legible shapes. The old design hid that with a backdrop
+     blur; removing the blur without removing the alpha is what made the
+     menu look broken. */
+  .nav-shell {
     position: fixed;
     top: 3.5rem;
     left: 0;
     right: 0;
+    bottom: 0;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    padding: 0.5rem 1.25rem 1.15rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(4, 10, 20, 0.97);
+    padding: 1.35rem 1.5rem calc(1.35rem + env(safe-area-inset-bottom, 0px));
+    background: #050b16;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
     transition:
-      opacity 180ms ease,
-      transform 180ms ease,
-      visibility 0s linear 180ms;
+      opacity 200ms ease,
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 200ms;
   }
 
-  .nav-shell[data-open="true"] .nav-links {
+  .nav-shell[data-open="true"] {
     opacity: 1;
     visibility: visible;
     transform: none;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 200ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-links {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    /* Reset, do not inherit: the base rule is a 1.35rem gap for a horizontal
+       desktop row. Left in place it stacked on top of each link's own
+       padding and pushed the items ~57px apart, which is what made the menu
+       look loose and unconsidered. Dividers carry the separation now. */
+    gap: 0;
   }
 
   .nav-links a {
-    color: rgba(255, 255, 255, 0.72);
-    padding: 0.65rem 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* 52px rows: comfortably past the 44px target without the sprawl. */
+    min-height: 3.25rem;
+    padding: 0 0 0 0.9rem;
+    font-size: 1.02rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.82);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* The desktop underline indicator would sit under a full-width row here. */
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-links a[data-active="true"] {
+    color: #ffffff;
+  }
+
+  /* Accent bar marks the current page — the desktop nav has an active state
+     and the mobile menu had none. */
+  .nav-links a[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 1.15rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-green));
   }
 
   .mobile-nav-quote {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 0.35rem;
-    padding: 0.8rem 1rem !important;
+    min-height: 3.25rem;
+    margin-top: 1.5rem;
+    padding: 0 1rem !important;
     border-radius: 999px;
+    border-bottom: none !important;
     background: linear-gradient(135deg, #7fd0ff, #b8e8ff);
     color: #04101b !important;
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .mobile-nav-quote::before {
+    display: none;
+  }
+
+  .nav-panel-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    /* Pinned to the bottom of the sheet: the links group at the top, this
+       anchors the base, and the space between them is the composition
+       rather than leftover emptiness. */
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+
+  .nav-panel-contact a {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+
+  .nav-panel-social {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.35rem;
+  }
+
+  .nav-panel-social a {
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 600;
   }
 
   .nav-actions .button-secondary {

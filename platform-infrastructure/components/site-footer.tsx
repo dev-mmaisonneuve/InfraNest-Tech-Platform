@@ -63,6 +63,14 @@ export function SiteFooter() {
                 >
                   LinkedIn
                 </a>
+                <a
+                  className="footer-contact-link"
+                  href={company.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Instagram
+                </a>
               </div>
               <span className="footer-legal">&copy; <CurrentYear fallback={new Date().getFullYear()} /> InfraNest Technologies.<br />All rights reserved.</span>
             </div>
