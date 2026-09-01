@@ -42,7 +42,7 @@ export default function AboutPage() {
         <SectionHeading
           eyebrow="About InfraNest"
           title="A steadier foundation for business technology."
-          description="InfraNest is built for businesses that want organized systems, responsive support, and a thoughtful technology partner."
+          description="InfraNest is built for businesses that want clean systems, responsive support, and a thoughtful operator on the technology side of the business."
           h1
           reveal
         />
@@ -94,7 +94,7 @@ export default function AboutPage() {
           <SectionHeading
             eyebrow="Credibility"
             title="A calm, structured approach to business technology."
-            description="The goal is not more noise. It is a cleaner operating environment, steadier support, and better decisions about the systems your business depends on."
+            description="The goal is not more noise. A cleaner operating environment, steadier support, and better decisions around the systems your business depends on."
             reveal
           />
           <div className="trust-grid">
