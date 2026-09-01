@@ -1,6 +1,10 @@
+/**
+ * Runtime-ready assets only. The full-resolution brand masters live in
+ * `assets/` at the project root (see assets/README.md) and are deliberately
+ * not addressable here: pointing UI code at a 200kB source PNG is how the
+ * footer ended up serving one.
+ */
 export const brandAssets = {
-  sourceWordmark: "/assets/Infra-logo.png",
-  sourceArchiveWordmark: "/assets/InfraNest-logo.png",
   uiWordmark: {
     src: "/assets/infra-logo-ui.png",
     width: 448,

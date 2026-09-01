@@ -25,10 +25,10 @@ export function SiteFooter() {
               <div className="brand-mark">
                 <Image
                   className="brand-wordmark footer-brand-larger"
-                  src="/assets/Infra-logo.png"
+                  src={brandAssets.uiWordmark.src}
                   alt="InfraNest Technologies"
-                  width={292}
-                  height={112}
+                  width={brandAssets.uiWordmark.width}
+                  height={brandAssets.uiWordmark.height}
                 />
               </div>
               <p className="footer-tagline">

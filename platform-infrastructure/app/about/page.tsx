@@ -52,7 +52,7 @@ export default function AboutPage() {
           <div className="info-panel" style={{ padding: "1.5rem" }} data-reveal="left">
             <div className="stack">
               <span className="eyebrow">Our story</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.35rem, 2.5vw, 1.75rem)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
+              <h2 className="panel-heading">
                 Small businesses deserve strong technology operations before things become chaotic.
               </h2>
               <p className="meta-copy">{aboutContent.story}</p>
@@ -129,11 +129,11 @@ export default function AboutPage() {
         </div>
 
         {/* ─── Bottom CTA ─── */}
-        <div className="panel" style={{ padding: "2rem" }}>
+        <div className="panel" style={{ padding: "var(--card-pad)" }}>
           <div className="section-split">
             <div className="stack">
               <span className="eyebrow">Work with InfraNest</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)", fontWeight: 800, letterSpacing: "-0.035em", lineHeight: 1.1 }}>
+              <h2 className="cta-heading">
                 Ready to talk about what steady technology support looks like?
               </h2>
               <p className="meta-copy">

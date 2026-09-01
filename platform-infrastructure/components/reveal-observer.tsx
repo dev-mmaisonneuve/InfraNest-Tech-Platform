@@ -6,6 +6,10 @@ export function RevealObserver() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Tells the inline bootstrap script that hydration made it in time, so the
+    // 2.5s force-reveal fallback does not fire. Once fired it is left in
+    // place: re-hiding already-visible content would flash.
+    (window as Window & { __revealReady?: boolean }).__revealReady = true;
     const els = document.querySelectorAll("[data-reveal]");
     const io = new IntersectionObserver(
       (entries) =>

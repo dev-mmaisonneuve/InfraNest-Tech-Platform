@@ -25,6 +25,30 @@
   --radius-md: 18px;
   --radius-sm: 12px;
   --max-width: 1240px;
+
+  /* ── Fluid type scale ──────────────────────────────────────────────────
+     One continuous scale from 320px to desktop, replacing the previous
+     split where a max-width:760px block re-set headings in 14vw/10vw —
+     which made type LARGER as screens got smaller (60px h1 on a 430px
+     phone vs 42px on a 768px tablet) and snapped 22px at the boundary.
+     Slopes are tuned so the desktop sizes are unchanged: --step-h1 still
+     reaches its 4.6rem cap at ~1330px, --step-h2 its 2.9rem cap by
+     ~1290px. Phones land at ~32px / ~26px. */
+  --step-h1: clamp(2rem, 0.9rem + 4.5vw, 4.6rem);
+  --step-h2: clamp(1.6rem, 1.05rem + 2.3vw, 2.9rem);
+  --step-h3: clamp(1.08rem, 1rem + 0.4vw, 1.18rem);
+  --step-lead: clamp(1.02rem, 0.94rem + 0.42vw, 1.18rem);
+  --step-body: 1.0625rem;
+  --text-md: 0.9375rem;
+  --text-sm: 0.85rem;
+  --text-xs: 0.75rem;
+
+  /* ── Spacing ───────────────────────────────────────────────────────────
+     Section rhythm and card padding scale continuously instead of halving
+     at one breakpoint. */
+  --section-pad: clamp(3rem, 1.9rem + 4.1vw, 5.5rem);
+  --card-pad: clamp(1.15rem, 0.9rem + 1.1vw, 1.75rem);
+  --lead-lh: 1.6;
 }
 
 *,
@@ -35,6 +59,11 @@
 
 html {
   scroll-behavior: smooth;
+  /* Reveal animations translate below-fold elements sideways before the
+     observer clears them; without this the homepage, contact and quote pages
+     all scroll horizontally by ~10px on phones. clip contains the overflow
+     without creating a scroll container the way hidden would. */
+  overflow-x: clip;
 }
 
 body {
@@ -150,12 +179,12 @@ a {
 }
 
 .page-shell {
-  padding: 6rem 0 8rem;
+  padding: clamp(4.5rem, 3.4rem + 3.2vw, 6rem) 0 clamp(3.5rem, 2rem + 4.4vw, 8rem);
 }
 
 .stack {
   display: grid;
-  gap: 1.5rem;
+  gap: clamp(1rem, 0.8rem + 0.9vw, 1.5rem);
 }
 
 .eyebrow {
@@ -197,36 +226,65 @@ a {
 /* ─── Sections ─── */
 
 .section {
-  padding: 5.5rem 0;
+  padding: var(--section-pad) 0;
 }
 
 .section-heading {
   max-width: 48rem;
-  margin-bottom: 3rem;
+  /* The gap between a section's introduction and the content it introduces
+     was a flat 48px everywhere; fluid so phones spend ~30px. */
+  margin-bottom: clamp(1.8rem, 1.3rem + 1.7vw, 3rem);
 }
 
 .section-heading h1,
 .section-heading h2 {
-  margin: 0.85rem 0 0;
+  /* Tighter than before (0.85rem): the eyebrow is this heading's label and
+     should read as attached to it, not floating above it. */
+  margin: 0.6rem 0 0;
   font-family: var(--font-display), Arial, sans-serif;
-  font-size: clamp(1.85rem, 4.5vw, 2.9rem);
+  font-size: var(--step-h2);
   line-height: 1.12;
   letter-spacing: -0.022em;
   font-weight: 800;
+  text-wrap: balance;
+}
+
+/* Panel and CTA headings — previously six inline style objects across four
+   pages, in three slightly different sizes for the same role. One fluid size
+   per role, on the shared scale. */
+.panel-heading {
+  margin: 0;
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.cta-heading {
+  margin: 0;
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: clamp(1.45rem, 1.1rem + 1.6vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
 }
 
 .section-heading p {
-  margin: 1.1rem 0 0;
+  margin: 0.8rem 0 0;
   color: var(--muted);
-  font-size: 1.125rem;
-  line-height: 1.82;
+  font-size: var(--step-lead);
+  line-height: var(--lead-lh);
   max-width: 44rem;
 }
 
 /* ─── Hero ─── */
 
 .hero {
-  padding: 7rem 0 5.5rem;
+  /* Top padding must clear the fixed header at every width (56px mobile,
+     77px desktop); beyond that it was pure spend. */
+  padding: clamp(5rem, 4rem + 3vw, 7rem) 0 clamp(2.5rem, 1.5rem + 2.8vw, 5.5rem);
   position: relative;
 }
 
@@ -239,24 +297,48 @@ a {
 
 .hero-copy {
   display: grid;
-  gap: 1.5rem;
+  gap: 0;
+}
+
+/* The single 1.5rem gap made eyebrow, headline, paragraph, CTAs and stats
+   read as five equally-weighted objects in a stack. Spacing now encodes the
+   relationships: the eyebrow is the headline's label (close), the paragraph
+   supports it (medium), the CTA row is a separate act (far). */
+.hero-copy .eyebrow {
+  /* Grid items stretch by default, which turned this label into a
+     full-width banner. Sized to its own text it reads as a badge again. */
+  justify-self: start;
+  margin-bottom: 0.75rem;
+}
+
+.hero-copy > p {
+  margin-bottom: 1.6rem;
+}
+
+.hero-copy .hero-actions {
+  margin-bottom: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
 }
 
 .hero-copy h1 {
-  margin: 0;
+  margin: 0 0 1rem;
   font-family: var(--font-display), Arial, sans-serif;
-  font-size: clamp(2.6rem, 5.5vw, 4.6rem);
+  font-size: var(--step-h1);
   line-height: 1.06;
   letter-spacing: -0.025em;
   font-weight: 800;
+  text-wrap: balance;
 }
 
 .hero-copy p {
   margin: 0;
   color: var(--muted);
-  font-size: 1.18rem;
+  font-size: var(--step-lead);
   max-width: 42rem;
-  line-height: 1.82;
+  /* 1.82 was a desktop value carried onto phones, where lines are short and
+     that much leading reads as disconnection rather than air. Fluid between
+     ~1.55 on narrow measures and ~1.75 on wide ones; em units because a
+     unitless number cannot participate in calc with a length. */
+  line-height: clamp(1.55em, 1.35em + 0.5vw, 1.8em);
 }
 
 .hero-actions,
@@ -365,6 +447,15 @@ a {
 }
 
 /* ─── Hero Spotlight ─── */
+
+/* All ambient animation inside the spotlight pauses while it is offscreen —
+   on phones it renders ~340px below the fold and was animating unseen from
+   first paint. The wrapper sets data-inview from an IntersectionObserver;
+   with JavaScript absent the attribute never appears and nothing pauses. */
+.hero-spotlight[data-inview="false"] *,
+.hero-spotlight[data-inview="false"] {
+  animation-play-state: paused !important;
+}
 
 .hero-spotlight {
   position: relative;
@@ -581,14 +672,6 @@ a {
   transform-origin: center;
 }
 
-.section-jump {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-weight: 600;
-  color: var(--accent-ink);
-  font-size: 0.94rem;
-}
 
 .hero-kicker {
   color: rgba(255, 255, 255, 0.55);
@@ -621,11 +704,9 @@ a {
 .cards-grid,
 .service-grid,
 .trust-grid,
-.process-grid,
-.about-grid,
-.contact-grid {
+.process-grid{
   display: grid;
-  gap: 1rem;
+  gap: clamp(0.75rem, 0.6rem + 0.55vw, 1rem);
 }
 
 .stats-grid {
@@ -640,9 +721,11 @@ a {
   padding: 1.25rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.5);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  /* Was rgba(.5) plus backdrop blur — but the backdrop here is the page's
+     own static near-white gradient, so the frost was invisible while the
+     compositor re-sampled it every frame. Slightly more opaque fill, no
+     filter. */
+  background: rgba(255, 255, 255, 0.62);
   color: #0f172a;
 }
 
@@ -660,6 +743,11 @@ a {
   box-shadow: 0 6px 16px rgba(112, 194, 255, 0.28);
   flex-shrink: 0;
   margin-bottom: 0.15rem;
+}
+
+.stat-copy {
+  display: grid;
+  gap: 0.2rem;
 }
 
 .stat-value {
@@ -685,9 +773,7 @@ a {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.process-grid,
-.about-grid,
-.contact-grid {
+.process-grid{
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -697,9 +783,8 @@ a {
 .service-card,
 .trust-card,
 .process-card,
-.about-card,
-.contact-card {
-  padding: 1.75rem;
+.about-card{
+  padding: var(--card-pad);
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: #ffffff;
@@ -711,23 +796,21 @@ a {
 .service-card:hover,
 .trust-card:hover,
 .process-card:hover,
-.about-card:hover,
-.contact-card:hover {
+.about-card:hover{
   transform: translateY(-3px);
   border-color: var(--border-strong);
   background: #f4f8ff;
   box-shadow: var(--shadow-card);
 }
 
-.service-card h3,
-.trust-card h3,
-.process-card h3,
-.about-card h3,
-.contact-card h3,
-.card h3 {
+.service-card :is(h2, h3),
+.trust-card :is(h2, h3),
+.process-card :is(h2, h3),
+.about-card :is(h2, h3),
+.card :is(h2, h3) {
   margin: 0 0 0.6rem;
   font-family: var(--font-display), Arial, sans-serif;
-  font-size: 1.18rem;
+  font-size: var(--step-h3);
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.015em;
@@ -737,14 +820,13 @@ a {
 .trust-card p,
 .process-card p,
 .about-card p,
-.contact-card p,
 .card p,
 .card li,
 .service-card li,
-.about-card li {
+.about-card li{
   margin: 0;
   color: var(--muted);
-  line-height: 1.76;
+  line-height: 1.62;
   font-size: 1rem;
 }
 
@@ -1210,16 +1292,6 @@ a {
   transition: height 420ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.brand-copy strong {
-  display: block;
-  font-family: var(--font-display), Arial, sans-serif;
-  font-size: 1rem;
-}
-
-.brand-copy span {
-  color: var(--muted);
-  font-size: 0.88rem;
-}
 
 .nav-links {
   display: flex;
@@ -1283,14 +1355,39 @@ a {
   color: #ffffff;
 }
 
+/* Hamburger-to-X morph, keyed off aria-expanded so the visual state can
+   never disagree with the accessible one. */
+.nav-icon line {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 200ms ease, opacity 140ms ease;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-icon line:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-icon line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-icon line:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
 .nav-toggle {
   display: none;
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.85);
+  /* 44x44 touch target, visually quiet: the icon is the control, not a
+     third card competing with the logo chip and the bar. */
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -1312,6 +1409,10 @@ a {
 }
 
 .site-footer {
+  /* Skippable while offscreen; the placeholder size prevents scroll jumps
+     when it enters. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
   padding: 0.5rem 0 1.25rem;
 }
 
@@ -1387,10 +1488,16 @@ a {
 .footer-contact-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.1rem;
 }
 
 .footer-contact-link {
+  display: inline-flex;
+  align-items: center;
+  /* 0.55rem vertical padding takes the 25px line box to ~44px of tappable
+     area (WCAG 2.5.8 practical guidance) without visually inflating the
+     footer — the stack gap above shrinks to compensate. */
+  padding: 0.55rem 0;
   color: var(--text);
   font-size: 0.91rem;
   font-weight: 600;
@@ -1489,76 +1596,6 @@ a {
   margin: 0;
 }
 
-.testimonial-quote {
-  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-weight: 400;
-  color: var(--muted);
-  font-size: 1.08rem;
-  line-height: 1.82;
-  position: relative;
-  padding-top: 1.75rem;
-}
-
-.testimonial-quote::before {
-  content: "\201C";
-  position: absolute;
-  top: -0.25rem;
-  left: 0;
-  font-family: var(--font-display), Arial, sans-serif;
-  font-size: 3rem;
-  line-height: 1;
-  color: var(--accent);
-  font-style: normal;
-}
-
-.testimonial-attribution {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
-}
-
-.testimonial-avatar {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-green));
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #04101a;
-  font-weight: 800;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-  box-shadow:
-    0 0 0 2px #ffffff,
-    0 0 0 4px rgba(112, 194, 255, 0.45),
-    0 6px 16px rgba(112, 194, 255, 0.3);
-}
-
-.testimonial-name {
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: var(--text);
-  line-height: 1.3;
-}
-
-.testimonial-company {
-  font-size: 0.82rem;
-  color: var(--muted);
-  line-height: 1.3;
-}
-
-/* ─── Platform Strip ─── */
-
-.platform-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  align-items: center;
-}
 
 .platform-badge {
   padding: 0.3rem 0.85rem;
@@ -1694,16 +1731,12 @@ details.faq-item[open] .faq-answer {
 
 @media (max-width: 980px) {
   .hero-grid,
-  .section-split,
-  .footer-top,
-  .footer-bottom,
-  .footer-grid,
-  .contact-grid,
-  .trust-grid,
-  .process-grid,
-  .about-grid,
-  .cards-grid,
-  .service-grid {
+.section-split,
+.footer-grid,
+.trust-grid,
+.process-grid,
+.cards-grid,
+.service-grid{
     grid-template-columns: 1fr;
   }
 
@@ -1717,21 +1750,34 @@ details.faq-item[open] .faq-answer {
     width: min(calc(100% - 1.5rem), var(--max-width));
   }
 
-  .page-shell {
-    padding-top: 4.25rem;
-    padding-bottom: 4rem;
-  }
-
-  .hero {
-    padding-top: 4.25rem;
-  }
-
-  .header-row {
-    min-height: 4.4rem;
+  .header-row,
+  .site-header[data-scrolled="true"] .header-row {
+    /* One 56px bar in both scroll states. The desktop shrink-to-pill
+       animation reads as polish at 77px; at phone size it just made the
+       bar twitch. */
+    min-height: 3.5rem;
   }
 
   .site-header[data-scrolled="true"] {
     padding: 0 1rem;
+  }
+
+  /* The wordmark PNG carries its own baked-in white plate, so the CSS card
+     around it doubled the surface: a 52px white box inside a 70px bar. With
+     the card stripped, the image's own plate — cropped by a small radius —
+     is the chip, and the bar reads as one surface with two elements. */
+  .brand-mark,
+  .site-header[data-scrolled="true"] .brand-mark {
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .brand-wordmark,
+  .site-header[data-scrolled="true"] .brand-wordmark {
+    height: 2rem;
+    border-radius: 0.5rem;
   }
 
   .site-header[data-scrolled="true"] .header-bg {
@@ -1772,24 +1818,14 @@ details.faq-item[open] .faq-answer {
     height: 5rem;
   }
 
-  .hero-atmosphere {
-    width: 5.5rem;
-    height: 3.3rem;
-  }
-
-  .hero-glass-slab {
-    width: 3.8rem;
-    height: 5.7rem;
-  }
-
-  .hero-atmosphere-left,
-  .hero-glass-slab-left {
-    left: 1.4rem;
-  }
-
-  .hero-atmosphere-right,
-  .hero-glass-slab-right {
-    right: 1.2rem;
+  /* At phone scale the slabs, atmosphere blobs and particle field shrink to
+     smudges — decoration that does not survive the size but still runs ten
+     infinite animations and two backdrop blurs. The network diagram, packet
+     travel, scan sweep and tunnel glow read fine and stay. */
+  .hero-glass-slab,
+  .hero-atmosphere,
+  .hero-particle-field {
+    display: none;
   }
 
   .nav-toggle {
@@ -1803,23 +1839,36 @@ details.faq-item[open] .faq-answer {
   }
 
   .nav-links {
+    /* Attached to the bar: full bleed, square top corners, the header's own
+       background — opening extends the header downward instead of floating
+       a fourth surface under it. Hidden via visibility rather than display
+       so the open/close can actually transition (display cannot animate,
+       which is why the old menu popped). The backdrop blur went with the
+       old card: at 0.97 alpha it was invisible and cost compositing. */
     position: fixed;
-    top: 5rem;
-    left: 1rem;
-    right: 1rem;
-    display: none;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    display: flex;
     flex-direction: column;
     align-items: stretch;
-    padding: 1rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1.25rem 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(4, 10, 20, 0.97);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      visibility 0s linear 180ms;
   }
 
   .nav-shell[data-open="true"] .nav-links {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 180ms ease, transform 180ms ease;
   }
 
   .nav-links a {
@@ -1846,14 +1895,6 @@ details.faq-item[open] .faq-answer {
     display: none;
   }
 
-  .brand-copy span {
-    display: none;
-  }
-
-  .brand-wordmark {
-    height: 2.25rem;
-  }
-
 
   .stats-grid,
   .form-grid,
@@ -1870,32 +1911,107 @@ details.faq-item[open] .faq-answer {
     padding: 1.5rem;
   }
 
-  .hero-copy h1 {
-    font-size: clamp(2.5rem, 14vw, 4rem);
-  }
 
-  .section-heading h1,
-  .section-heading h2 {
-    font-size: clamp(1.9rem, 10vw, 2.8rem);
-  }
-
-  .section {
-    padding: 2.75rem 0;
-  }
 }
 
 /* ─── Scroll Reveal ─── */
 
-[data-reveal] {
+/* Hidden only when the inline bootstrap script has run (.js on <html>), so
+   content stays visible with JavaScript unavailable or blocked. The same
+   script arms a timer that adds .reveal-fallback if hydration has not
+   happened within 2.5s — a slow or failed bundle un-hides everything rather
+   than leaving the visitor a blank page. */
+.js [data-reveal] {
   opacity: 0;
   transform: translateY(22px);
   transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
-[data-reveal="left"]  { transform: translateX(-22px); }
-[data-reveal="right"] { transform: translateX(22px); }
+.js [data-reveal="left"]  { transform: translateX(-22px); }
+.js [data-reveal="right"] { transform: translateX(22px); }
 
-[data-reveal].is-visible {
+/* Horizontal reveal offsets become vertical on phones: the sideways slide is
+   what created the 10px overflow, and at this width it reads as a glitch
+   rather than motion design. Placed after the base rules — the media query
+   adds no specificity, so source order is what makes this win. */
+@media (max-width: 760px) {
+  .js [data-reveal="left"],
+  .js [data-reveal="right"] {
+    transform: translateY(18px);
+  }
+
+  /* Proof points as a hairline list instead of three stacked cards. The
+     values here are phrases, not numerals — "Boston + US remote" cannot
+     survive a 98px column at 320px — so rows, not columns. Card chrome
+     (border, fill, blur, icon plate) comes off; the typography carries it. */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.15rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .stat-card:hover {
+    transform: none;
+    background: transparent;
+    box-shadow: none;
+    border-color: var(--border);
+  }
+
+  .stat-icon {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 0.6rem;
+    flex-shrink: 0;
+  }
+
+  .stat-copy {
+    gap: 0.05rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  /* Card icon plates: 44px + 17px margin before a word of content appears,
+     repeated on every card on About, Services and the homepage preview.
+     Kept — they carry brand personality — but at label scale. */
+  .card-icon-wrap {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .card-icon-wrap svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .step-badge {
+    margin-bottom: 0.7rem;
+  }
+}
+
+[data-reveal].is-visible,
+.reveal-fallback [data-reveal] {
   opacity: 1;
   transform: translate(0, 0);
 }
@@ -1913,6 +2029,11 @@ details.faq-item[open] .faq-answer {
   [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
+  }
+
+  .nav-links,
+  .nav-icon line {
     transition: none !important;
   }
 }

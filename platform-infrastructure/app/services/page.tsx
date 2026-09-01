@@ -78,7 +78,7 @@ export default function ServicesPage() {
           {services.map((service, index) => (
             <article className="service-card" key={service.title} data-reveal data-delay={String((index % 4) + 1)}>
               <div className="card-icon-wrap">{serviceIcons[index]}</div>
-              <h3>{service.title}</h3>
+              <h2>{service.title}</h2>
               <p>{service.description}</p>
               <div className="service-best-for">
                 <strong>Best for:</strong> {serviceBestFor[index]}
@@ -103,7 +103,7 @@ export default function ServicesPage() {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <h3>Who this is for</h3>
+            <h2>Who this is for</h2>
             <p>
               Small businesses and growing teams that need reliable operational coverage, smarter support structure, and
               better technology ownership without building a full internal IT function too early.
@@ -116,7 +116,7 @@ export default function ServicesPage() {
                 <polyline points="17 6 23 6 23 12" />
               </svg>
             </div>
-            <h3>What outcomes to expect</h3>
+            <h2>What outcomes to expect</h2>
             <ul>
               <li>Cleaner SaaS and account administration</li>
               <li>More dependable user support and issue response</li>
@@ -141,11 +141,11 @@ export default function ServicesPage() {
         </div>
 
         {/* ─── CTA ─── */}
-        <div className="panel" style={{ padding: "2rem" }}>
+        <div className="panel" style={{ padding: "var(--card-pad)" }}>
           <div className="section-split">
             <div className="stack">
               <span className="eyebrow">Next step</span>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.9rem, 4vw, 2.6rem)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08 }}>
+              <h2 className="cta-heading">
                 If you already know the business needs hands-on support, start with the quote flow.
               </h2>
               <p className="meta-copy">
