@@ -5,6 +5,7 @@ export const company = {
   phone: "(617) 302-7580",
   serviceArea: "Greater Boston, MA and remote support across the U.S.",
   linkedIn: "https://www.linkedin.com/company/infranest-tech/",
+  instagram: "https://www.instagram.com/infranest_tech",
   schedulingNote: "Most inquiries receive a response within 24 hours.",
 };
 

@@ -46,8 +46,8 @@
   /* ── Spacing ───────────────────────────────────────────────────────────
      Section rhythm and card padding scale continuously instead of halving
      at one breakpoint. */
-  --section-pad: clamp(3rem, 1.9rem + 4.1vw, 5.5rem);
-  --card-pad: clamp(1.15rem, 0.9rem + 1.1vw, 1.75rem);
+  --section-pad: clamp(3.5rem, 2.4rem + 4.1vw, 5.5rem);
+  --card-pad: clamp(1.3rem, 1.05rem + 1.1vw, 1.75rem);
   --lead-lh: 1.6;
 }
 
@@ -233,7 +233,7 @@ a {
   max-width: 48rem;
   /* The gap between a section's introduction and the content it introduces
      was a flat 48px everywhere; fluid so phones spend ~30px. */
-  margin-bottom: clamp(1.8rem, 1.3rem + 1.7vw, 3rem);
+  margin-bottom: clamp(2.1rem, 1.6rem + 1.7vw, 3rem);
 }
 
 .section-heading h1,
@@ -311,9 +311,6 @@ a {
   margin-bottom: 0.75rem;
 }
 
-.hero-copy > p {
-  margin-bottom: 1.6rem;
-}
 
 .hero-copy .hero-actions {
   margin-bottom: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
@@ -330,10 +327,15 @@ a {
 }
 
 .hero-copy p {
-  margin: 0;
+  margin-top: 0;
   color: var(--muted);
   font-size: var(--step-lead);
   max-width: 42rem;
+  /* Separates the supporting copy from the CTA row. This lived in a
+     `.hero-copy > p` rule above, which has the same specificity as this one
+     and lost on source order — so the margin was silently 0 and the
+     paragraph ran into the buttons. */
+  margin-bottom: 1.75rem;
   /* 1.82 was a desktop value carried onto phones, where lines are short and
      that much leading reads as disconnection rather than air. Fluid between
      ~1.55 on narrow measures and ~1.75 on wide ones; em units because a
@@ -949,11 +951,36 @@ a {
   align-items: start;
 }
 
+/* The context panel is short and the form is long, which left most of the
+   left column empty. Sticky turns that dead gutter into something useful:
+   the "how this works" copy stays with you while you fill the form in.
+   overflow-x: clip on html was chosen over hidden partly so this works.
+
+   The ratio is deliberately the same 1:1.15 the contact page uses. At the
+   previous 0.66fr:1fr the form took 710px against a 468px panel, which read
+   as a main pane with a sidebar rather than two cards of equal standing —
+   and let the card heading sit on one very wide line. */
+.section-split--form {
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 1.15fr);
+}
+
+.section-split--form > :first-child {
+  position: sticky;
+  top: 6.5rem;
+}
+
 .contact-split {
   grid-template-columns: minmax(0, 1fr) minmax(320px, 1.15fr);
 }
 
 /* ─── Forms ─── */
+
+/* Was an inline style on the form's inner stack, which meant a phone paid
+   the same 1.35rem gutter as a 1200px desktop. */
+.form-panel-body {
+  padding: 1.35rem;
+  gap: 1rem;
+}
 
 .form-shell {
   display: grid;
@@ -1030,18 +1057,22 @@ a {
 
 .checkbox-grid {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.6rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* These are eight checkboxes, and they were sized like eight feature cards:
+   5.5rem tall around a 3rem icon, 388px of the form before the gaps. Sized
+   as rows they cost ~240px and the form stops towering over the panel
+   beside it. The icon stays because it is what makes the block scannable. */
 .checkbox-card {
   position: relative;
   display: flex;
-  gap: 0.9rem;
+  gap: 0.7rem;
   align-items: center;
-  min-height: 5.5rem;
-  padding: 0.9rem 1rem;
-  border-radius: 1rem;
+  min-height: 3.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.85rem;
   border: 1px solid #d9e2f3;
   background: #ffffff;
   cursor: pointer;
@@ -1073,8 +1104,8 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2.25rem;
+  height: 2.25rem;
   flex: 0 0 auto;
 }
 
@@ -1085,7 +1116,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.95rem;
+  border-radius: 0.65rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   transition: opacity 180ms ease, transform 180ms ease, background 180ms ease, border-color 180ms ease;
 }
@@ -1110,12 +1141,12 @@ a {
 }
 
 .checkbox-copy {
-  max-width: 14rem;
+  max-width: none;
   color: #1a3a5c;
-  font-size: 0.93rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  line-height: 1.5;
+  line-height: 1.35;
 }
 
 .checkbox-card:has(input:checked) {
@@ -1299,7 +1330,8 @@ a {
   gap: 1.35rem;
 }
 
-.mobile-nav-quote {
+.mobile-nav-quote,
+.nav-panel-contact {
   display: none;
 }
 
@@ -1488,16 +1520,22 @@ a {
 .footer-contact-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0;
+}
+
+.footer-social-row {
+  display: flex;
+  gap: 1.4rem;
 }
 
 .footer-contact-link {
   display: inline-flex;
   align-items: center;
-  /* 0.55rem vertical padding takes the 25px line box to ~44px of tappable
-     area (WCAG 2.5.8 practical guidance) without visually inflating the
-     footer — the stack gap above shrinks to compensate. */
-  padding: 0.55rem 0;
+  /* 0.3rem takes the 25px line box to ~35px of tappable area. Comfortably
+     past SC 2.5.8's 24px minimum, short of the 44px best-practice figure —
+     a deliberate trade, because 44px rows plus a fourth link made this
+     column visibly sprawl. */
+  padding: 0.3rem 0;
   color: var(--text);
   font-size: 0.91rem;
   font-weight: 600;
@@ -1523,7 +1561,11 @@ a {
   position: fixed;
   right: 1.25rem;
   bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  z-index: 60;
+  /* Below .site-header (40), not above it. At 60 this pill floated over the
+     open mobile menu — an opaque full-viewport sheet — as if it belonged to
+     it. The two never overlap otherwise: the header is fixed to the top and
+     this sits bottom-right, so giving up the higher layer costs nothing. */
+  z-index: 30;
   padding: 0.8rem 1rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1730,6 +1772,10 @@ details.faq-item[open] .faq-answer {
 /* ─── Responsive ─── */
 
 @media (max-width: 980px) {
+  .section-split--form > :first-child {
+    position: static;
+  }
+
   .hero-grid,
 .section-split,
 .footer-grid,
@@ -1834,57 +1880,141 @@ details.faq-item[open] .faq-answer {
     justify-content: center;
   }
 
-  .nav-shell {
-    position: static;
-  }
+  /* The shell is the panel: a full-height sheet from under the bar to the
+     bottom of the screen. The previous version was a strip sized to its own
+     content, which left a hard edge across the middle of the page and read
+     as a slab dropped on top of it.
 
-  .nav-links {
-    /* Attached to the bar: full bleed, square top corners, the header's own
-       background — opening extends the header downward instead of floating
-       a fourth surface under it. Hidden via visibility rather than display
-       so the open/close can actually transition (display cannot animate,
-       which is why the old menu popped). The backdrop blur went with the
-       old card: at 0.97 alpha it was invisible and cost compositing. */
+     The background is fully opaque. At rgba(.97) the page showed through —
+     invisible in isolation, but --text (#111827) against the composited
+     panel (11,17,27) differs by about 6 per channel, so headings ghosted
+     through as legible shapes. The old design hid that with a backdrop
+     blur; removing the blur without removing the alpha is what made the
+     menu look broken. */
+  .nav-shell {
     position: fixed;
     top: 3.5rem;
     left: 0;
     right: 0;
+    bottom: 0;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    padding: 0.5rem 1.25rem 1.15rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(4, 10, 20, 0.97);
+    padding: 1.35rem 1.5rem calc(1.35rem + env(safe-area-inset-bottom, 0px));
+    background: #050b16;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
     transition:
-      opacity 180ms ease,
-      transform 180ms ease,
-      visibility 0s linear 180ms;
+      opacity 200ms ease,
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 200ms;
   }
 
-  .nav-shell[data-open="true"] .nav-links {
+  .nav-shell[data-open="true"] {
     opacity: 1;
     visibility: visible;
     transform: none;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 200ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-links {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    /* Reset, do not inherit: the base rule is a 1.35rem gap for a horizontal
+       desktop row. Left in place it stacked on top of each link's own
+       padding and pushed the items ~57px apart, which is what made the menu
+       look loose and unconsidered. Dividers carry the separation now. */
+    gap: 0;
   }
 
   .nav-links a {
-    color: rgba(255, 255, 255, 0.72);
-    padding: 0.65rem 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* 52px rows: comfortably past the 44px target without the sprawl. */
+    min-height: 3.25rem;
+    padding: 0 0 0 0.9rem;
+    font-size: 1.02rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.82);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* The desktop underline indicator would sit under a full-width row here. */
+  .nav-links a::after {
+    display: none;
+  }
+
+  .nav-links a[data-active="true"] {
+    color: #ffffff;
+  }
+
+  /* Accent bar marks the current page — the desktop nav has an active state
+     and the mobile menu had none. */
+  .nav-links a[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 1.15rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-green));
   }
 
   .mobile-nav-quote {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 0.35rem;
-    padding: 0.8rem 1rem !important;
+    min-height: 3.25rem;
+    margin-top: 1.5rem;
+    padding: 0 1rem !important;
     border-radius: 999px;
+    border-bottom: none !important;
     background: linear-gradient(135deg, #7fd0ff, #b8e8ff);
     color: #04101b !important;
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .mobile-nav-quote::before {
+    display: none;
+  }
+
+  .nav-panel-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    /* Pinned to the bottom of the sheet: the links group at the top, this
+       anchors the base, and the space between them is the composition
+       rather than leftover emptiness. */
+    margin-top: auto;
+    padding-top: 1.5rem;
+  }
+
+  .nav-panel-contact a {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+
+  .nav-panel-social {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.35rem;
+  }
+
+  .nav-panel-social a {
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 600;
   }
 
   .nav-actions .button-secondary {
@@ -1897,9 +2027,92 @@ details.faq-item[open] .faq-answer {
 
 
   .stats-grid,
-  .form-grid,
-  .checkbox-grid {
+  .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Eight full-width rows cost about 490px — a whole phone screen for one
+     field. Two columns were rejected before because the labels wrapped to
+     four lines, and that was true while each tile carried a 2.1rem service
+     icon. Trading the icon for a plain checkbox square returns ~40px of
+     label width per tile, which is the difference between four lines and
+     two. The block lands near 280px. The icon survives on desktop, where
+     there is room for it. */
+  .checkbox-card {
+    min-height: 3.6rem;
+    padding: 0.55rem 0.6rem;
+    gap: 0.5rem;
+    border-radius: 0.7rem;
+  }
+
+  .checkbox-marker {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .checkbox-badge {
+    background: #ffffff;
+    border: 1.5px solid #cbd8ea;
+    border-radius: 0.35rem;
+  }
+
+  .checkbox-badge svg {
+    display: none;
+  }
+
+  .checkbox-check {
+    border-radius: 0.35rem;
+    font-size: 0.78rem;
+  }
+
+  .checkbox-copy {
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  /* 9rem of empty textarea reads as a demand on a phone when it is one of
+     eleven inputs. Scoped to the quote form on purpose: contact's message
+     field is the whole point of that form, not one field among many, and
+     a tall box there is an invitation rather than a chore. */
+  .form-grid--quote .field textarea {
+    min-height: 7rem;
+  }
+
+  .form-panel-body {
+    padding: 1.1rem;
+    gap: 0.85rem;
+  }
+
+  /* Helper copy under the card heading, not a page lead. At --step-lead it
+     competed with the field labels for weight. */
+  .form-panel .section-heading p {
+    font-size: var(--text-md);
+    line-height: 1.5;
+    margin-top: 0.55rem;
+  }
+
+  /* Timeline and budget are short selects and pair cleanly, saving a row.
+     Scoped to the quote form: the contact form's last child is a
+     full-width textarea and must keep the whole row. */
+  .form-grid--quote {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid--quote > * {
+    grid-column: 1 / -1;
+  }
+
+  .form-grid--quote > .field:nth-last-child(-n + 2) {
+    grid-column: span 1;
+  }
+
+  /* Phone and company hold short values and pair without crowding either.
+     Name and email keep the full row: they are the two fields most likely
+     to be long and are the ones that must not feel cramped. */
+  .form-grid--quote > .field:nth-child(3),
+  .form-grid--quote > .field:nth-child(4) {
+    grid-column: span 1;
   }
 
   .footer-grid {
@@ -1912,6 +2125,53 @@ details.faq-item[open] .faq-answer {
   }
 
 
+}
+
+/* ─── Page entrance ───────────────────────────────────────────────────────
+   For the pages that no longer scroll-reveal. Fires once on load rather
+   than on scroll, so nothing waits to appear as you move down the page —
+   that was the objection to the old behaviour.
+
+   The reveal is a mask, not a fade: each block is uncovered from behind a
+   fixed top edge while its content rises into place, so the type reads as
+   revealed rather than faded in. Deliberately not opacity-based — an
+   opacity fade is the same gesture as the scroll reveals we removed.
+
+   Pure CSS, so unlike the reveal observer it does not depend on hydration.
+
+   fill-mode is `backwards`, not `both`, and that matters: `both` would
+   leave the final clip-path applied forever, and a clip-path on an
+   ancestor crops `position: sticky` children — which would quietly break
+   the sticky context panel on the quote and contact pages as you scroll.
+   `backwards` holds the start frame during the delay and then hands the
+   element back to its own styles with no clip at all. */
+@keyframes page-enter {
+  from {
+    /* Sides and bottom are inset negatively so the panels' drop shadows
+       are not sheared off mid-animation. */
+    clip-path: inset(0 -40px 100% -40px);
+    transform: translateY(14px);
+  }
+  to {
+    clip-path: inset(0 -40px -40px -40px);
+    transform: none;
+  }
+}
+
+.page-enter > .container > * {
+  animation: page-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+/* Only the first few are staggered — enough to read as a sequence without
+   the tail of a long page trickling in. */
+.page-enter > .container > *:nth-child(2) { animation-delay: 90ms; }
+.page-enter > .container > *:nth-child(3) { animation-delay: 180ms; }
+.page-enter > .container > *:nth-child(n + 4) { animation-delay: 230ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter > .container > * {
+    animation: none;
+  }
 }
 
 /* ─── Scroll Reveal ─── */

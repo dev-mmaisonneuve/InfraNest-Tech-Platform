@@ -53,13 +53,13 @@ export default function HomePage() {
       <section className="hero" id="hero">
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow eyebrow--pulse" data-reveal>{homeContent.eyebrow}</span>
-            <h1 data-reveal data-delay="1">
+            <span className="eyebrow eyebrow--pulse">{homeContent.eyebrow}</span>
+            <h1>
               Keep your technology{" "}
               <em className="gradient-text serif-accent">reliable, secure, and ready to scale.</em>
             </h1>
-            <p data-reveal data-delay="2">{homeContent.description}</p>
-            <div className="hero-actions" data-reveal data-delay="3">
+            <p>{homeContent.description}</p>
+            <div className="hero-actions">
               <Link className="button" href={homeContent.primaryCta.href}>
                 {homeContent.primaryCta.label}
               </Link>
@@ -68,7 +68,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="stats-grid" data-reveal data-delay="4">
+            <div className="stats-grid">
               {homeContent.stats.map((stat) => (
                 <article className="stat-card" key={stat.label}>
                   <div className="stat-icon" aria-hidden="true">
@@ -89,7 +89,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <aside className="hero-panel" data-reveal="right">
+          <aside className="hero-panel">
             <HeroSpotlightWrapper>
               <div className="hero-tunnel-glow" aria-hidden="true" />
               <div className="hero-atmosphere hero-atmosphere-left" aria-hidden="true" />
@@ -246,7 +246,7 @@ export default function HomePage() {
       {/* ─── CTA ─── */}
       <section className="section" id="cta">
         <div className="container panel" style={{ padding: "2rem" }}>
-          <div className="section-split" data-reveal>
+          <div className="section-split">
             <div className="stack">
               <span className="eyebrow">Get started</span>
               <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.05 }}>

@@ -39,18 +39,17 @@ const contactIcons: Record<string, React.ReactNode> = {
 
 export default function ContactPage() {
   return (
-    <div className="page-shell">
+    <div className="page-shell page-enter">
       <div className="container stack">
         <SectionHeading
           eyebrow="Contact"
           title="Get in touch. We'll take it from there."
           description="Use the contact form for general questions, or request a quote if you already know what you need."
           h1
-          reveal
         />
 
-        <div className="section-split contact-split">
-          <div className="info-panel" style={{ padding: "1.75rem" }} data-reveal="left">
+        <div className="section-split contact-split section-split--form">
+          <div className="info-panel" style={{ padding: "1.75rem" }}>
             <div className="stack">
               <span className="eyebrow">Direct contact</span>
               <h2 className="panel-heading">
@@ -91,11 +90,11 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div data-reveal="right"><ContactForm /></div>
+          <div><ContactForm /></div>
         </div>
 
         {/* ─── FAQ ─── */}
-        <div className="stack" style={{ gap: "1.25rem" }} data-reveal>
+        <div className="stack" style={{ gap: "1.25rem" }}>
           <div>
             <span className="eyebrow">FAQ</span>
             <h2 className="cta-heading" style={{ margin: "0.75rem 0 0.5rem" }}>

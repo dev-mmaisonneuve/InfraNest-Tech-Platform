@@ -55,14 +55,27 @@ export function SiteFooter() {
               <div className="footer-contact-stack">
                 <a className="footer-contact-link" href={`mailto:${company.email}`}>{company.email}</a>
                 <a className="footer-contact-link" href={`tel:${company.phone.replace(/[^\d]/g, "")}`}>{company.phone}</a>
-                <a
-                  className="footer-contact-link"
-                  href={company.linkedIn}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  LinkedIn
-                </a>
+                {/* Paired on one row: the email and phone are actions, these
+                    two are a set. Grouping them says so, and keeps the column
+                    from growing a fourth full-width row. */}
+                <div className="footer-social-row">
+                  <a
+                    className="footer-contact-link"
+                    href={company.linkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                  <a
+                    className="footer-contact-link"
+                    href={company.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Instagram
+                  </a>
+                </div>
               </div>
               <span className="footer-legal">&copy; <CurrentYear fallback={new Date().getFullYear()} /> InfraNest Technologies.<br />All rights reserved.</span>
             </div>
