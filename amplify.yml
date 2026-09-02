@@ -26,11 +26,16 @@ applications:
             # notification steps never run. `NEXT_PUBLIC_*` values are unaffected
             # because Next.js inlines them into the bundle during the build.
             #
+            # This grep is an allowlist, so **any new server-side variable has to be
+            # added to it** or it is simply absent at request time with no error.
+            # `TURNSTILE_HOSTNAMES` is here for that reason: without it, setting the
+            # override in the console would appear to work and change nothing.
+            #
             # `|| true` keeps a missing variable from failing the build outright.
             # `reportRuntimeConfig()` in `lib/env.ts` already names anything absent
             # in the deployment logs, which is a far clearer signal than a build
             # step exiting non-zero.
-            - env | grep -e LEADS_TABLE_NAME -e QUOTE_REQUESTS_TABLE_NAME -e ACKNOWLEDGMENTS_TABLE_NAME -e NOTIFICATION_ -e TURNSTILE_SECRET_KEY > .env.production || true
+            - env | grep -e LEADS_TABLE_NAME -e QUOTE_REQUESTS_TABLE_NAME -e ACKNOWLEDGMENTS_TABLE_NAME -e NOTIFICATION_ -e TURNSTILE_SECRET_KEY -e TURNSTILE_HOSTNAMES > .env.production || true
             - env | grep -e NEXT_PUBLIC_ >> .env.production || true
             - npm run build
       artifacts:

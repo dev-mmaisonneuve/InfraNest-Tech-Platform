@@ -7,7 +7,7 @@ import { sendAcknowledgmentEmail, sendNotificationEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { contactSchema } from "@/lib/forms";
 import { claimAcknowledgmentSlot, isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
-import { verifyTurnstileToken } from "@/lib/turnstile";
+import { clientIpFromHeaders, verifyTurnstileToken } from "@/lib/turnstile";
 
 const duplicateMessage =
   "We've already received a recent message from this address. Please wait a moment before sending another.";
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
   }
 
   // Verified before any database work so unverified traffic never reaches DynamoDB.
-  const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
+  const clientIp = clientIpFromHeaders(request.headers);
+  const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken, "contact", clientIp);
   if (!turnstile.ok) {
     return NextResponse.json(
       { ok: false, message: "We couldn't verify your submission. Please refresh the page and try again." },
