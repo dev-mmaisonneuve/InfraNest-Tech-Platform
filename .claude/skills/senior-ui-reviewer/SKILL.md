@@ -44,8 +44,18 @@ Skip straight to implementing only when the fix is obvious and contained. Say so
 ## Always use the frontend-design skill
 
 For any layout, styling, typography, visual refinement or UI implementation work, **invoke the
-installed `frontend-design` skill** via the Skill tool before writing the code — it is listed as
+`frontend-design` skill** via the Skill tool before writing the code — it is listed as
 `frontend-design`, or `frontend-design:frontend-design` if the plugin namespace is shown.
+
+It ships in the official plugin marketplace, not in this repo, so it is a per-machine install and a
+fresh checkout will not have it:
+
+```
+/plugin install frontend-design@claude-plugins-official
+```
+
+**If it is not available, say so once and carry on** using the principles in this file — an absent
+plugin is not a reason to skip or halt visual work. Do not vendor a copy into the repo.
 
 Treat it as the design implementation specialist and yourself as the reviewer who briefs it and
 checks its output. The user should never have to ask for it separately; invoking `senior-ui-reviewer`
@@ -104,7 +114,8 @@ the design system in detail.
 - `app/globals.css` — the entire design system. One file, ~2100 lines.
 - `data/site-content.ts` — single source of truth for all visible copy and content arrays.
 - `components/` — `site-header.tsx`, `site-footer.tsx`, `section-heading.tsx`, the two form components.
-- `app/*/page.tsx` — five routes: `/`, `/services`, `/about`, `/contact`, `/quote`.
+- `app/*/page.tsx` — six routes: `/`, `/services`, `/about`, `/contact`, `/quote`, `/privacy`.
+  A site-wide audit covers `/privacy` too; it is plain but it is a real customer-facing page.
 
 Conventions that bite if you miss them:
 
@@ -119,8 +130,10 @@ Conventions that bite if you miss them:
   it's overriding will silently lose. Source order decides.
 - **Fonts**: Outfit ships weights 700/800 only — any other weight silently falls back. Instrument Serif
   is italic-only and is a deliberate brand choice; keep it.
-- **Icons**: inline SVG, `viewBox="0 0 24 24"`, `stroke="currentColor"`. Only `<path>`, `<line>`,
-  `<rect>` — `<polygon>` and `<circle>` don't inherit `fill="none"` reliably and render blank.
+- **Icons**: inline SVG, no icon library. Match the existing style — `viewBox="0 0 24 24"`,
+  `fill="none" stroke="currentColor"` on the root, geometry underneath. Any SVG shape is fine:
+  presentation attributes inherit normally, and the site already renders `<circle>`, `<polyline>`
+  and `<polygon>` this way (the homepage pillar icons among them).
 - **Motion is deliberately restrained.** `data-reveal` exists but is applied only where it earns its
   place; it was cut back on purpose because it was everywhere. Don't reintroduce it broadly.
 - **Cards are the house style.** Don't flatten the site to solve a spacing problem — reduce selectively.
@@ -128,7 +141,9 @@ Conventions that bite if you miss them:
 
 ## Verification
 
-- `npx tsc --noEmit` and `npx next build` before claiming done.
+- `npx tsc --noEmit` and `NEXT_PUBLIC_SITE_URL=https://infranests.com npx next build` before
+  claiming done. The variable is required: `lib/site-url.ts` throws on a production build without
+  it, which is why `.github/workflows/ci.yml` sets it too. A local `.env.local` also satisfies it.
 - **Never claim a layout or performance improvement without measuring it** when measurement is
   available. Grep the emitted CSS in `.next/static/css/` to confirm a rule actually shipped.
 - If something can't be verified in this environment — real device behaviour, screen readers, live form
