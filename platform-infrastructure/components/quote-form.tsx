@@ -253,7 +253,7 @@ export function QuoteForm() {
           </div>
         </div>
 
-        <TurnstileWidget ref={turnstileRef} onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
+        <TurnstileWidget ref={turnstileRef} action="quote" onToken={(token) => setForm((current) => ({ ...current, turnstileToken: token }))} />
         <p className="form-note">
           This form is protected against spam and abuse. See how we handle your
           information in our <Link href="/privacy">privacy policy</Link>.

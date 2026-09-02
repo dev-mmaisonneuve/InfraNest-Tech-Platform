@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useImperativeHandle, useRef, type Ref } from "react";
 
+import type { TurnstileAction } from "@/lib/turnstile";
+
 declare global {
   interface Window {
     turnstile?: {
@@ -9,6 +11,7 @@ declare global {
         element: string | HTMLElement,
         options: {
           sitekey: string;
+          action?: string;
           callback: (token: string) => void;
           "expired-callback"?: () => void;
           "error-callback"?: () => void;
@@ -29,10 +32,15 @@ export type TurnstileHandle = {
 
 type TurnstileWidgetProps = {
   onToken: (token: string) => void;
+  /**
+   * Echoed back by siteverify and checked server-side, which is what keeps a
+   * token solved on one form from being redeemed against the other endpoint.
+   */
+  action: TurnstileAction;
   ref?: Ref<TurnstileHandle>;
 };
 
-export function TurnstileWidget({ onToken, ref }: TurnstileWidgetProps) {
+export function TurnstileWidget({ onToken, action, ref }: TurnstileWidgetProps) {
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const containerId = useId().replace(/:/g, "");
   const widgetId = useRef<string | null>(null);
@@ -93,6 +101,7 @@ export function TurnstileWidget({ onToken, ref }: TurnstileWidgetProps) {
 
       widgetId.current = window.turnstile.render(element, {
         sitekey: resolvedSiteKey,
+        action,
         size: "flexible",
         theme: "dark",
         callback: (token) => onTokenRef.current(token),
@@ -125,7 +134,7 @@ export function TurnstileWidget({ onToken, ref }: TurnstileWidgetProps) {
         window.turnstile.remove(widgetId.current);
       }
     };
-  }, [containerId, siteKey]);
+  }, [action, containerId, siteKey]);
 
   if (!siteKey) {
     // Render nothing rather than developer-facing text. This branch is reached

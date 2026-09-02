@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
   }
 
   // Verified before any database work so unverified traffic never reaches DynamoDB.
-  const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken);
+  // Only as trustworthy as the proxy chain in front of this handler, which is
+  // why it sharpens Cloudflare's scoring rather than gating anything here.
+  const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken, "contact", clientIp);
   if (!turnstile.ok) {
     return NextResponse.json(
       { ok: false, message: "We couldn't verify your submission. Please refresh the page and try again." },
