@@ -126,11 +126,15 @@ the design system in detail.
 
 Conventions that bite if you miss them:
 
-- **Change the token, not the component rule.** Type and spacing run on fluid `clamp()` tokens in
-  `:root` (`--step-h1/h2/h3`, `--step-lead`, `--section-pad`, `--card-pad`). There are deliberately no
-  per-breakpoint font-size overrides; adding one recreates a size-inversion bug that shipped once
-  already, where a `max-width: 760px` block re-set headings in `vw` units and made phones render them
-  *larger* than desktop.
+- **For the shared type scale, change the token, not the component rule.** Headings and rhythm run
+  on fluid `clamp()` tokens in `:root` (`--step-h1/h2/h3`, `--step-lead`, `--section-pad`,
+  `--card-pad`). Never re-set those sizes inside a media query: a `max-width: 760px` block once
+  re-declared headings in `vw` units and made phones render them *larger* than desktop, which is the
+  bug this rule exists to prevent.
+
+  This does **not** ban component font-size overrides at a breakpoint. A component that genuinely
+  changes shape on a phone can and does set its own size — `.hero-feature-row`, `.stat-value` and
+  `.stat-label` all do, inside the 760px block, deliberately. The rule is about the shared scale.
 - **Only two real breakpoints**, both structural: 980px (multi-column grids collapse) and 760px
   (mobile nav, full-width header, decorative layers off). Everything else scales fluidly.
 - **Media queries add no specificity.** A mobile override placed earlier in the file than the base rule
