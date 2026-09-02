@@ -143,14 +143,14 @@ export function QuoteForm() {
 
   return (
     <form className="form-shell form-panel" onSubmit={handleSubmit}>
-      <div className="stack" style={{ padding: "1.35rem", gap: "1rem" }}>
+      <div className="stack form-panel-body">
         <div className="section-heading" style={{ marginBottom: 0 }}>
           <span className="eyebrow">Quote request</span>
           <h2>What do you need help with?</h2>
           <p>Give InfraNest enough context to recommend the right starting point without overcomplicating the process.</p>
         </div>
 
-        <div className="form-grid">
+        <div className="form-grid form-grid--quote">
           <Field
             label="Name"
             name="name"

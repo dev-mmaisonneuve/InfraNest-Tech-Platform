@@ -150,7 +150,7 @@ export default function RootLayout({
               url: siteUrl,
               logo: `${siteUrl}${brandAssets.badge.src}`,
               image: `${siteUrl}/opengraph-image`,
-              sameAs: [company.linkedIn],
+              sameAs: [company.linkedIn, company.instagram],
             }),
           }}
         />

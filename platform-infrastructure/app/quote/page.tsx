@@ -16,18 +16,17 @@ export const metadata: Metadata = {
 
 export default function QuotePage() {
   return (
-    <div className="page-shell">
+    <div className="page-shell page-enter">
       <div className="container stack">
         <SectionHeading
           eyebrow="Request a quote"
           title="Tell us what you need."
           description="For businesses that need hands-on help with IT operations, cloud systems, SaaS administration, or managed support."
           h1
-          reveal
         />
 
-        <div className="section-split">
-          <div className="info-panel" style={{ padding: "1.5rem" }} data-reveal="left">
+        <div className="section-split section-split--form">
+          <div className="info-panel" style={{ padding: "1.5rem" }}>
             <div className="stack" style={{ gap: "1.1rem" }}>
               <span className="eyebrow">How this works</span>
               <h2 className="panel-heading">
@@ -45,7 +44,7 @@ export default function QuotePage() {
             </div>
           </div>
 
-          <div data-reveal="right"><QuoteForm /></div>
+          <div><QuoteForm /></div>
         </div>
       </div>
     </div>
