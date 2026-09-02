@@ -43,6 +43,28 @@ export function SiteHeader() {
     navRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
   }, [isOpen]);
 
+  // Covering the page visually does not remove it from the tab order or the
+  // accessibility tree. Focus moved into the menu on open, but nothing held it
+  // there: tabbing past the last contact link walked straight into the page
+  // underneath the opaque sheet, where a keyboard user cannot see what they
+  // have landed on. `inert` takes those subtrees out of both the tab order and
+  // the accessibility tree at once — a focus trap would fix the keyboard case
+  // and still leave a screen reader free to browse the hidden page by heading.
+  //
+  // Everything in the body except the header goes inert, rather than a fixed
+  // list, so anything added to the layout later is covered by default. The
+  // hasAttribute guard means the cleanup only restores what this effect set.
+  useEffect(() => {
+    if (!isOpen) return;
+    const header = headerRef.current;
+    if (!header) return;
+    const backdrop = Array.from(document.body.children).filter(
+      (element) => element !== header && !element.hasAttribute("inert"),
+    );
+    backdrop.forEach((element) => element.setAttribute("inert", ""));
+    return () => backdrop.forEach((element) => element.removeAttribute("inert"));
+  }, [isOpen]);
+
   // A scroll gesture on a phone can start anywhere, and the open panel is
   // position: fixed — without a lock the whole page slides underneath it.
   // Inline styles override the stylesheet's overflow-x: clip while open and
