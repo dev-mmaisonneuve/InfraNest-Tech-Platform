@@ -2067,9 +2067,11 @@ details.faq-item[open] .faq-answer {
     line-height: 1.3;
   }
 
-  /* 9rem of empty textarea reads as a demand on a phone. Four lines is
-     still an invitation, and the field is resizable. */
-  .field textarea {
+  /* 9rem of empty textarea reads as a demand on a phone when it is one of
+     eleven inputs. Scoped to the quote form on purpose: contact's message
+     field is the whole point of that form, not one field among many, and
+     a tall box there is an invitation rather than a chore. */
+  .form-grid--quote .field textarea {
     min-height: 7rem;
   }
 
