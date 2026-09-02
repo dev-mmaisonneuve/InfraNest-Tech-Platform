@@ -76,6 +76,38 @@ function approvedHostnames(): Set<string> {
   return hostnames;
 }
 
+/**
+ * The viewer address, or nothing when it cannot be trusted.
+ *
+ * X-Forwarded-For is deliberately not consulted. CloudFront *appends* the
+ * viewer address to whatever the client sent rather than replacing the header,
+ * so a request that supplies its own X-Forwarded-For controls the leftmost
+ * entry — exactly the one the obvious parse picks. Handing an attacker-chosen
+ * address to siteverify degrades Cloudflare's risk signal instead of sharpening
+ * it, which is worse than sending nothing.
+ *
+ * CloudFront-Viewer-Address is set by CloudFront itself and overwrites any
+ * client-supplied value, so it is safe to use where it is present. Where it is
+ * absent, remoteip is simply omitted: it is an optional field, and no signal
+ * beats a forged one.
+ */
+export function clientIpFromHeaders(headers: Headers): string | undefined {
+  const viewer = headers.get("cloudfront-viewer-address")?.trim();
+  if (!viewer) {
+    return undefined;
+  }
+
+  // "198.51.100.7:41234", and for IPv6 "2001:db8::1:41234" — the port is always
+  // present and always last, so split on the final colon, and only when what
+  // follows it actually looks like one.
+  const separator = viewer.lastIndexOf(":");
+  if (separator === -1 || !/^\d+$/.test(viewer.slice(separator + 1))) {
+    return viewer;
+  }
+
+  return viewer.slice(0, separator) || undefined;
+}
+
 export async function verifyTurnstileToken(
   token: string | undefined,
   action: TurnstileAction,
@@ -104,8 +136,8 @@ export async function verifyTurnstileToken(
     response: token,
   });
 
-  // Optional, and only as good as the proxy chain in front of this handler —
-  // sent when available because it sharpens Cloudflare's own risk scoring.
+  // Optional. Sent only when the address came from a header the client cannot
+  // seed — see clientIpFromHeaders above.
   if (remoteIp) {
     body.set("remoteip", remoteIp);
   }

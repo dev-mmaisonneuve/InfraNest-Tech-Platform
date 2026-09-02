@@ -7,7 +7,7 @@ import { sendAcknowledgmentEmail, sendNotificationEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { contactSchema } from "@/lib/forms";
 import { claimAcknowledgmentSlot, isDuplicateSubmission, validationErrorResponse } from "@/lib/submissions";
-import { verifyTurnstileToken } from "@/lib/turnstile";
+import { clientIpFromHeaders, verifyTurnstileToken } from "@/lib/turnstile";
 
 const duplicateMessage =
   "We've already received a recent message from this address. Please wait a moment before sending another.";
@@ -31,9 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Verified before any database work so unverified traffic never reaches DynamoDB.
-  // Only as trustworthy as the proxy chain in front of this handler, which is
-  // why it sharpens Cloudflare's scoring rather than gating anything here.
-  const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const clientIp = clientIpFromHeaders(request.headers);
   const turnstile = await verifyTurnstileToken(parsed.data.turnstileToken, "contact", clientIp);
   if (!turnstile.ok) {
     return NextResponse.json(

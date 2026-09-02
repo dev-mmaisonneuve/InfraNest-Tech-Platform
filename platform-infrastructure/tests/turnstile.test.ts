@@ -193,3 +193,31 @@ test("a failed siteverify request is a rejection, not an exception", async () =>
   siteverify.restore();
   restore();
 });
+
+test("the client IP comes from CloudFront's own header, never X-Forwarded-For", async () => {
+  const { clientIpFromHeaders } = await import("@/lib/turnstile");
+  const headers = (init: Record<string, string>) => new Headers(init);
+
+  // CloudFront appends to X-Forwarded-For rather than replacing it, so the
+  // leftmost entry is whatever the client sent. It must never be used.
+  assert.equal(
+    clientIpFromHeaders(headers({ "x-forwarded-for": "198.51.100.9, 203.0.113.4" })),
+    undefined,
+  );
+
+  assert.equal(clientIpFromHeaders(headers({ "cloudfront-viewer-address": "203.0.113.4:41234" })), "203.0.113.4");
+  assert.equal(clientIpFromHeaders(headers({ "cloudfront-viewer-address": "2001:db8::1:41234" })), "2001:db8::1");
+
+  // A spoofed X-Forwarded-For alongside a real viewer address changes nothing.
+  assert.equal(
+    clientIpFromHeaders(headers({
+      "x-forwarded-for": "198.51.100.9",
+      "cloudfront-viewer-address": "203.0.113.4:41234",
+    })),
+    "203.0.113.4",
+  );
+
+  // No trusted header means no remoteip at all — an omitted signal beats a forged one.
+  assert.equal(clientIpFromHeaders(headers({})), undefined);
+  assert.equal(clientIpFromHeaders(headers({ "cloudfront-viewer-address": "   " })), undefined);
+});

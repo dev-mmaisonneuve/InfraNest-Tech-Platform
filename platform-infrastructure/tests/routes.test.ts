@@ -50,6 +50,10 @@ mock.module("@/lib/turnstile", {
   namedExports: {
     verifyTurnstileToken: () =>
       Promise.resolve({ ok: state.turnstileOk, verified: state.turnstileOk }),
+    // The routes import this too. Mocking the module replaces it wholesale, so
+    // anything the handlers pull from it has to be listed here or the route
+    // throws at the call site rather than failing a meaningful assertion.
+    clientIpFromHeaders: () => undefined,
   },
 });
 
