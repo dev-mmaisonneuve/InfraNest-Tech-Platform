@@ -112,7 +112,14 @@ Everything below is relative to `platform-infrastructure/`. Read `CLAUDE.md` the
 the design system in detail.
 
 - `app/globals.css` — the entire design system. One file, ~2100 lines.
-- `data/site-content.ts` — single source of truth for all visible copy and content arrays.
+- `data/site-content.ts` — the shared content source: navigation, services, form options, FAQ,
+  contact details, acknowledgment copy. Edit here first for anything it owns.
+- **It is not the whole copy inventory.** Visible text is also written directly into page
+  components: the homepage value proposition and its response-time line are literals in
+  `app/page.tsx`, the "how this works" list is in `app/quote/page.tsx`, and nearly the entire
+  privacy policy is prose in `app/privacy/page.tsx`. Grep the rendered string to find where it
+  actually lives before changing or citing it — the rule against rewriting approved copy covers
+  these just as much.
 - `components/` — `site-header.tsx`, `site-footer.tsx`, `section-heading.tsx`, the two form components.
 - `app/*/page.tsx` — six routes: `/`, `/services`, `/about`, `/contact`, `/quote`, `/privacy`.
   A site-wide audit covers `/privacy` too; it is plain but it is a real customer-facing page.
