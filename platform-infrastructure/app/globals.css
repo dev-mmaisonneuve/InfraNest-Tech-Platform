@@ -954,9 +954,14 @@ a {
 /* The context panel is short and the form is long, which left most of the
    left column empty. Sticky turns that dead gutter into something useful:
    the "how this works" copy stays with you while you fill the form in.
-   overflow-x: clip on html was chosen over hidden partly so this works. */
+   overflow-x: clip on html was chosen over hidden partly so this works.
+
+   The ratio is deliberately the same 1:1.15 the contact page uses. At the
+   previous 0.66fr:1fr the form took 710px against a 468px panel, which read
+   as a main pane with a sidebar rather than two cards of equal standing —
+   and let the card heading sit on one very wide line. */
 .section-split--form {
-  grid-template-columns: minmax(0, 0.66fr) minmax(340px, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 1.15fr);
 }
 
 .section-split--form > :first-child {
@@ -969,6 +974,13 @@ a {
 }
 
 /* ─── Forms ─── */
+
+/* Was an inline style on the form's inner stack, which meant a phone paid
+   the same 1.35rem gutter as a 1200px desktop. */
+.form-panel-body {
+  padding: 1.35rem;
+  gap: 1rem;
+}
 
 .form-shell {
   display: grid;
@@ -1045,18 +1057,22 @@ a {
 
 .checkbox-grid {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.6rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* These are eight checkboxes, and they were sized like eight feature cards:
+   5.5rem tall around a 3rem icon, 388px of the form before the gaps. Sized
+   as rows they cost ~240px and the form stops towering over the panel
+   beside it. The icon stays because it is what makes the block scannable. */
 .checkbox-card {
   position: relative;
   display: flex;
-  gap: 0.9rem;
+  gap: 0.7rem;
   align-items: center;
-  min-height: 5.5rem;
-  padding: 0.9rem 1rem;
-  border-radius: 1rem;
+  min-height: 3.6rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.85rem;
   border: 1px solid #d9e2f3;
   background: #ffffff;
   cursor: pointer;
@@ -1088,8 +1104,8 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2.25rem;
+  height: 2.25rem;
   flex: 0 0 auto;
 }
 
@@ -1100,7 +1116,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.95rem;
+  border-radius: 0.65rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
   transition: opacity 180ms ease, transform 180ms ease, background 180ms ease, border-color 180ms ease;
 }
@@ -1125,12 +1141,12 @@ a {
 }
 
 .checkbox-copy {
-  max-width: 14rem;
+  max-width: none;
   color: #1a3a5c;
-  font-size: 0.93rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  line-height: 1.5;
+  line-height: 1.35;
 }
 
 .checkbox-card:has(input:checked) {
@@ -2007,45 +2023,67 @@ details.faq-item[open] .faq-answer {
 
 
   .stats-grid,
-  .form-grid,
-  .checkbox-grid {
+  .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .checkbox-grid {
-    gap: 0.5rem;
-  }
-
-  /* Rows, not cards. Two columns were the other option and lose: these
-     labels are long ("IT Operations & Technology Management") and would
-     wrap to four lines in a ~150px column, which is harder to scan than a
-     single-column list, not easier. */
+  /* Eight full-width rows cost about 490px — a whole phone screen for one
+     field. Two columns were rejected before because the labels wrapped to
+     four lines, and that was true while each tile carried a 2.1rem service
+     icon. Trading the icon for a plain checkbox square returns ~40px of
+     label width per tile, which is the difference between four lines and
+     two. The block lands near 280px. The icon survives on desktop, where
+     there is room for it. */
   .checkbox-card {
-    min-height: 3.4rem;
-    padding: 0.5rem 0.7rem;
-    gap: 0.6rem;
-    border-radius: 0.75rem;
+    min-height: 3.6rem;
+    padding: 0.55rem 0.6rem;
+    gap: 0.5rem;
+    border-radius: 0.7rem;
   }
 
   .checkbox-marker {
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 1.15rem;
+    height: 1.15rem;
   }
 
-  .checkbox-badge,
-  .checkbox-check {
-    border-radius: 0.6rem;
+  .checkbox-badge {
+    background: #ffffff;
+    border: 1.5px solid #cbd8ea;
+    border-radius: 0.35rem;
   }
 
   .checkbox-badge svg {
-    width: 1rem;
-    height: 1rem;
+    display: none;
+  }
+
+  .checkbox-check {
+    border-radius: 0.35rem;
+    font-size: 0.78rem;
   }
 
   .checkbox-copy {
-    max-width: none;
-    font-size: 0.88rem;
-    line-height: 1.35;
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  /* 9rem of empty textarea reads as a demand on a phone. Four lines is
+     still an invitation, and the field is resizable. */
+  .field textarea {
+    min-height: 7rem;
+  }
+
+  .form-panel-body {
+    padding: 1.1rem;
+    gap: 0.85rem;
+  }
+
+  /* Helper copy under the card heading, not a page lead. At --step-lead it
+     competed with the field labels for weight. */
+  .form-panel .section-heading p {
+    font-size: var(--text-md);
+    line-height: 1.5;
+    margin-top: 0.55rem;
   }
 
   /* Timeline and budget are short selects and pair cleanly, saving a row.
@@ -2060,6 +2098,14 @@ details.faq-item[open] .faq-answer {
   }
 
   .form-grid--quote > .field:nth-last-child(-n + 2) {
+    grid-column: span 1;
+  }
+
+  /* Phone and company hold short values and pair without crowding either.
+     Name and email keep the full row: they are the two fields most likely
+     to be long and are the ones that must not feel cramped. */
+  .form-grid--quote > .field:nth-child(3),
+  .form-grid--quote > .field:nth-child(4) {
     grid-column: span 1;
   }
 
