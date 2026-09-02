@@ -148,9 +148,22 @@ Conventions that bite if you miss them:
 
 ## Verification
 
-- `npx tsc --noEmit` and `NEXT_PUBLIC_SITE_URL=https://infranests.com npx next build` before
-  claiming done. The variable is required: `lib/site-url.ts` throws on a production build without
-  it, which is why `.github/workflows/ci.yml` sets it too. A local `.env.local` also satisfies it.
+- Before claiming done, from **`platform-infrastructure/`**, not the repo root:
+
+  ```bash
+  cd platform-infrastructure
+  npx tsc --noEmit
+  npm test
+  NEXT_PUBLIC_SITE_URL=https://infranests.com npx next build
+  ```
+
+  The `cd` is load-bearing. This skill lives in `.claude/` at the repo root, which has no
+  `package.json` and no `tsconfig.json`; run from there, `tsc` prints its help and exits without
+  typechecking anything, and `next` resolves outside the project. `.github/workflows/ci.yml` sets
+  `working-directory: platform-infrastructure` for the same reason.
+
+  `NEXT_PUBLIC_SITE_URL` is required too: `lib/site-url.ts` throws on a production build without it.
+  A local `.env.local` also satisfies it.
 - **Never claim a layout or performance improvement without measuring it** when measurement is
   available. Grep the emitted CSS in `.next/static/css/` to confirm a rule actually shipped.
 - If something can't be verified in this environment — real device behaviour, screen readers, live form
