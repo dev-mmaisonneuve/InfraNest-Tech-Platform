@@ -152,10 +152,15 @@ Conventions that bite if you miss them:
 
   ```bash
   cd platform-infrastructure
+  npm run lint
   npx tsc --noEmit
   npm test
   NEXT_PUBLIC_SITE_URL=https://infranests.com npx next build
   ```
+
+  All four, in that order — the same gates `ci.yml` runs. Lint is not redundant with the
+  typecheck: it is the gate that catches missing hook dependencies, raw `<img>`, and the
+  jsx-a11y rules, none of which `tsc` or the tests see. UI work touches exactly those.
 
   The `cd` is load-bearing. This skill lives in `.claude/` at the repo root, which has no
   `package.json` and no `tsconfig.json`; run from there, `tsc` prints its help and exits without
