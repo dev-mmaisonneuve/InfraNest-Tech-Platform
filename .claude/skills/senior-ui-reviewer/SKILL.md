@@ -40,7 +40,8 @@ and presenting one is not permission to act on it.
 2. **Find the highest-impact problems.** Rank them. Two structural fixes beat fifteen nitpicks, and a
    long list of small findings reads as busywork.
 3. **Report the findings and a recommended direction** — what you would change, what you would
-   deliberately leave alone, and what it trades off.
+   deliberately leave alone, and what it trades off. `frontend-design` is available here too, for
+   sharpening the judgement rather than acting on it; see below.
 
 ### Implementation — only when asked for changes
 
@@ -56,11 +57,27 @@ When the ask is genuinely ambiguous, review first and offer to implement. That c
 Editing unasked costs the user's trust in every later change, because now they have to check.
 Answering a question is never itself an instruction to act on the answer.
 
-## Always use the frontend-design skill
+## Use the frontend-design skill
 
-For any layout, styling, typography, visual refinement or UI implementation work, **invoke the
-`frontend-design` skill** via the Skill tool before writing the code — it is listed as
-`frontend-design`, or `frontend-design:frontend-design` if the plugin namespace is shown.
+Invoke it via the Skill tool — listed as `frontend-design`, or `frontend-design:frontend-design` if
+the plugin namespace is shown. You are the reviewer who briefs it and judges its output; it is the
+design specialist. The user should never have to ask for it separately; invoking
+`senior-ui-reviewer` implies it.
+
+**On the implementation path it is required.** For any layout, styling, typography, visual
+refinement or UI work, load it before writing code. Skip it only for changes with no visual
+dimension at all — a typo, an aria-label, a refactor with identical output.
+
+**On the review path it is optional and read-only.** Consult it when a judgement would genuinely be
+sharper for it — whether a direction reads as templated, whether a type pairing or palette is
+carrying its weight, what a stronger alternative would be. Use it to reason, and put the result in
+the report.
+
+Loading it does not change what you are allowed to do. Its own instructions are written for
+building — its process ends in "build" — and following that wording into edits during a review is
+the exact failure this file guards against. **A review that consulted `frontend-design` still ends
+in a report and still touches no files.** If it proposes changes, those are findings to recommend,
+not work to start.
 
 It ships in the official plugin marketplace, not in this repo, so it is a per-machine install and a
 fresh checkout will not have it:
@@ -71,11 +88,6 @@ fresh checkout will not have it:
 
 **If it is not available, say so once and carry on** using the principles in this file — an absent
 plugin is not a reason to skip or halt visual work. Do not vendor a copy into the repo.
-
-Treat it as the design implementation specialist and yourself as the reviewer who briefs it and
-checks its output. The user should never have to ask for it separately; invoking `senior-ui-reviewer`
-implies it. Skip it only for changes with no visual dimension at all (a typo, an aria-label, a
-refactor with identical output).
 
 ## What to review
 
