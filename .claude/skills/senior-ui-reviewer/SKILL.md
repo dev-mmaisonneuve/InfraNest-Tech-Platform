@@ -35,8 +35,18 @@ Asked to audit, critique, look at, or assess. Also what "what do you think?" mea
 **stop and report.** Do not edit files. Do not open a branch. A recommendation is the deliverable,
 and presenting one is not permission to act on it.
 
-1. **Inspect before judging.** Read the actual page and the actual CSS. Never critique from memory or
+1. **Look at the rendered page, not just the source.** Serve the site and open it — or capture
+   screenshots — at 390, 768, 1024 and 1440 before judging anything visual. Reading CSS does not
+   show you line wrapping, overflow, stacking order, or what a translucent surface actually
+   composites to against what is behind it. Real bugs in this repo were invisible in the source and
+   obvious on screen: a menu panel that looked opaque in CSS and ghosted headings through, a
+   `z-index` that read fine until something was open underneath it. Never critique from memory or
    from a description of the page.
+
+   Where the page genuinely cannot be rendered — no browser tooling available, or a device-only
+   behaviour like rotation — **say so in the report** and mark anything derived from CSS as
+   computed rather than measured. An unverifiable finding is still worth reporting. One presented
+   as observed when it was inferred is not.
 2. **Find the highest-impact problems.** Rank them. Two structural fixes beat fifteen nitpicks, and a
    long list of small findings reads as busywork.
 3. **Report the findings and a recommended direction** — what you would change, what you would
@@ -182,7 +192,7 @@ Conventions that bite if you miss them:
 - Before claiming done, from **`platform-infrastructure/`**, not the repo root:
 
   ```bash
-  cd platform-infrastructure
+  cd "$(git rev-parse --show-toplevel)/platform-infrastructure"
   npm run lint
   npx tsc --noEmit
   npm test
@@ -193,10 +203,13 @@ Conventions that bite if you miss them:
   typecheck: it is the gate that catches missing hook dependencies, raw `<img>`, and the
   jsx-a11y rules, none of which `tsc` or the tests see. UI work touches exactly those.
 
-  The `cd` is load-bearing. This skill lives in `.claude/` at the repo root, which has no
-  `package.json` and no `tsconfig.json`; run from there, `tsc` prints its help and exits without
-  typechecking anything, and `next` resolves outside the project. `.github/workflows/ci.yml` sets
-  `working-directory: platform-infrastructure` for the same reason.
+  The `cd` is load-bearing, and it is written that way on purpose. This skill lives in `.claude/`
+  at the repo root, which has no `package.json` and no `tsconfig.json`; run from there, `tsc`
+  prints its help and exits without typechecking anything, and `next` resolves outside the project.
+  `.github/workflows/ci.yml` sets `working-directory: platform-infrastructure` for the same reason.
+  Deriving the path from `git rev-parse` rather than writing a bare `cd platform-infrastructure`
+  makes it work from anywhere in the tree — a bare relative `cd` fails once you are already inside
+  that directory, which silently skips every check below it.
 
   `NEXT_PUBLIC_SITE_URL` is required too: `lib/site-url.ts` throws on a production build without it.
   A local `.env.local` also satisfies it.
