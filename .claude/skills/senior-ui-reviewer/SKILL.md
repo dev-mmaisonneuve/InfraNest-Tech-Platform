@@ -136,8 +136,9 @@ These hold unless the user explicitly says otherwise.
 - **Preserve content, functionality, branding and backend behaviour.** Never delete content to shorten
   a page. Never change form field behaviour, validation, Turnstile, DynamoDB writes, SES delivery, or
   security headers for a visual reason.
-- **Copy is not yours to rewrite.** Marketing text is approved and lives in `data/site-content.ts`.
-  Propose wording changes; don't make them unasked. "24 hours" is the approved response-time phrasing.
+- **Copy is not yours to rewrite.** Approved marketing text stays as written wherever it is stored —
+  `data/site-content.ts` or hardcoded in a page component (see the source map below). Propose wording
+  changes; don't make them unasked. "24 hours" is the approved response-time phrasing.
 - **No new dependencies.** There is no component library, no icon library, no CSS framework. Inline
   SVG and hand-written CSS. Keep it that way.
 - **Scope your CSS.** A rule written to fix one page will reach every page that shares the selector.
@@ -148,7 +149,8 @@ These hold unless the user explicitly says otherwise.
 Everything below is relative to `platform-infrastructure/`. Read `CLAUDE.md` there first; it documents
 the design system in detail.
 
-- `app/globals.css` — the entire design system. One file, ~2100 lines.
+- `app/globals.css` — the entire design system, in one file. Check its length rather than
+  assuming; it grows.
 - `data/site-content.ts` — the shared content source: navigation, services, form options, FAQ,
   contact details, acknowledgment copy. Edit here first for anything it owns.
 - **It is not the whole copy inventory.** Visible text is also written directly into page
