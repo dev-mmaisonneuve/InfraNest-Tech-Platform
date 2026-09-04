@@ -25,12 +25,38 @@ export function SiteHeader() {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
 
+  // Scroll drives one boolean, so the work per event has to stay near zero.
+  // The listener does nothing but schedule a frame; the read happens once per
+  // frame at most, no matter how many events the browser delivers.
+  //
+  // The thresholds are deliberately asymmetric. A single 55px line flips
+  // repeatedly whenever a scroll settles near it, and because the compacted bar
+  // is shorter than the resting one, each flip nudges the page and can trip the
+  // comparison straight back — which is what read as glitching on a phone,
+  // where momentum scrolling lingers around a position instead of stopping at
+  // it. Compact past 64, expand again below 32, and the states cannot chatter.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 55);
-    onScroll();
+    let frame = 0;
+
+    const read = () => {
+      frame = 0;
+      const y = window.scrollY;
+      setScrolled((current) => (current ? y > 32 : y > 64));
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(read);
+    };
+
+    read();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   // The toggle comes after the nav in DOM order, because the visual layout puts
@@ -103,13 +129,34 @@ export function SiteHeader() {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  // Tapping anywhere outside the header (the open panel is part of it)
-  // closes the menu — the other half of the scroll-lock expectation.
+  // Tapping away from the menu closes it.
+  //
+  // "Outside the header" alone was not enough, and on a phone it was never
+  // true: the open sheet is a child of the header and covers the whole
+  // viewport below the bar, so every tap landed inside and the toggle was the
+  // only way back out. Anything in the sheet that is not a link, the CTA or a
+  // contact row is empty space, and tapping empty space is the gesture people
+  // reach for — so treat it as tapping outside.
   useEffect(() => {
     if (!isOpen) return;
+
     const onPointerDown = (event: PointerEvent) => {
-      if (!headerRef.current?.contains(event.target as Node)) setIsOpen(false);
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+
+      if (!headerRef.current?.contains(target)) {
+        setIsOpen(false);
+        return;
+      }
+
+      // Inside the sheet: close unless the tap actually hit something that
+      // does its own job. closest() covers taps that land on a child span or
+      // svg rather than the control itself.
+      if (shellRef.current?.contains(target) && !target.closest("a, button")) {
+        setIsOpen(false);
+      }
     };
+
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [isOpen]);
@@ -150,7 +197,7 @@ export function SiteHeader() {
             below the bar rather than a strip that ends mid-page. On desktop
             it is an inert wrapper and all of this collapses to a row.
           */}
-          <div className="nav-shell" id="primary-navigation" data-open={isOpen}>
+          <div className="nav-shell" id="primary-navigation" data-open={isOpen} ref={shellRef}>
             <nav className="nav-links" ref={navRef} aria-label="Primary navigation">
               {navigation.map((item) => {
                 const isActive =
