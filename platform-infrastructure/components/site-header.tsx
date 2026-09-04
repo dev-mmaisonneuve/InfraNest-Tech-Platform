@@ -156,28 +156,59 @@ export function SiteHeader() {
   // only way back out. Anything in the sheet that is not a link, the CTA or a
   // contact row is empty space, and tapping empty space is the gesture people
   // reach for — so treat it as tapping outside.
+  //
+  // Deciding on pointerup rather than pointerdown, because pointerdown fires
+  // before the pointer has moved and so cannot tell a tap from the start of a
+  // drag. The sheet scrolls when it overflows a short viewport, and the places
+  // a thumb naturally lands to start that scroll — the panel padding, the gap
+  // between the links and the contact block — are exactly the empty areas that
+  // dismiss it. On pointerdown the menu would shut the instant you tried to
+  // scroll it. Movement past 10px is a drag and cancels the dismissal.
   useEffect(() => {
     if (!isOpen) return;
 
-    const onPointerDown = (event: PointerEvent) => {
-      const target = event.target instanceof Element ? event.target : null;
-      if (!target) return;
+    let origin: { x: number; y: number; target: Element } | null = null;
 
-      if (!headerRef.current?.contains(target)) {
+    const onPointerDown = (event: PointerEvent) => {
+      origin =
+        event.target instanceof Element
+          ? { x: event.clientX, y: event.clientY, target: event.target }
+          : null;
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      const start = origin;
+      origin = null;
+      if (!start) return;
+
+      const travelled = Math.hypot(event.clientX - start.x, event.clientY - start.y);
+      if (travelled > 10) return;
+
+      if (!headerRef.current?.contains(start.target)) {
         setIsOpen(false);
         return;
       }
 
-      // Inside the sheet: close unless the tap actually hit something that
-      // does its own job. closest() covers taps that land on a child span or
-      // svg rather than the control itself.
-      if (shellRef.current?.contains(target) && !target.closest("a, button")) {
+      // Inside the sheet: close unless the press actually landed on something
+      // that does its own job. closest() covers presses that land on a child
+      // span or svg rather than the control itself.
+      if (shellRef.current?.contains(start.target) && !start.target.closest("a, button")) {
         setIsOpen(false);
       }
     };
 
+    const onPointerCancel = () => {
+      origin = null;
+    };
+
     document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
+    document.addEventListener("pointerup", onPointerUp);
+    document.addEventListener("pointercancel", onPointerCancel);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("pointerup", onPointerUp);
+      document.removeEventListener("pointercancel", onPointerCancel);
+    };
   }, [isOpen]);
 
   // Escape closes the menu and returns focus to the control that opened it.
