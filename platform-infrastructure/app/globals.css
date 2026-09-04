@@ -1226,6 +1226,10 @@ a {
   right: 0;
   z-index: 40;
   padding: 0;
+  /* The mobile sheet hangs off the bottom of the bar, so the bar's height has
+     to be readable from outside it. Declared here and overridden per state
+     rather than repeated as a literal in three places. */
+  --header-h: 4.8rem;
   transition: padding 420ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1324,10 +1328,26 @@ a {
 }
 
 
+/* The row is space-between across three items of unequal width — a 141px logo
+   plate and a 163px CTA — so the links landed 19px left of the viewport centre
+   at every desktop width (measured identical at 768, 1024 and 1440). Almost
+   centred reads as sloppy in a way neither properly centred nor properly
+   left-aligned does. Centring the shell to the row is independent of what
+   flanks it and stays correct if the CTA label ever changes length.
+
+   Deliberately not scoped to a media query: the 760px block already re-declares
+   position, left and transform on .nav-shell for the mobile sheet, and it comes
+   later in the file, so all three of these are overridden there. */
+.nav-shell {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.35rem;
+  gap: 1.45rem;
 }
 
 .mobile-nav-quote,
@@ -1337,36 +1357,70 @@ a {
 
 .nav-links a {
   color: rgba(255, 255, 255, 0.78);
-  font-size: 0.93rem;
+  font-size: 0.9rem;
   font-weight: 500;
+  /* Small UI text on a dark ground closes up; a hair of tracking keeps the
+     words legible without making them look spaced out. */
+  letter-spacing: 0.012em;
   position: relative;
-  padding-bottom: 0.2rem;
-  transition: color 160ms ease;
+  padding: 0.3rem 0.1rem 0.55rem;
+  transition: color 200ms ease;
 }
 
-.nav-links a:hover,
-.nav-links a[data-active="true"] {
-  color: rgba(255, 255, 255, 0.96);
-}
+/* A filament rather than an underline: one hairline that fades out at both
+   ends and carries its own glow, so the item reads as lit from beneath instead
+   of ruled under. The gradient stops kill the hard terminals that make a plain
+   border-bottom look like a default; the two box-shadows are the bloom, a tight
+   one for the filament's own light and a wide one for the spill onto the bar.
 
+   Only opacity animates. Nothing here moves, changes size, or repeats, so
+   there is no pulse to read as a blinking indicator and no layout cost.
+
+   ::after on purpose — the mobile block owns ::before for the current-page bar
+   on the stacked rows, and the two must not collide. */
 .nav-links a::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -0.35rem;
+  bottom: 0.15rem;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-green));
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent) 18%,
+    var(--accent) 82%,
+    transparent
+  );
+  box-shadow:
+    0 0 10px rgba(112, 194, 255, 0.72),
+    0 0 24px rgba(112, 194, 255, 0.38),
+    0 0 44px rgba(112, 194, 255, 0.16);
   opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition: opacity 220ms ease;
+  pointer-events: none;
 }
 
-.nav-links a:hover::after,
+/* Hover and the current page are the same gesture at two intensities, which is
+   what makes them read as related — and the label colour separates them so the
+   distinction never rests on brightness alone. */
+.nav-links a:hover {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.nav-links a:hover::after {
+  opacity: 0.45;
+}
+
+.nav-links a[data-active="true"] {
+  color: #ffffff;
+}
+
+/* Full strength for the current page. The accent is 7.7:1 against this bar, so
+   the indicator clears the 3:1 WCAG 2.2 SC 1.4.11 floor with room to spare. */
 .nav-links a[data-active="true"]::after {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .nav-actions {
@@ -1796,16 +1850,20 @@ details.faq-item[open] .faq-answer {
     width: min(calc(100% - 1.5rem), var(--max-width));
   }
 
-  .header-row,
-  .site-header[data-scrolled="true"] .header-row {
-    /* One 56px bar in both scroll states. The desktop shrink-to-pill
-       animation reads as polish at 77px; at phone size it just made the
-       bar twitch. */
-    min-height: 3.5rem;
+  /* One height, in every scroll state. Shrinking the bar as you scroll gives
+     the eye a moving target on a surface that is meant to be the fixed thing
+     on the screen, and no amount of easing makes that read as deliberate —
+     it reads as the header failing to settle. The bar either sits still or
+     gets out of the way; it does not resize. */
+  .site-header,
+  .site-header[data-scrolled="true"] {
+    --header-h: 3.5rem;
+    padding: 0;
   }
 
-  .site-header[data-scrolled="true"] {
-    padding: 0 1rem;
+  .header-row,
+  .site-header[data-scrolled="true"] .header-row {
+    min-height: var(--header-h);
   }
 
   /* The wordmark PNG carries its own baked-in white plate, so the CSS card
@@ -1829,6 +1887,86 @@ details.faq-item[open] .faq-answer {
   .site-header[data-scrolled="true"] .header-bg {
     inset: 0;
     border-radius: 0;
+  }
+
+  /* ── Hide on the way down, return on the way up ──────────────────────────
+     The bar leaves rather than shrinks. Only the surface and the wordmark
+     move; the header element itself never translates, because the toggle
+     lives inside it and has to stay exactly where it was. That also keeps
+     the control's position identical whether the bar is showing or not, so
+     there is nothing to track with your thumb. */
+  /* One rule, deliberately. This was split in two, and the second one's
+     `transition` shorthand quietly dropped `transform` from the first — the
+     surface snapped off while the wordmark still animated.
+
+     backdrop-filter is off here because on a full-bleed fixed bar it is the
+     single most expensive thing in this header on a phone: every scroll frame
+     re-blurs whatever is behind it. The bar is near-opaque anyway, so the blur
+     was buying almost nothing. */
+  .header-bg {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(5, 11, 22, 0.96);
+    transform: translateY(0);
+    transition:
+      transform 260ms cubic-bezier(0.32, 0.72, 0, 1),
+      background-color 240ms ease,
+      box-shadow 240ms ease,
+      border-color 240ms ease;
+  }
+
+  /* visibility, not just opacity: pointer-events stops the mouse but leaves an
+     anchor in the tab order, so a keyboard user could land on an invisible
+     Home link — invisible focus ring and all — before reaching the toggle that
+     is still on screen. The 0s delay lets it fade first, then leave. */
+  .brand-mark {
+    visibility: visible;
+    transition:
+      opacity 180ms ease,
+      transform 260ms cubic-bezier(0.32, 0.72, 0, 1),
+      visibility 0s;
+  }
+
+  .site-header[data-hidden="true"] .header-bg {
+    transform: translateY(-100%);
+  }
+
+  .site-header[data-hidden="true"] .brand-mark {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 180ms ease,
+      transform 260ms cubic-bezier(0.32, 0.72, 0, 1),
+      visibility 0s linear 260ms;
+  }
+
+  /* With the bar gone the header is an invisible strip across the top of the
+     page; without this it would keep swallowing taps meant for the content
+     underneath it. The toggle is handed its own pointer events back. */
+  .site-header[data-hidden="true"] {
+    pointer-events: none;
+  }
+
+  .site-header[data-hidden="true"] .nav-toggle {
+    pointer-events: auto;
+    /* The icon was white on a dark bar. With the bar gone it sits on whatever
+       the page happens to be — light, in most places — so it brings its own
+       ground with it. */
+    background: rgba(6, 13, 25, 0.9);
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(4, 10, 20, 0.34);
+  }
+
+  .nav-toggle {
+    transition: background-color 200ms ease, box-shadow 200ms ease;
+  }
+
+  .site-header[data-scrolled="true"] .header-bg {
+    background: #050b16;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 6px 20px rgba(4, 10, 20, 0.35);
   }
 
   .hero-grid,
@@ -1893,7 +2031,7 @@ details.faq-item[open] .faq-answer {
      menu look broken. */
   .nav-shell {
     position: fixed;
-    top: 3.5rem;
+    top: var(--header-h);
     left: 0;
     right: 0;
     bottom: 0;
@@ -1906,18 +2044,23 @@ details.faq-item[open] .faq-answer {
     overscroll-behavior: contain;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
+    /* Closing is faster than opening. A panel that opens in 190ms feels
+       responsive; one that takes the same time to get out of the way feels
+       slow, because by then you have already decided where you are going. */
     transition:
-      opacity 200ms ease,
-      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 200ms;
+      opacity 130ms ease,
+      transform 130ms cubic-bezier(0.32, 0.72, 0, 1),
+      visibility 0s linear 130ms;
   }
 
   .nav-shell[data-open="true"] {
     opacity: 1;
     visibility: visible;
     transform: none;
-    transition: opacity 200ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      opacity 190ms ease,
+      transform 190ms cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .nav-links {
@@ -1939,13 +2082,25 @@ details.faq-item[open] .faq-answer {
     /* 52px rows: comfortably past the 44px target without the sprawl. */
     min-height: 3.25rem;
     padding: 0 0 0 0.9rem;
-    font-size: 1.02rem;
+    font-size: 1.05rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.82);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    /* Destination names, not running text — a touch of negative tracking at
+       this size reads as set rather than typed. */
+    letter-spacing: -0.008em;
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    /* Removes the tap delay some mobile browsers still apply to elements they
+       suspect might be double-tapped to zoom. */
+    touch-action: manipulation;
   }
 
-  /* The desktop underline indicator would sit under a full-width row here. */
+  .nav-toggle {
+    touch-action: manipulation;
+  }
+
+  /* The filament belongs to a word on a horizontal bar. Stretched under a
+     full-width row it would read as a second divider competing with the
+     hairline separators, so the rows use the ::before bar below instead. */
   .nav-links a::after {
     display: none;
   }
@@ -2293,8 +2448,24 @@ details.faq-item[open] .faq-answer {
   }
 
   .nav-links,
+  .nav-links a,
+  .nav-links a::after,
+  .nav-shell,
+  .header-row,
+  .brand-wordmark,
+  /* The two that actually move when the bar hides. Listing .brand-wordmark
+     alone missed both: the surface translates on .header-bg, and the logo
+     fades and lifts on .brand-mark, its parent. */
+  .header-bg,
+  .brand-mark,
   .nav-icon line {
     transition: none !important;
+  }
+
+  /* The wordmark's compaction is a transform, so switching the transition off
+     is not enough on its own — it would simply snap to the scaled state. */
+  .site-header[data-scrolled="true"] .brand-wordmark {
+    transform: none;
   }
 }
 
