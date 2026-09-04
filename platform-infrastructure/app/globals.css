@@ -1850,26 +1850,20 @@ details.faq-item[open] .faq-answer {
     width: min(calc(100% - 1.5rem), var(--max-width));
   }
 
-  /* 56px at rest, 48px once scrolled. The bar is fixed, so its own height
-     change reflows the six nodes inside it and nothing in the document — the
-     twitch the previous pass was avoiding came from the blurred backdrop
-     animating `inset` underneath, and from the horizontal padding jump below,
-     not from the height itself. */
-  .site-header {
-    --header-h: 3.5rem;
-  }
-
+  /* One height, in every scroll state. Shrinking the bar as you scroll gives
+     the eye a moving target on a surface that is meant to be the fixed thing
+     on the screen, and no amount of easing makes that read as deliberate —
+     it reads as the header failing to settle. The bar either sits still or
+     gets out of the way; it does not resize. */
+  .site-header,
   .site-header[data-scrolled="true"] {
-    --header-h: 3rem;
-    /* Was `0 1rem`, which shifted the whole row sideways the moment the state
-       flipped. The bar is full-bleed on a phone; there is nothing to inset. */
+    --header-h: 3.5rem;
     padding: 0;
   }
 
   .header-row,
   .site-header[data-scrolled="true"] .header-row {
     min-height: var(--header-h);
-    transition: min-height 240ms cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   /* The wordmark PNG carries its own baked-in white plate, so the CSS card
@@ -1884,24 +1878,65 @@ details.faq-item[open] .faq-answer {
     box-shadow: none;
   }
 
-  /* The wordmark shrinks by transform, not by height. Animating `height` on an
-     image forces a layout pass per frame; a scale runs on the compositor and
-     the box it occupies never changes, so nothing around it moves. */
   .brand-wordmark,
   .site-header[data-scrolled="true"] .brand-wordmark {
     height: 2rem;
     border-radius: 0.5rem;
-    transform-origin: left center;
-    transition: transform 240ms cubic-bezier(0.32, 0.72, 0, 1);
-  }
-
-  .site-header[data-scrolled="true"] .brand-wordmark {
-    transform: scale(0.86);
   }
 
   .site-header[data-scrolled="true"] .header-bg {
     inset: 0;
     border-radius: 0;
+  }
+
+  /* ── Hide on the way down, return on the way up ──────────────────────────
+     The bar leaves rather than shrinks. Only the surface and the wordmark
+     move; the header element itself never translates, because the toggle
+     lives inside it and has to stay exactly where it was. That also keeps
+     the control's position identical whether the bar is showing or not, so
+     there is nothing to track with your thumb. */
+  .header-bg {
+    transform: translateY(0);
+    transition:
+      transform 260ms cubic-bezier(0.32, 0.72, 0, 1),
+      background-color 240ms ease,
+      box-shadow 240ms ease,
+      border-color 240ms ease;
+  }
+
+  .brand-mark {
+    transition: opacity 180ms ease, transform 260ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .site-header[data-hidden="true"] .header-bg {
+    transform: translateY(-100%);
+  }
+
+  .site-header[data-hidden="true"] .brand-mark {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    pointer-events: none;
+  }
+
+  /* With the bar gone the header is an invisible strip across the top of the
+     page; without this it would keep swallowing taps meant for the content
+     underneath it. The toggle is handed its own pointer events back. */
+  .site-header[data-hidden="true"] {
+    pointer-events: none;
+  }
+
+  .site-header[data-hidden="true"] .nav-toggle {
+    pointer-events: auto;
+    /* The icon was white on a dark bar. With the bar gone it sits on whatever
+       the page happens to be — light, in most places — so it brings its own
+       ground with it. */
+    background: rgba(6, 13, 25, 0.9);
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(4, 10, 20, 0.34);
+  }
+
+  .nav-toggle {
+    transition: background-color 200ms ease, box-shadow 200ms ease;
   }
 
   /* backdrop-filter on a full-bleed fixed bar is the single most expensive

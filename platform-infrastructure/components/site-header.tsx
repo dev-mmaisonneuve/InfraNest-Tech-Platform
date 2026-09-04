@@ -20,6 +20,7 @@ const navSectionIds = navigation
 export function SiteHeader() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const activeSection = useScrollSpy(navSectionIds);
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -40,10 +41,28 @@ export function SiteHeader() {
   useEffect(() => {
     let frame = 0;
 
+    let lastY = window.scrollY;
+
     const read = () => {
       frame = 0;
       const y = window.scrollY;
       setScrolled((current) => (current ? y > 32 : y > 64));
+
+      // Direction, not position, drives whether the bar is on screen. Momentum
+      // scrolling and rubber-banding both produce small deltas in the wrong
+      // direction, so movement under 6px is treated as noise rather than a
+      // change of mind — without that the bar flickers on every settle.
+      const delta = y - lastY;
+      if (Math.abs(delta) > 6) {
+        lastY = y;
+        // Nothing hides near the top: there is no content gained by it, and
+        // iOS reports negative scrollY during an overscroll, which would read
+        // as scrolling up and fight whatever was already on screen.
+        if (delta > 0 && y > 120) setIsHidden(true);
+        else if (delta < 0) setIsHidden(false);
+      }
+
+      if (y <= 8) setIsHidden(false);
     };
 
     const onScroll = () => {
@@ -176,7 +195,7 @@ export function SiteHeader() {
   }, [isOpen]);
 
   return (
-    <header className="site-header" data-scrolled={scrolled} ref={headerRef}>
+    <header className="site-header" data-scrolled={scrolled} data-hidden={isHidden && !isOpen} ref={headerRef}>
       <div className="header-bg" aria-hidden="true" />
       <div className="container">
         <div className="header-row">
@@ -245,7 +264,14 @@ export function SiteHeader() {
               aria-expanded={isOpen}
               aria-controls="primary-navigation"
               aria-label={isOpen ? "Close navigation" : "Open navigation"}
-              onClick={() => setIsOpen((value) => !value)}
+              onClick={() => {
+                setIsOpen((value) => !value);
+                // The sheet hangs off the bottom of the bar, so the bar has to
+                // be on screen for the panel to have anything to hang from.
+                // Reaching for the control is also a clear signal you want the
+                // header back, whichever way the toggle is going.
+                setIsHidden(false);
+              }}
             >
               <svg className="nav-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
                 <line x1="4" y1="7" x2="20" y2="7" />
