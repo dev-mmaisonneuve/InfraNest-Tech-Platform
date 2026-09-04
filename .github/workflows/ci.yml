@@ -37,8 +37,60 @@ jobs:
       # build cleanly — none of those steps ask whether anything is known-broken.
       # Fails on high and critical only: moderate advisories in transitive dev
       # dependencies would block merges without a corresponding real risk.
+      #
+      # `npm audit` exits 1 both when it finds advisories and when the registry
+      # refuses the request, so the exit code alone cannot tell a real finding
+      # from an outage — and npm's quick-audit endpoint has been returning
+      # 400 "Invalid package tree" intermittently while it is retired, after
+      # hanging for six minutes first. That failed builds carrying no dependency
+      # change at all. The report is parsed instead: a real result carries
+      # metadata.vulnerabilities, an outage carries `error`.
+      #
+      # An unreachable registry warns rather than fails. A broken audit endpoint
+      # is not evidence of a vulnerability, and blocking every merge on npm's
+      # uptime buys nothing; the warning is annotated on the run so a persistent
+      # outage is visible rather than silent.
       - name: Audit dependencies
-        run: npm audit --audit-level=high
+        run: |
+          set -uo pipefail
+          set +e
+
+          cat > "${RUNNER_TEMP}/check-audit.mjs" <<'JS'
+          let raw = "";
+          process.stdin.on("data", (chunk) => (raw += chunk));
+          process.stdin.on("end", () => {
+            let report;
+            try {
+              report = JSON.parse(raw);
+            } catch {
+              process.exit(2);
+            }
+            if (report.error) process.exit(2);
+
+            const counts = report.metadata?.vulnerabilities ?? {};
+            const blocking = (counts.high ?? 0) + (counts.critical ?? 0);
+            if (blocking > 0) {
+              console.error(`${blocking} high or critical advisories.`);
+              process.exit(1);
+            }
+            console.log("No high or critical advisories.");
+            process.exit(0);
+          });
+          JS
+
+          for attempt in 1 2 3; do
+            report=$(npm audit --json --fetch-timeout=60000 2>/dev/null)
+            printf '%s' "$report" | node "${RUNNER_TEMP}/check-audit.mjs"
+            status=$?
+
+            if [ "$status" -eq 0 ]; then exit 0; fi
+            if [ "$status" -eq 1 ]; then exit 1; fi
+
+            echo "Audit endpoint unavailable (attempt ${attempt}/3)."
+            if [ "$attempt" -lt 3 ]; then sleep 15; fi
+          done
+
+          echo "::warning::npm audit could not reach the registry after three attempts. The dependency audit did not run for this commit."
 
       # Catches what types and tests cannot: exhaustive hook dependency arrays,
       # raw <img> where next/image belongs, and the jsx-a11y rules.
